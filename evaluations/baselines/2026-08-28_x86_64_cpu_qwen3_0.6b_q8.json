@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "status": "development_baseline",
+  "measured_at": "2026-08-28T02:26:41.294615+00:00",
+  "claim_boundary": "x86_64 CPU 개발셋 기준선이다. 홀드아웃 정확도나 Raspberry Pi·Jetson 성능으로 일반화하지 않는다.",
+  "hardware": {
+    "cpu": "AMD Ryzen 7 260 w/ Radeon 780M Graphics",
+    "physical_cores": 8,
+    "logical_cpus": 16,
+    "memory_bytes": 32864538624,
+    "gpu_present_but_unused": "NVIDIA GeForce RTX 5050 Laptop GPU 8151 MiB",
+    "os": "Ubuntu 24.04.4 LTS",
+    "kernel": "7.0.0-28-generic"
+  },
+  "runtime": {
+    "name": "llama.cpp",
+    "release": "b10549",
+    "commit": "b2e5e9b28",
+    "asset": "llama-b10549-bin-ubuntu-x64.tar.gz",
+    "asset_size_bytes": 16675230,
+    "asset_sha256": "66b26d8cb3ab8edaf5a12bfe642b8f00844925f614f196a96a222b7ed1582c1d",
+    "flags": [
+      "--offline",
+      "--parallel 1",
+      "--threads 8",
+      "--ctx-size 4096",
+      "--n-gpu-layers 0",
+      "--host 127.0.0.1"
+    ]
+  },
+  "model": {
+    "repository": "Qwen/Qwen3-0.6B-GGUF",
+    "repository_commit": "23749fefcc72300e3a2ad315e1317431b06b590a",
+    "file": "Qwen3-0.6B-Q8_0.gguf",
+    "size_bytes": 639446688,
+    "sha256": "9465e63a22add5354d9bb4b99e90117043c7124007664907259bd16d043bb031"
+  },
+  "index": {
+    "source_root": "$HOME",
+    "documents": 2317,
+    "chunks": 2941,
+    "pipeline": "hash-v1:128|chars-v1:800:120",
+    "first_build_wall_seconds": 8.29,
+    "first_build_max_rss_kib": 36252,
+    "unchanged_update_wall_seconds": 0.72,
+    "unchanged_update_max_rss_kib": 36524,
+    "unchanged_update_embedded_chunks": 0
+  },
+  "retrieval_development_set": {
+    "dataset": "robot-diagnostics-dev-v0.1.0",
+    "dataset_sha256": "c376e07b8ebe7f85d5630c7dca469199d4835ada59e31b3380d04826641b26b4",
+    "case_count": 7,
+    "k": 5,
+    "hit_rate_at_5": 1.0,
+    "recall_at_5": 0.9285714285714286,
+    "mrr": 1.0,
+    "source_precision_at_5": 0.2833333333333333,
+    "chunk_precision_at_5": 0.31428571428571433
+  },
+  "generation_development_set": {
+    "request_count": 14,
+    "rounds_per_case": 2,
+    "retrieval_k": 2,
+    "max_output_tokens": 80,
+    "first_run_ttft_ms_p50": 18040.172,
+    "first_run_ttft_ms_p95": 19622.1283,
+    "first_run_wall_latency_ms_p50": 24476.078,
+    "first_run_wall_latency_ms_p95": 25065.4044,
+    "repeated_ttft_ms_p50": 91.82,
+    "repeated_ttft_ms_p95": 199.2719,
+    "repeated_wall_latency_ms_p50": 6070.486,
+    "repeated_wall_latency_ms_p95": 7323.8797,
+    "first_run_prompt_tokens_per_second_p50": 66.83241393704559,
+    "generation_tokens_per_second_p05": 11.231346401254907,
+    "generation_tokens_per_second_p50": 13.426383448406556,
+    "generation_tokens_per_second_p95": 14.542496839910322,
+    "max_server_rss_mib": 2008.9765625,
+    "required_concept_recall": 0.5,
+    "rubric_case_accuracy": 0.2857142857142857,
+    "citation_precision": 0.7142857142857143,
+    "expected_source_citation_recall": 0.5714285714285714,
+    "citation_format_compliance": 0.07142857142857142
+  },
+  "edge_devices": {
+    "raspberry_pi": "not_measured_no_device_access",
+    "jetson": "not_measured_no_device_access"
+  },
+  "network_isolation": {
+    "runtime_offline_flag": true,
+    "server_bind": "127.0.0.1",
+    "os_level_block": "not_verified_user_network_namespace_not_permitted"
+  }
+}

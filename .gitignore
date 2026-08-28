@@ -1,0 +1,13 @@
+.local/
+.venv/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+*.db
+*.db-shm
+*.db-wal
+evaluations/results/*.json
+!evaluations/results/.gitkeep

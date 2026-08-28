@@ -1,0 +1,680 @@
+{
+  "artifact_scope": "추적 가능한 원시 개발 증거. 로컬 임시 경로와 프로세스 ID만 제거했다.",
+  "benchmark_id": "local-rag-generation-dev-v1",
+  "cases": [
+    {
+      "answer": "[출처: 경로: jdamr_evidence/20260826_prearm_autonomy_run01/README.md] 로봇이 제자리에서 회전했지만, 기존 진행 검사가 위치 변화만 확인해 정지로 판단한 이유는 위치와 회전을 함께 확인하는 `PoseProgressChecker`를 교체한 것",
+      "id": "jdamr-progress-rotation",
+      "max_rss_kib": 1178988,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 1.0,
+        "citations": [
+          "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+        ],
+        "concept_recall": 1.0,
+        "expected_source_citation_recall": 1.0,
+        "matched_concept_count": 2,
+        "required_concept_count": 2,
+        "rubric_pass": true
+      },
+      "question": "로봇이 제자리에서 실제로 회전했는데 Nav2 진행 검사가 정지로 판단한 이유는 무엇인가?",
+      "retrieved_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md"
+      ],
+      "robot": "JD-AMR",
+      "round": 1,
+      "timings": {
+        "cache_n": 0,
+        "predicted_ms": 6396.582,
+        "predicted_n": 80,
+        "predicted_per_second": 12.350345856584031,
+        "predicted_per_token_ms": 80.96939240506329,
+        "prompt_ms": 17615.214,
+        "prompt_n": 1145,
+        "prompt_per_second": 65.00062956941653,
+        "prompt_per_token_ms": 15.384466375545852
+      },
+      "ttft_ms": 17637.126,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1145,
+        "prompt_tokens_details": {
+          "cached_tokens": 0
+        },
+        "total_tokens": 1225
+      },
+      "wall_latency_ms": 24033.932
+    },
+    {
+      "answer": "[출처: 경로: jdamr_evidence/20260826_prearm_autonomy_run01/README.md] 로봇이 제자리 회전을 확인했지만, 기존 진행 검사가 위치 변화만 판단한 이유는 위치와 회전을 함께 확인하는 `PoseProgressChecker`를 교체한 것 때문입니다.\n\n[",
+      "id": "jdamr-progress-rotation",
+      "max_rss_kib": 1179312,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 1.0,
+        "citations": [
+          "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+        ],
+        "concept_recall": 1.0,
+        "expected_source_citation_recall": 1.0,
+        "matched_concept_count": 2,
+        "required_concept_count": 2,
+        "rubric_pass": true
+      },
+      "question": "로봇이 제자리에서 실제로 회전했는데 Nav2 진행 검사가 정지로 판단한 이유는 무엇인가?",
+      "retrieved_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md"
+      ],
+      "robot": "JD-AMR",
+      "round": 2,
+      "timings": {
+        "cache_n": 1144,
+        "predicted_ms": 6761.313,
+        "predicted_n": 80,
+        "predicted_per_second": 11.684121116712095,
+        "predicted_per_token_ms": 85.58624050632912,
+        "prompt_ms": 67.569,
+        "prompt_n": 1,
+        "prompt_per_second": 14.79968624665157,
+        "prompt_per_token_ms": 67.569
+      },
+      "ttft_ms": 91.364,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1145,
+        "prompt_tokens_details": {
+          "cached_tokens": 1144
+        },
+        "total_tokens": 1225
+      },
+      "wall_latency_ms": 6852.618
+    },
+    {
+      "answer": "[출처: 경로: jdamr_evidence/20260826_prearm_autonomy_run01/README.md] 자율 탐색 dry-run이 로봇을 구동하지 않았다는 사실을 확인했으며, `/cmd_vel` 발행 없음으로 확인했다.\n\n[출처: 경로: jdamr_evidence/2",
+      "id": "jdamr-dry-run-safety",
+      "max_rss_kib": 1317000,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 1.0,
+        "citations": [
+          "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+        ],
+        "concept_recall": 0.6666666666666666,
+        "expected_source_citation_recall": 1.0,
+        "matched_concept_count": 2,
+        "required_concept_count": 3,
+        "rubric_pass": false
+      },
+      "question": "자율 탐색 dry-run이 로봇을 구동하지 않았다는 사실을 어떤 cmd_vel 근거로 확인했는가?",
+      "retrieved_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "gazebo-so101-capstone/docs/08-대시보드.md"
+      ],
+      "robot": "JD-AMR",
+      "round": 1,
+      "timings": {
+        "cache_n": 114,
+        "predicted_ms": 5431.498,
+        "predicted_n": 80,
+        "predicted_per_second": 14.544790405888028,
+        "predicted_per_token_ms": 68.75313924050633,
+        "prompt_ms": 19370.009,
+        "prompt_n": 1052,
+        "prompt_per_second": 54.310764646521335,
+        "prompt_per_token_ms": 18.412556083650188
+      },
+      "ttft_ms": 19595.522,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1166,
+        "prompt_tokens_details": {
+          "cached_tokens": 114
+        },
+        "total_tokens": 1246
+      },
+      "wall_latency_ms": 25028.016
+    },
+    {
+      "answer": "[출처: 경로: jdamr_evidence/20260826_prearm_autonomy_run01/README.md] 자율 탐색 dry-run이 로봇을 구동하지 않았다는 사실을 확인했으며, `/cmd_vel` 발행 없음으로 확인했다.\n\n[출처: 경로: jdamr_evidence/2",
+      "id": "jdamr-dry-run-safety",
+      "max_rss_kib": 1317328,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 1.0,
+        "citations": [
+          "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+        ],
+        "concept_recall": 0.6666666666666666,
+        "expected_source_citation_recall": 1.0,
+        "matched_concept_count": 2,
+        "required_concept_count": 3,
+        "rubric_pass": false
+      },
+      "question": "자율 탐색 dry-run이 로봇을 구동하지 않았다는 사실을 어떤 cmd_vel 근거로 확인했는가?",
+      "retrieved_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "gazebo-so101-capstone/docs/08-대시보드.md"
+      ],
+      "robot": "JD-AMR",
+      "round": 2,
+      "timings": {
+        "cache_n": 1165,
+        "predicted_ms": 5481.963,
+        "predicted_n": 80,
+        "predicted_per_second": 14.410896242823966,
+        "predicted_per_token_ms": 69.39193670886075,
+        "prompt_ms": 69.108,
+        "prompt_n": 1,
+        "prompt_per_second": 14.470104763558487,
+        "prompt_per_token_ms": 69.108
+      },
+      "ttft_ms": 91.82,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1166,
+        "prompt_tokens_details": {
+          "cached_tokens": 1165
+        },
+        "total_tokens": 1246
+      },
+      "wall_latency_ms": 5574.422
+    },
+    {
+      "answer": "[출처: 경로: gazebo-so101-capstone/docs/19-외부-검수-요청.md]  \n**물림** (물림각 0.439) ← 과거 성공 사례\n\n[출처: 경로: PKM/01_wiki/concepts/순환-검증-넣은",
+      "id": "so101-false-success",
+      "max_rss_kib": 1457120,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 1.0,
+        "citations": [
+          "gazebo-so101-capstone/docs/19-외부-검수-요청.md"
+        ],
+        "concept_recall": 0.0,
+        "expected_source_citation_recall": 0.5,
+        "matched_concept_count": 0,
+        "required_concept_count": 2,
+        "rubric_pass": false
+      },
+      "question": "닫기 직전 판정은 통과했지만 큐브가 바닥에 남은 사례에서 로그 성공 대신 무엇을 최종 정답으로 사용했는가?",
+      "retrieved_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "PKM/01_wiki/concepts/순환-검증-넣은-값을-되읽는-검사.md"
+      ],
+      "robot": "SO-101 mobile manipulator",
+      "round": 1,
+      "timings": {
+        "cache_n": 114,
+        "predicted_ms": 5445.817,
+        "predicted_n": 80,
+        "predicted_per_second": 14.506546951540972,
+        "predicted_per_token_ms": 68.93439240506329,
+        "prompt_ms": 19373.791,
+        "prompt_n": 1133,
+        "prompt_per_second": 58.48106857351769,
+        "prompt_per_token_ms": 17.099550750220654
+      },
+      "ttft_ms": 19633.531,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1247,
+        "prompt_tokens_details": {
+          "cached_tokens": 114
+        },
+        "total_tokens": 1327
+      },
+      "wall_latency_ms": 25081.428
+    },
+    {
+      "answer": "[출처: 경로: gazebo-so101-capstone/docs/19-외부-검수-요청.md]  \n**물림** (물림각 0.439) ← 과거 성공 사례\n\n[출처: 경로: PKM/01_wiki/concepts/순환-검증-넣은",
+      "id": "so101-false-success",
+      "max_rss_kib": 1457456,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 1.0,
+        "citations": [
+          "gazebo-so101-capstone/docs/19-외부-검수-요청.md"
+        ],
+        "concept_recall": 0.0,
+        "expected_source_citation_recall": 0.5,
+        "matched_concept_count": 0,
+        "required_concept_count": 2,
+        "rubric_pass": false
+      },
+      "question": "닫기 직전 판정은 통과했지만 큐브가 바닥에 남은 사례에서 로그 성공 대신 무엇을 최종 정답으로 사용했는가?",
+      "retrieved_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "PKM/01_wiki/concepts/순환-검증-넣은-값을-되읽는-검사.md"
+      ],
+      "robot": "SO-101 mobile manipulator",
+      "round": 2,
+      "timings": {
+        "cache_n": 1246,
+        "predicted_ms": 5432.816,
+        "predicted_n": 80,
+        "predicted_per_second": 14.541261842845405,
+        "predicted_per_token_ms": 68.76982278481013,
+        "prompt_ms": 65.094,
+        "prompt_n": 1,
+        "prompt_per_second": 15.362398992226627,
+        "prompt_per_token_ms": 65.094
+      },
+      "ttft_ms": 86.737,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1247,
+        "prompt_tokens_details": {
+          "cached_tokens": 1246
+        },
+        "total_tokens": 1327
+      },
+      "wall_latency_ms": 5520.128
+    },
+    {
+      "answer": "- 접근 거리가 0.383·0.379m로 정확해진 뒤에도 실패했다면, **높이는 원인이 아니다** (출처: [lift 1.05~1.25 스윕에서 **하강밀림 6/6 = 0.0mm**. 죠가",
+      "id": "so101-distance-not-root-cause",
+      "max_rss_kib": 1606324,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 0.0,
+        "citations": [],
+        "concept_recall": 1.0,
+        "expected_source_citation_recall": 0.0,
+        "matched_concept_count": 3,
+        "required_concept_count": 3,
+        "rubric_pass": true
+      },
+      "question": "접근 거리가 0.383m와 0.379m로 정확해진 뒤에도 파지가 실패했다면 거리를 원인으로 확정할 수 있는가?",
+      "retrieved_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "gazebo-so101-capstone/docs/18-판정-규칙.md"
+      ],
+      "robot": "SO-101 mobile manipulator",
+      "round": 1,
+      "timings": {
+        "cache_n": 114,
+        "predicted_ms": 6455.88,
+        "predicted_n": 80,
+        "predicted_per_second": 12.236906510034265,
+        "predicted_per_token_ms": 81.72,
+        "prompt_ms": 17887.151,
+        "prompt_n": 1209,
+        "prompt_per_second": 67.5904172777431,
+        "prompt_per_token_ms": 14.794996691480565
+      },
+      "ttft_ms": 18040.172,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1323,
+        "prompt_tokens_details": {
+          "cached_tokens": 114
+        },
+        "total_tokens": 1403
+      },
+      "wall_latency_ms": 24496.031
+    },
+    {
+      "answer": "- 접근 거리가 0.383·0.379m로 정확해진 뒤에도 실패했다면, **높이는 원인이 아니다** (출처: 경로: gazebo-so101-capstone/docs/18-판정-규칙.md).  \n- **거리는 원인이 아니다** (출처: 경",
+      "id": "so101-distance-not-root-cause",
+      "max_rss_kib": 1606660,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 1.0,
+        "citations": [
+          "gazebo-so101-capstone/docs/18-판정-규칙.md"
+        ],
+        "concept_recall": 1.0,
+        "expected_source_citation_recall": 0.0,
+        "matched_concept_count": 3,
+        "required_concept_count": 3,
+        "rubric_pass": true
+      },
+      "question": "접근 거리가 0.383m와 0.379m로 정확해진 뒤에도 파지가 실패했다면 거리를 원인으로 확정할 수 있는가?",
+      "retrieved_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "gazebo-so101-capstone/docs/18-판정-규칙.md"
+      ],
+      "robot": "SO-101 mobile manipulator",
+      "round": 2,
+      "timings": {
+        "cache_n": 1322,
+        "predicted_ms": 5964.457,
+        "predicted_n": 80,
+        "predicted_per_second": 13.245128600977424,
+        "predicted_per_token_ms": 75.49945569620253,
+        "prompt_ms": 80.313,
+        "prompt_n": 1,
+        "prompt_per_second": 12.4512843499807,
+        "prompt_per_token_ms": 80.313
+      },
+      "ttft_ms": 105.542,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1323,
+        "prompt_tokens_details": {
+          "cached_tokens": 1322
+        },
+        "total_tokens": 1403
+      },
+      "wall_latency_ms": 6070.486
+    },
+    {
+      "answer": "- [출처: 경로: exam_ws/src/exam_diffbot/README.md] 실차가 명령을 받을 때 노드와 펌웨어가 각각 몇 초 뒤 정지시키는가?  \n- [출처: 경로: PKM/01_wiki/concepts/이산-명령-인터페이스",
+      "id": "diffbot-command-timeout",
+      "max_rss_kib": 1764016,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 1.0,
+        "citations": [
+          "exam_ws/src/exam_diffbot/README.md"
+        ],
+        "concept_recall": 0.0,
+        "expected_source_citation_recall": 1.0,
+        "matched_concept_count": 0,
+        "required_concept_count": 2,
+        "rubric_pass": false
+      },
+      "question": "두바퀴 실차에서 cmd_vel이 끊겼을 때 노드와 펌웨어가 각각 몇 초 뒤 정지시키는가?",
+      "retrieved_paths": [
+        "exam_ws/src/exam_diffbot/README.md",
+        "PKM/01_wiki/concepts/이산-명령-인터페이스-위의-연속-제어.md"
+      ],
+      "robot": "differential drive robot",
+      "round": 1,
+      "timings": {
+        "cache_n": 114,
+        "predicted_ms": 6872.454,
+        "predicted_n": 80,
+        "predicted_per_second": 11.49516606440727,
+        "predicted_per_token_ms": 86.99308860759493,
+        "prompt_ms": 13959.66,
+        "prompt_n": 1002,
+        "prompt_per_second": 71.77825247892856,
+        "prompt_per_token_ms": 13.931796407185628
+      },
+      "ttft_ms": 14334.331,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1116,
+        "prompt_tokens_details": {
+          "cached_tokens": 114
+        },
+        "total_tokens": 1196
+      },
+      "wall_latency_ms": 21207.493
+    },
+    {
+      "answer": "- [출처: 경로: exam_ws/src/exam_diffbot/README.md] 실차가 명령을 받을 때 노드와 펌웨어가 각각 몇 초 뒤 정지시키는가?  \n- [출처: 경로: PKM/01_wiki/concepts/이산-명령-인터페이스",
+      "id": "diffbot-command-timeout",
+      "max_rss_kib": 1764328,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 1.0,
+        "citations": [
+          "exam_ws/src/exam_diffbot/README.md"
+        ],
+        "concept_recall": 0.0,
+        "expected_source_citation_recall": 1.0,
+        "matched_concept_count": 0,
+        "required_concept_count": 2,
+        "rubric_pass": false
+      },
+      "question": "두바퀴 실차에서 cmd_vel이 끊겼을 때 노드와 펌웨어가 각각 몇 초 뒤 정지시키는가?",
+      "retrieved_paths": [
+        "exam_ws/src/exam_diffbot/README.md",
+        "PKM/01_wiki/concepts/이산-명령-인터페이스-위의-연속-제어.md"
+      ],
+      "robot": "differential drive robot",
+      "round": 2,
+      "timings": {
+        "cache_n": 1115,
+        "predicted_ms": 7354.724,
+        "predicted_n": 80,
+        "predicted_per_second": 10.741395598257663,
+        "predicted_per_token_ms": 93.09777215189874,
+        "prompt_ms": 135.318,
+        "prompt_n": 1,
+        "prompt_per_second": 7.3899998522000026,
+        "prompt_per_token_ms": 135.318
+      },
+      "ttft_ms": 171.89,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1116,
+        "prompt_tokens_details": {
+          "cached_tokens": 1115
+        },
+        "total_tokens": 1196
+      },
+      "wall_latency_ms": 7525.849
+    },
+    {
+      "answer": "1. 자이로 값이 완전히 고정되어 있음 → 상수 의심해야 하는가? [출처: 경로: PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md]\n\n2. 자이로가 살아 있음 → 행동과 대",
+      "id": "diffbot-dead-gyro",
+      "max_rss_kib": 1898516,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 1.0,
+        "citations": [
+          "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md"
+        ],
+        "concept_recall": 0.5,
+        "expected_source_citation_recall": 1.0,
+        "matched_concept_count": 1,
+        "required_concept_count": 2,
+        "rubric_pass": false
+      },
+      "question": "자이로 값이 계속 오지만 소수점 끝까지 완전히 고정되어 있다면 어떤 측정 실패를 의심해야 하는가?",
+      "retrieved_paths": [
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md",
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md"
+      ],
+      "robot": "differential drive robot",
+      "round": 1,
+      "timings": {
+        "cache_n": 114,
+        "predicted_ms": 5766.644,
+        "predicted_n": 80,
+        "predicted_per_second": 13.699475812968513,
+        "predicted_per_token_ms": 72.99549367088608,
+        "prompt_ms": 18494.02,
+        "prompt_n": 1236,
+        "prompt_per_second": 66.83241393704559,
+        "prompt_per_token_ms": 14.96279935275081
+      },
+      "ttft_ms": 18709.092,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1350,
+        "prompt_tokens_details": {
+          "cached_tokens": 114
+        },
+        "total_tokens": 1430
+      },
+      "wall_latency_ms": 24476.078
+    },
+    {
+      "answer": "- 자이로 값이 완전히 고정되어 있음 → 상수 의심해야 하는가 [출처: 경로 1].  \n- 자이로가 살아 있음 → 행동과 대조해야 하는가 [출처: 경로 1].",
+      "id": "diffbot-dead-gyro",
+      "max_rss_kib": 1898860,
+      "quality": {
+        "citation_format_compliance": 1.0,
+        "citation_precision": 0.0,
+        "citations": [
+          "경로 1",
+          "경로 1"
+        ],
+        "concept_recall": 0.5,
+        "expected_source_citation_recall": 0.0,
+        "matched_concept_count": 1,
+        "required_concept_count": 2,
+        "rubric_pass": false
+      },
+      "question": "자이로 값이 계속 오지만 소수점 끝까지 완전히 고정되어 있다면 어떤 측정 실패를 의심해야 하는가?",
+      "retrieved_paths": [
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md",
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md"
+      ],
+      "robot": "differential drive robot",
+      "round": 2,
+      "timings": {
+        "cache_n": 1349,
+        "predicted_ms": 4262.312,
+        "predicted_n": 59,
+        "predicted_per_second": 13.607638295835688,
+        "predicted_per_token_ms": 73.48813793103449,
+        "prompt_ms": 63.75,
+        "prompt_n": 1,
+        "prompt_per_second": 15.686274509803921,
+        "prompt_per_token_ms": 63.75
+      },
+      "ttft_ms": 87.083,
+      "usage": {
+        "completion_tokens": 59,
+        "prompt_tokens": 1350,
+        "prompt_tokens_details": {
+          "cached_tokens": 1349
+        },
+        "total_tokens": 1409
+      },
+      "wall_latency_ms": 4348.651
+    },
+    {
+      "answer": "1. 명령과 응답 지연을 계산하기 전에 use_sim_time와 메시지 시계 축을 확인해야 하는 이유는 런치에서 일부 노드에만 넘기면 한 시스템 안에 두 시계 축이 공존할 수 있다는 점이다. [출처: 경로: PKM/01_w",
+      "id": "rosbag-clock-axis",
+      "max_rss_kib": 2056884,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 0.0,
+        "citations": [],
+        "concept_recall": 0.3333333333333333,
+        "expected_source_citation_recall": 0.0,
+        "matched_concept_count": 1,
+        "required_concept_count": 3,
+        "rubric_pass": false
+      },
+      "question": "rosbag에서 명령과 응답 지연을 계산하기 전에 use_sim_time과 메시지 시계 축을 확인해야 하는 이유는 무엇인가?",
+      "retrieved_paths": [
+        "PKM/01_wiki/concepts/rosbag2-기록과-명령응답-짝짓기.md",
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+      ],
+      "robot": "ROS 2 common",
+      "round": 1,
+      "timings": {
+        "cache_n": 114,
+        "predicted_ms": 5663.043,
+        "predicted_n": 80,
+        "predicted_per_second": 13.950097147417035,
+        "predicted_per_token_ms": 71.68408860759493,
+        "prompt_ms": 15510.007,
+        "prompt_n": 1051,
+        "prompt_per_second": 67.76270313740025,
+        "prompt_per_token_ms": 14.757380589914368
+      },
+      "ttft_ms": 15673.435,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1165,
+        "prompt_tokens_details": {
+          "cached_tokens": 114
+        },
+        "total_tokens": 1245
+      },
+      "wall_latency_ms": 21338.24
+    },
+    {
+      "answer": "1. 명령과 응답 지연을 계산하기 전에 use_sim_time와 메시지 시계 축을 확인해야 하는 이유는 런치에서 일부 노드에만 넘기면 한 시스템 안에 두 시계 축이 공존할 수 있다는 점이다. [출처: 경로: PKM/01_w",
+      "id": "rosbag-clock-axis",
+      "max_rss_kib": 2057192,
+      "quality": {
+        "citation_format_compliance": 0.0,
+        "citation_precision": 0.0,
+        "citations": [],
+        "concept_recall": 0.3333333333333333,
+        "expected_source_citation_recall": 0.0,
+        "matched_concept_count": 1,
+        "required_concept_count": 3,
+        "rubric_pass": false
+      },
+      "question": "rosbag에서 명령과 응답 지연을 계산하기 전에 use_sim_time과 메시지 시계 축을 확인해야 하는 이유는 무엇인가?",
+      "retrieved_paths": [
+        "PKM/01_wiki/concepts/rosbag2-기록과-명령응답-짝짓기.md",
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+      ],
+      "robot": "ROS 2 common",
+      "round": 2,
+      "timings": {
+        "cache_n": 1164,
+        "predicted_ms": 6116.301,
+        "predicted_n": 80,
+        "predicted_per_second": 12.916303497816736,
+        "predicted_per_token_ms": 77.42153164556963,
+        "prompt_ms": 166.726,
+        "prompt_n": 1,
+        "prompt_per_second": 5.997864760145388,
+        "prompt_per_token_ms": 166.726
+      },
+      "ttft_ms": 211.007,
+      "usage": {
+        "completion_tokens": 80,
+        "prompt_tokens": 1165,
+        "prompt_tokens_details": {
+          "cached_tokens": 1164
+        },
+        "total_tokens": 1245
+      },
+      "wall_latency_ms": 6327.985
+    }
+  ],
+  "claim_boundary": "개발셋·현재 x86_64 CPU 호스트의 기준선이다. 홀드아웃 정확도나 Raspberry Pi·Jetson 엣지 성능으로 일반화하지 않는다.",
+  "dataset_id": "robot-diagnostics-dev-v0.1.0",
+  "dataset_sha256": "c376e07b8ebe7f85d5630c7dca469199d4835ada59e31b3380d04826641b26b4",
+  "dataset_split": "development",
+  "endpoint": "http://127.0.0.1:18080",
+  "execution": {
+    "accelerator": "cpu",
+    "case_count": 7,
+    "host": "Linux-7.0.0-28-generic-x86_64-with-glibc2.39",
+    "logical_cpu_count": 16,
+    "max_tokens": 80,
+    "request_count": 14,
+    "retrieval_k": 2,
+    "rounds": 2
+  },
+  "measured_at": "2026-08-28T02:26:41.294615+00:00",
+  "metrics": {
+    "citation_format_compliance": 0.07142857142857142,
+    "citation_precision": 0.7142857142857143,
+    "expected_source_citation_recall": 0.5714285714285714,
+    "first_run_prompt_tokens_per_second_p50": 66.83241393704559,
+    "first_run_ttft_ms_p50": 18040.172,
+    "first_run_ttft_ms_p95": 19622.1283,
+    "first_run_wall_latency_ms_p50": 24476.078,
+    "first_run_wall_latency_ms_p95": 25065.4044,
+    "generation_tokens_per_second_p05": 11.231346401254907,
+    "generation_tokens_per_second_p50": 13.426383448406556,
+    "generation_tokens_per_second_p95": 14.542496839910322,
+    "max_server_rss_mib": 2008.9765625,
+    "prompt_tokens_per_second_p50": 34.99851957816263,
+    "repeated_ttft_ms_p50": 91.82,
+    "repeated_ttft_ms_p95": 199.2719,
+    "repeated_wall_latency_ms_p50": 6070.486,
+    "repeated_wall_latency_ms_p95": 7323.8797,
+    "required_concept_recall": 0.5,
+    "rubric_case_accuracy": 0.2857142857142857,
+    "ttft_ms_p50": 7272.669,
+    "ttft_ms_p95": 19608.82515,
+    "wall_latency_ms_p50": 14366.670999999998,
+    "wall_latency_ms_p95": 25046.7102
+  },
+  "model": "qwen3-0.6b-q8",
+  "model_artifact": {
+    "path": "Qwen3-0.6B-Q8_0.gguf",
+    "sha256": "9465e63a22add5354d9bb4b99e90117043c7124007664907259bd16d043bb031",
+    "size_bytes": 639446688
+  },
+  "runtime_version": "llama.cpp b10549 commit b2e5e9b28; offline; parallel=1; n_gpu_layers=0",
+  "schema_version": 1
+}

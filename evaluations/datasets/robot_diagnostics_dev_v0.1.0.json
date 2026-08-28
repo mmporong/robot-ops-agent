@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "dataset_id": "robot-diagnostics-dev-v0.1.0",
+  "split": "development",
+  "created_at": "2026-08-28",
+  "purpose": "검색 파이프라인 개발용 공개 가능 질문. 최종 성능 판정용 홀드아웃이 아니다.",
+  "leakage_policy": "이 파일의 질문은 검색 로직을 고치는 데 사용할 수 있다. 최종 평가는 별도 조건 홀드아웃에서 수행한다.",
+  "cases": [
+    {
+      "id": "jdamr-progress-rotation",
+      "robot": "JD-AMR",
+      "category": "diagnosis",
+      "question": "로봇이 제자리에서 실제로 회전했는데 Nav2 진행 검사가 정지로 판단한 이유는 무엇인가?",
+      "expected_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+      ],
+      "answer_rubric": {
+        "required_concepts": [
+          ["위치 변화", "위치만"],
+          ["회전"]
+        ]
+      }
+    },
+    {
+      "id": "jdamr-dry-run-safety",
+      "robot": "JD-AMR",
+      "category": "safety",
+      "question": "자율 탐색 dry-run이 로봇을 구동하지 않았다는 사실을 어떤 cmd_vel 근거로 확인했는가?",
+      "expected_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+      ],
+      "answer_rubric": {
+        "required_concepts": [
+          ["/cmd_vel"],
+          ["발행 없음", "발행하지"],
+          ["발행자", "0개"]
+        ]
+      }
+    },
+    {
+      "id": "so101-false-success",
+      "robot": "SO-101 mobile manipulator",
+      "category": "diagnosis",
+      "question": "닫기 직전 판정은 통과했지만 큐브가 바닥에 남은 사례에서 로그 성공 대신 무엇을 최종 정답으로 사용했는가?",
+      "expected_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "gazebo-so101-capstone/README.md"
+      ],
+      "answer_rubric": {
+        "required_concepts": [
+          ["실좌표"],
+          ["바닥", "실제 좌표"]
+        ]
+      }
+    },
+    {
+      "id": "so101-distance-not-root-cause",
+      "robot": "SO-101 mobile manipulator",
+      "category": "hypothesis-rejection",
+      "question": "접근 거리가 0.383m와 0.379m로 정확해진 뒤에도 파지가 실패했다면 거리를 원인으로 확정할 수 있는가?",
+      "expected_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md"
+      ],
+      "answer_rubric": {
+        "required_concepts": [
+          ["0.383"],
+          ["0.379"],
+          ["원인이 아니다", "원인으로 확정할 수 없"]
+        ]
+      }
+    },
+    {
+      "id": "diffbot-command-timeout",
+      "robot": "differential drive robot",
+      "category": "safety",
+      "question": "두바퀴 실차에서 cmd_vel이 끊겼을 때 노드와 펌웨어가 각각 몇 초 뒤 정지시키는가?",
+      "expected_paths": [
+        "exam_ws/src/exam_diffbot/README.md"
+      ],
+      "answer_rubric": {
+        "required_concepts": [
+          ["0.5초", "0.5 초"],
+          ["0.3초", "0.3 초"]
+        ]
+      }
+    },
+    {
+      "id": "diffbot-dead-gyro",
+      "robot": "differential drive robot",
+      "category": "diagnosis",
+      "question": "자이로 값이 계속 오지만 소수점 끝까지 완전히 고정되어 있다면 어떤 측정 실패를 의심해야 하는가?",
+      "expected_paths": [
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md"
+      ],
+      "answer_rubric": {
+        "required_concepts": [
+          ["I2C", "읽기 실패"],
+          ["상수", "0.0"]
+        ]
+      }
+    },
+    {
+      "id": "rosbag-clock-axis",
+      "robot": "ROS 2 common",
+      "category": "data-quality",
+      "question": "rosbag에서 명령과 응답 지연을 계산하기 전에 use_sim_time과 메시지 시계 축을 확인해야 하는 이유는 무엇인가?",
+      "expected_paths": [
+        "PKM/01_wiki/concepts/rosbag2-기록과-명령응답-짝짓기.md"
+      ],
+      "answer_rubric": {
+        "required_concepts": [
+          ["노드별"],
+          ["두 시계", "시계 축"],
+          ["무의미", "틀린"]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "robot-ops-agent"
+version = "0.1.0"
+description = "로봇 운용 기록을 근거와 함께 조회하는 로컬 진단 에이전트"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+mcp = ["mcp==2.1.1"]
+
+[project.scripts]
+robot-ops = "robot_ops.cli:main"
+robot-ops-mcp = "robot_ops.mcp_server:main"
+robot-ops-benchmark = "robot_ops.model_benchmark:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
