@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Sequence
 
 from .config import DEFAULT_INCLUDE_DIRS, IndexSettings
-from .embedding import HashEmbedder
+from .embedding import Embedder, HashEmbedder, LlamaCppEmbedder
 from .evaluation import evaluate_retrieval, write_evaluation_report
 from .indexer import dump_report, index_stats, sync_index
 from .search import keyword_search, reciprocal_rank_fusion, vector_search
@@ -37,11 +37,28 @@ def _add_index_options(parser: argparse.ArgumentParser, *, include_embedder: boo
     if include_embedder:
         parser.add_argument(
             "--embedder",
-            choices=("hash",),
+            choices=("hash", "llama-cpp"),
             default="hash",
-            help="hash는 회귀 테스트 전용이며 검색 품질 근거가 아닙니다",
+            help="hash는 회귀 테스트 전용, llama-cpp는 로컬 의미 임베딩용입니다",
         )
         parser.add_argument("--hash-dim", type=int, default=128)
+        parser.add_argument(
+            "--embedding-endpoint",
+            default=os.environ.get("ROBOT_OPS_EMBEDDING_ENDPOINT"),
+            help="llama.cpp /v1/embeddings 루프백 URL",
+        )
+        parser.add_argument(
+            "--embedding-model",
+            default=os.environ.get("ROBOT_OPS_EMBEDDING_MODEL"),
+            help="인덱스 pipeline에 고정할 임베딩 모델 식별자",
+        )
+        parser.add_argument(
+            "--embedding-query-instruction",
+            default=os.environ.get("ROBOT_OPS_EMBEDDING_QUERY_INSTRUCTION"),
+            help="질의에만 붙일 임베딩 검색 지시문",
+        )
+        parser.add_argument("--embedding-timeout", type=float, default=60.0)
+        parser.add_argument("--embedding-batch-size", type=int, default=32)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -94,6 +111,29 @@ def _settings_from_args(args: argparse.Namespace) -> IndexSettings:
     )
 
 
+def _embedder_from_args(args: argparse.Namespace) -> Embedder:
+    if args.embedder == "hash":
+        return HashEmbedder(args.hash_dim)
+    if not args.embedding_endpoint:
+        raise ValueError(
+            "llama-cpp 임베더에는 --embedding-endpoint 또는 "
+            "ROBOT_OPS_EMBEDDING_ENDPOINT가 필요합니다"
+        )
+    if not args.embedding_model:
+        raise ValueError(
+            "llama-cpp 임베더에는 --embedding-model 또는 "
+            "ROBOT_OPS_EMBEDDING_MODEL이 필요합니다"
+        )
+    return LlamaCppEmbedder(
+        args.embedding_endpoint,
+        args.embedding_model,
+        timeout_seconds=args.embedding_timeout,
+        batch_size=args.embedding_batch_size,
+        api_key=os.environ.get("ROBOT_OPS_EMBEDDING_API_KEY", "no-key"),
+        query_instruction=args.embedding_query_instruction,
+    )
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     settings = _settings_from_args(args)
@@ -103,7 +143,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(json.dumps(index_stats(settings), ensure_ascii=False, indent=2, sort_keys=True))
             return 0
 
-        embedder = HashEmbedder(args.hash_dim)
+        embedder = _embedder_from_args(args)
 
         if args.command == "search":
             if args.method == "keyword":
@@ -143,10 +183,13 @@ def main(argv: Sequence[str] | None = None) -> int:
                     k=k,
                 )
 
+            query_identifier = getattr(
+                embedder, "query_identifier", embedder.identifier
+            )
             method_name = {
                 "keyword": "keyword-bm25-char3-v1",
-                "vector": f"vector:{embedder.identifier}",
-                "hybrid": "hybrid-rrf-v1",
+                "vector": f"vector:{query_identifier}",
+                "hybrid": f"hybrid-rrf-v1+vector:{query_identifier}",
             }[args.method]
             report = evaluate_retrieval(
                 args.dataset.expanduser().resolve(),
@@ -159,9 +202,9 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
             return 0
 
-        report = sync_index(settings, embedder, force=args.command == "index")
-        print(dump_report(report))
-        return 1 if report.failed else 0
+        index_report = sync_index(settings, embedder, force=args.command == "index")
+        print(dump_report(index_report))
+        return 1 if index_report.failed else 0
     except ValueError as error:
         print(json.dumps({"error": str(error)}, ensure_ascii=False))
         return 2

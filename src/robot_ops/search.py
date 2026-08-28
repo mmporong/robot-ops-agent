@@ -172,11 +172,21 @@ def vector_search(
             f"query={embedder.identifier}, index={','.join(incompatible)}"
         )
 
-    query_vector = list(embedder.embed(query))
+    embed_query = getattr(embedder, "embed_query", None)
+    query_vector = list(
+        embed_query(query) if callable(embed_query) else embedder.embed(query)
+    )
+    query_identifier = getattr(embedder, "query_identifier", embedder.identifier)
+    stored_dimensions = {row.embedding_dim for row in rows}
+    if stored_dimensions != {len(query_vector)}:
+        dimensions = ",".join(str(value) for value in sorted(stored_dimensions))
+        raise ValueError(
+            "질의 임베딩 차원과 인덱스 차원이 다릅니다: "
+            f"query={len(query_vector)}, index={dimensions}"
+        )
     scored = [
         (_cosine_similarity(query_vector, blob_to_vector(row.embedding)), row)
         for row in rows
-        if row.embedding_dim == len(query_vector)
     ]
     scored.sort(key=lambda item: (-item[0], item[1].path, item[1].chunk_index))
     return [
@@ -185,7 +195,7 @@ def vector_search(
             chunk_index=row.chunk_index,
             score=score,
             text=row.text,
-            method=f"vector:{embedder.identifier}",
+            method=f"vector:{query_identifier}",
         )
         for score, row in scored[:k]
     ]

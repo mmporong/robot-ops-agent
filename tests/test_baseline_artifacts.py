@@ -28,8 +28,46 @@ RETRIEVAL_EVIDENCE = (
     / "evidence"
     / "2026-08-28_keyword_dev_top5_raw.json"
 )
+EMBEDDING_BASELINE = (
+    PROJECT_ROOT
+    / "evaluations"
+    / "baselines"
+    / "2026-08-28_x86_64_vulkan_qwen3_embedding_0.6b_q8.json"
+)
 
 from robot_ops.model_benchmark import _percentile, score_answer  # noqa: E402
+
+
+def _recompute_retrieval_metrics(evidence: dict[str, object]) -> dict[str, float]:
+    reciprocal_ranks = []
+    recalls = []
+    source_precisions = []
+    chunk_precisions = []
+    cases = evidence["cases"]
+    assert isinstance(cases, list)
+    for case in cases:
+        hits = case["top_hits"]
+        expected = set(case["expected_paths"])
+        relevant_ranks = [hit["rank"] for hit in hits if hit["path"] in expected]
+        reciprocal_ranks.append(1.0 / min(relevant_ranks) if relevant_ranks else 0.0)
+        retrieved_expected = {hit["path"] for hit in hits} & expected
+        recalls.append(len(retrieved_expected) / len(expected))
+        unique_paths = {hit["path"] for hit in hits}
+        source_precisions.append(
+            len(retrieved_expected) / len(unique_paths) if unique_paths else 0.0
+        )
+        chunk_precisions.append(
+            sum(hit["path"] in expected for hit in hits) / evidence["k"]
+        )
+
+    case_count = evidence["case_count"]
+    return {
+        "hit_rate_at_5": sum(rank > 0.0 for rank in reciprocal_ranks) / case_count,
+        "recall_at_5": sum(recalls) / case_count,
+        "mrr": sum(reciprocal_ranks) / case_count,
+        "source_precision_at_5": sum(source_precisions) / case_count,
+        "chunk_precision_at_5": sum(chunk_precisions) / case_count,
+    }
 
 
 class BaselineArtifactTest(unittest.TestCase):
@@ -57,10 +95,6 @@ class BaselineArtifactTest(unittest.TestCase):
         self.assertEqual(evidence["case_count"], measured["case_count"])
         self.assertEqual(evidence["k"], measured["k"])
 
-        reciprocal_ranks = []
-        recalls = []
-        source_precisions = []
-        chunk_precisions = []
         for case in evidence["cases"]:
             hits = case["top_hits"]
             self.assertEqual(
@@ -71,38 +105,34 @@ class BaselineArtifactTest(unittest.TestCase):
                 case["top_paths"],
                 [hit["path"] for hit in hits],
             )
-            expected = set(case["expected_paths"])
-            relevant_ranks = [
-                hit["rank"] for hit in hits if hit["path"] in expected
-            ]
-            reciprocal_ranks.append(
-                1.0 / min(relevant_ranks) if relevant_ranks else 0.0
-            )
-            retrieved_expected = {hit["path"] for hit in hits} & expected
-            recalls.append(len(retrieved_expected) / len(expected))
-            unique_paths = {hit["path"] for hit in hits}
-            source_precisions.append(
-                len(retrieved_expected) / len(unique_paths) if unique_paths else 0.0
-            )
-            chunk_precisions.append(
-                sum(hit["path"] in expected for hit in hits) / evidence["k"]
-            )
+        recomputed = _recompute_retrieval_metrics(evidence)
+        for name, value in recomputed.items():
+            self.assertAlmostEqual(measured[name], value)
 
-        case_count = evidence["case_count"]
-        self.assertAlmostEqual(
-            measured["hit_rate_at_5"],
-            sum(rank > 0.0 for rank in reciprocal_ranks) / case_count,
+    def test_embedding_comparison_recomputes_all_tracked_methods(self) -> None:
+        baseline = json.loads(EMBEDDING_BASELINE.read_text(encoding="utf-8"))
+        dataset_hash = hashlib.sha256(DATASET.read_bytes()).hexdigest()
+        retrieval = baseline["retrieval_development_set"]
+
+        self.assertEqual(retrieval["dataset_sha256"], dataset_hash)
+        self.assertEqual(baseline["model"]["embedding_dimension"], 1024)
+        self.assertEqual(baseline["index"]["unchanged_update_embedded_chunks"], 0)
+        self.assertTrue(baseline["network_isolation"]["client_proxy_disabled"])
+        self.assertTrue(baseline["network_isolation"]["client_redirect_disabled"])
+        self.assertTrue(
+            baseline["edge_devices"]["raspberry_pi"].startswith("not_measured")
         )
-        self.assertAlmostEqual(measured["recall_at_5"], sum(recalls) / case_count)
-        self.assertAlmostEqual(measured["mrr"], sum(reciprocal_ranks) / case_count)
-        self.assertAlmostEqual(
-            measured["source_precision_at_5"],
-            sum(source_precisions) / case_count,
-        )
-        self.assertAlmostEqual(
-            measured["chunk_precision_at_5"],
-            sum(chunk_precisions) / case_count,
-        )
+
+        for name, measured in retrieval["methods"].items():
+            with self.subTest(method=name):
+                evidence_path = PROJECT_ROOT / measured["evidence"]
+                evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+                self.assertEqual(evidence["dataset_sha256"], dataset_hash)
+                self.assertEqual(evidence["case_count"], retrieval["case_count"])
+                self.assertEqual(evidence["k"], retrieval["k"])
+                recomputed = _recompute_retrieval_metrics(evidence)
+                for metric, value in recomputed.items():
+                    self.assertAlmostEqual(measured[metric], value)
 
     def test_generation_claims_recompute_from_tracked_raw_answers(self) -> None:
         baseline = json.loads(BASELINE.read_text(encoding="utf-8"))

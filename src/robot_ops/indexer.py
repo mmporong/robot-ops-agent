@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import sqlite3
 import time
@@ -288,6 +289,22 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
+def _embed_chunks(embedder: Embedder, chunks: Sequence[str]) -> list[list[float]]:
+    embed_many = getattr(embedder, "embed_many", None)
+    if callable(embed_many):
+        vectors = [list(vector) for vector in embed_many(chunks)]
+    else:
+        vectors = [list(embedder.embed(chunk)) for chunk in chunks]
+    if len(vectors) != len(chunks):
+        raise ValueError("임베더가 요청한 청크 수와 다른 개수의 벡터를 반환했습니다")
+    dimensions = {len(vector) for vector in vectors}
+    if 0 in dimensions or len(dimensions) > 1:
+        raise ValueError("임베더가 비어 있거나 차원이 다른 벡터를 반환했습니다")
+    if any(not math.isfinite(value) for vector in vectors for value in vector):
+        raise ValueError("임베더가 유한하지 않은 값을 반환했습니다")
+    return vectors
+
+
 def sync_index(settings: IndexSettings, embedder: Embedder, *, force: bool = False) -> IndexReport:
     started = time.perf_counter()
     normalized = settings.normalized()
@@ -362,8 +379,10 @@ def sync_index(settings: IndexSettings, embedder: Embedder, *, force: bool = Fal
             chunks = chunk_text(text, normalized.chunk_size, normalized.chunk_overlap)
             try:
                 prepared_chunks = []
-                for chunk_index, chunk in enumerate(chunks):
-                    embedding = list(embedder.embed(chunk))
+                embeddings = _embed_chunks(embedder, chunks)
+                for chunk_index, (chunk, embedding) in enumerate(
+                    zip(chunks, embeddings, strict=True)
+                ):
                     prepared_chunks.append(
                         (
                             chunk_index,

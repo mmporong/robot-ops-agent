@@ -59,6 +59,20 @@ class SearchEvaluationTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "임베더가 다릅니다"):
             vector_search(self.db_path, "회전", HashEmbedder(64), k=2)
 
+    def test_vector_search_rejects_changed_dimension_under_same_identifier(self) -> None:
+        identifier = self.embedder.identifier
+
+        class ChangedDimensionEmbedder:
+            @property
+            def identifier(self) -> str:
+                return identifier
+
+            def embed(self, text: str) -> list[float]:
+                return [1.0] * 16
+
+        with self.assertRaisesRegex(ValueError, "인덱스 차원이 다릅니다"):
+            vector_search(self.db_path, "회전", ChangedDimensionEmbedder(), k=2)
+
     def test_evaluation_records_hash_and_metrics(self) -> None:
         dataset_path = self.root / "dataset.json"
         dataset_path.write_text(

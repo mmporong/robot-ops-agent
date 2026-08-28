@@ -1,0 +1,410 @@
+{
+  "case_count": 7,
+  "cases": [
+    {
+      "category": "diagnosis",
+      "expected_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+      ],
+      "id": "jdamr-progress-rotation",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "JD-AMR",
+      "top_hits": [
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+          "rank": 1,
+          "score": 50.64718481840162
+        },
+        {
+          "chunk_index": 8,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+          "rank": 2,
+          "score": 24.66839802277371
+        },
+        {
+          "chunk_index": 2,
+          "method": "keyword-bm25-char3-v1",
+          "path": "PKM/01_wiki/concepts/tf2-좌표변환-트리.md",
+          "rank": 3,
+          "score": 24.178824814144217
+        },
+        {
+          "chunk_index": 18,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+          "rank": 4,
+          "score": 23.796690605220185
+        },
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "PKM/01_wiki/concepts/Nav2-서버-아키텍처-및-플러그인-구조.md",
+          "rank": 5,
+          "score": 23.186018220544483
+        }
+      ],
+      "top_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+        "PKM/01_wiki/concepts/tf2-좌표변환-트리.md",
+        "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+        "PKM/01_wiki/concepts/Nav2-서버-아키텍처-및-플러그인-구조.md"
+      ]
+    },
+    {
+      "category": "safety",
+      "expected_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+      ],
+      "id": "jdamr-dry-run-safety",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "JD-AMR",
+      "top_hits": [
+        {
+          "chunk_index": 1,
+          "method": "keyword-bm25-char3-v1",
+          "path": "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+          "rank": 1,
+          "score": 43.357930908191996
+        },
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/08-대시보드.md",
+          "rank": 2,
+          "score": 32.10051072744933
+        },
+        {
+          "chunk_index": 8,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/11-Gazebo-시뮬레이션-구조.md",
+          "rank": 3,
+          "score": 25.30421469284371
+        },
+        {
+          "chunk_index": 5,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+          "rank": 4,
+          "score": 24.25306266799918
+        },
+        {
+          "chunk_index": 1,
+          "method": "keyword-bm25-char3-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 5,
+          "score": 22.64061893655863
+        }
+      ],
+      "top_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "gazebo-so101-capstone/docs/08-대시보드.md",
+        "gazebo-so101-capstone/docs/11-Gazebo-시뮬레이션-구조.md",
+        "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+        "exam_ws/src/exam_diffbot/README.md"
+      ]
+    },
+    {
+      "category": "diagnosis",
+      "expected_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "gazebo-so101-capstone/README.md"
+      ],
+      "id": "so101-false-success",
+      "path_recall": 0.5,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "SO-101 mobile manipulator",
+      "top_hits": [
+        {
+          "chunk_index": 3,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+          "rank": 1,
+          "score": 32.79250076858805
+        },
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "PKM/01_wiki/concepts/순환-검증-넣은-값을-되읽는-검사.md",
+          "rank": 2,
+          "score": 28.473031944835743
+        },
+        {
+          "chunk_index": 2,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/18-판정-규칙.md",
+          "rank": 3,
+          "score": 28.406446866782094
+        },
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/10-다음-단계.md",
+          "rank": 4,
+          "score": 27.197613143888056
+        },
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/18-판정-규칙.md",
+          "rank": 5,
+          "score": 25.70825165132768
+        }
+      ],
+      "top_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "PKM/01_wiki/concepts/순환-검증-넣은-값을-되읽는-검사.md",
+        "gazebo-so101-capstone/docs/18-판정-규칙.md",
+        "gazebo-so101-capstone/docs/10-다음-단계.md",
+        "gazebo-so101-capstone/docs/18-판정-규칙.md"
+      ]
+    },
+    {
+      "category": "hypothesis-rejection",
+      "expected_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md"
+      ],
+      "id": "so101-distance-not-root-cause",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "SO-101 mobile manipulator",
+      "top_hits": [
+        {
+          "chunk_index": 4,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+          "rank": 1,
+          "score": 83.77993900843526
+        },
+        {
+          "chunk_index": 8,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/18-판정-규칙.md",
+          "rank": 2,
+          "score": 56.3498811034016
+        },
+        {
+          "chunk_index": 11,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+          "rank": 3,
+          "score": 33.24795193635946
+        },
+        {
+          "chunk_index": 7,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/18-판정-규칙.md",
+          "rank": 4,
+          "score": 29.461923490425736
+        },
+        {
+          "chunk_index": 24,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/18-판정-규칙.md",
+          "rank": 5,
+          "score": 26.62160267055577
+        }
+      ],
+      "top_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "gazebo-so101-capstone/docs/18-판정-규칙.md",
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "gazebo-so101-capstone/docs/18-판정-규칙.md",
+        "gazebo-so101-capstone/docs/18-판정-규칙.md"
+      ]
+    },
+    {
+      "category": "safety",
+      "expected_paths": [
+        "exam_ws/src/exam_diffbot/README.md"
+      ],
+      "id": "diffbot-command-timeout",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "differential drive robot",
+      "top_hits": [
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 1,
+          "score": 39.43738099845403
+        },
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "PKM/01_wiki/concepts/이산-명령-인터페이스-위의-연속-제어.md",
+          "rank": 2,
+          "score": 30.846155379088103
+        },
+        {
+          "chunk_index": 1,
+          "method": "keyword-bm25-char3-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 3,
+          "score": 25.613621059318145
+        },
+        {
+          "chunk_index": 2,
+          "method": "keyword-bm25-char3-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 4,
+          "score": 23.83643741402006
+        },
+        {
+          "chunk_index": 1,
+          "method": "keyword-bm25-char3-v1",
+          "path": "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+          "rank": 5,
+          "score": 23.34320980323725
+        }
+      ],
+      "top_paths": [
+        "exam_ws/src/exam_diffbot/README.md",
+        "PKM/01_wiki/concepts/이산-명령-인터페이스-위의-연속-제어.md",
+        "exam_ws/src/exam_diffbot/README.md",
+        "exam_ws/src/exam_diffbot/README.md",
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+      ]
+    },
+    {
+      "category": "diagnosis",
+      "expected_paths": [
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md"
+      ],
+      "id": "diffbot-dead-gyro",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "differential drive robot",
+      "top_hits": [
+        {
+          "chunk_index": 2,
+          "method": "keyword-bm25-char3-v1",
+          "path": "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md",
+          "rank": 1,
+          "score": 32.08014468272686
+        },
+        {
+          "chunk_index": 1,
+          "method": "keyword-bm25-char3-v1",
+          "path": "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md",
+          "rank": 2,
+          "score": 27.73859715588005
+        },
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "PKM/01_wiki/concepts/측정-격리-누적을-한계로-착각하기.md",
+          "rank": 3,
+          "score": 24.21044427333684
+        },
+        {
+          "chunk_index": 2,
+          "method": "keyword-bm25-char3-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 4,
+          "score": 22.66048096664468
+        },
+        {
+          "chunk_index": 2,
+          "method": "keyword-bm25-char3-v1",
+          "path": "robot-dashboard/projects/so101-arm/HANDOFF.md",
+          "rank": 5,
+          "score": 20.591726211819005
+        }
+      ],
+      "top_paths": [
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md",
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md",
+        "PKM/01_wiki/concepts/측정-격리-누적을-한계로-착각하기.md",
+        "exam_ws/src/exam_diffbot/README.md",
+        "robot-dashboard/projects/so101-arm/HANDOFF.md"
+      ]
+    },
+    {
+      "category": "data-quality",
+      "expected_paths": [
+        "PKM/01_wiki/concepts/rosbag2-기록과-명령응답-짝짓기.md"
+      ],
+      "id": "rosbag-clock-axis",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "ROS 2 common",
+      "top_hits": [
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "PKM/01_wiki/concepts/rosbag2-기록과-명령응답-짝짓기.md",
+          "rank": 1,
+          "score": 88.70153227117973
+        },
+        {
+          "chunk_index": 2,
+          "method": "keyword-bm25-char3-v1",
+          "path": "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+          "rank": 2,
+          "score": 49.98769910196877
+        },
+        {
+          "chunk_index": 16,
+          "method": "keyword-bm25-char3-v1",
+          "path": "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+          "rank": 3,
+          "score": 47.30394819992962
+        },
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "PKM/01_wiki/concepts/시계-선택-시뮬-시간과-벽시계.md",
+          "rank": 4,
+          "score": 46.023007927773776
+        },
+        {
+          "chunk_index": 0,
+          "method": "keyword-bm25-char3-v1",
+          "path": "PKM/01_wiki/concepts/물리-스텝과-RTF.md",
+          "rank": 5,
+          "score": 41.408484761799244
+        }
+      ],
+      "top_paths": [
+        "PKM/01_wiki/concepts/rosbag2-기록과-명령응답-짝짓기.md",
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+        "PKM/01_wiki/concepts/시계-선택-시뮬-시간과-벽시계.md",
+        "PKM/01_wiki/concepts/물리-스텝과-RTF.md"
+      ]
+    }
+  ],
+  "dataset_id": "robot-diagnostics-dev-v0.1.0",
+  "dataset_sha256": "c376e07b8ebe7f85d5630c7dca469199d4835ada59e31b3380d04826641b26b4",
+  "dataset_split": "development",
+  "evaluated_at": "2026-08-28T05:52:11.077676+00:00",
+  "k": 5,
+  "method": "keyword-bm25-char3-v1",
+  "metrics": {
+    "chunk_precision_at_5": 0.31428571428571433,
+    "hit_rate_at_5": 1.0,
+    "mrr": 1.0,
+    "recall_at_5": 0.9285714285714286,
+    "source_precision_at_5": 0.2833333333333333
+  },
+  "schema_version": 1,
+  "unmeasured": [
+    "answer_citation_accuracy",
+    "diagnosis_accuracy",
+    "generation_latency"
+  ]
+}

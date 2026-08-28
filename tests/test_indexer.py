@@ -32,6 +32,22 @@ class CountingEmbedder:
         return [float(len(text)), 1.0, 0.0, -1.0]
 
 
+class BatchCountingEmbedder:
+    def __init__(self) -> None:
+        self.batches: list[tuple[str, ...]] = []
+
+    @property
+    def identifier(self) -> str:
+        return "batch-counting-v1:4"
+
+    def embed(self, text: str) -> list[float]:
+        raise AssertionError("배치 경로를 사용해야 합니다")
+
+    def embed_many(self, texts: tuple[str, ...] | list[str]) -> list[list[float]]:
+        self.batches.append(tuple(texts))
+        return [[float(len(text)), 1.0, 0.0, -1.0] for text in texts]
+
+
 class IndexerTest(unittest.TestCase):
     def setUp(self) -> None:
         self.temp_dir = tempfile.TemporaryDirectory()
@@ -85,6 +101,17 @@ class IndexerTest(unittest.TestCase):
         self.assertGreater(calls_after_first, 0)
         self.assertEqual(second.skipped, 1)
         self.assertEqual(embedder.calls, calls_after_first)
+
+    def test_document_chunks_use_one_batch_embedding_call(self) -> None:
+        self._write("long.md", "로봇 상태 진단 기록 " * 20)
+        embedder = BatchCountingEmbedder()
+
+        report = sync_index(self.settings, embedder)
+
+        self.assertEqual(report.added, 1)
+        self.assertEqual(len(embedder.batches), 1)
+        self.assertGreater(len(embedder.batches[0]), 1)
+        self.assertEqual(report.embedded_chunks, len(embedder.batches[0]))
 
     def test_touch_without_content_change_updates_metadata_without_embedding(self) -> None:
         path = self._write("odom.md", "바퀴 오도메트리와 실측을 비교한다.")

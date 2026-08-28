@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "status": "development_baseline",
+  "measured_at": "2026-08-28T14:50:51+09:00",
+  "claim_boundary": "x86_64 노트북의 Vulkan 개발셋 비교다. 홀드아웃 정확도나 Raspberry Pi·Jetson 성능으로 일반화하지 않는다.",
+  "hardware": {
+    "cpu": "AMD Ryzen 7 260 w/ Radeon 780M Graphics",
+    "physical_cores": 8,
+    "logical_cpus": 16,
+    "memory_bytes": 32864538624,
+    "gpu": "NVIDIA GeForce RTX 5050 Laptop GPU",
+    "gpu_memory_mib": 8151,
+    "driver": "595.84",
+    "os": "Ubuntu 24.04.4 LTS",
+    "kernel": "7.0.0-28-generic"
+  },
+  "runtime": {
+    "name": "llama.cpp",
+    "release": "b10549",
+    "commit": "b2e5e9b28",
+    "backend": "Vulkan",
+    "binary_size_bytes": 17920,
+    "binary_sha256": "390fbf19999d69295c25d34c73921fd85c712edde782b401bd0387c528935651",
+    "flags": [
+      "--embedding",
+      "--pooling last",
+      "--offline",
+      "--parallel 1",
+      "--ctx-size 8192",
+      "--ubatch-size 8192",
+      "--n-gpu-layers 99",
+      "--host 127.0.0.1"
+    ]
+  },
+  "model": {
+    "repository": "Qwen/Qwen3-Embedding-0.6B-GGUF",
+    "repository_commit": "d20cf9c16f82914a21dbd9c645f56895fb1d7750",
+    "file": "Qwen3-Embedding-0.6B-Q8_0.gguf",
+    "size_bytes": 639446688,
+    "sha256": "06507c7b42688469c4e7298b0a1e16deff06caf291cf0a5b278c308249c3e439",
+    "embedding_dimension": 1024
+  },
+  "index": {
+    "source_root": "$HOME",
+    "documents": 2321,
+    "chunks": 3075,
+    "pipeline": "llama.cpp-openai-v1:qwen3-embedding-0.6b-q8_0-d20cf9c|chars-v1:800:120",
+    "first_build_wall_seconds": 162.330695,
+    "first_build_client_max_rss_kib": 41592,
+    "unchanged_update_wall_seconds": 0.746782,
+    "unchanged_update_client_max_rss_kib": 36108,
+    "unchanged_update_embedded_chunks": 0
+  },
+  "resource_samples": {
+    "server_rss_mib_after_run": 830.94140625,
+    "gpu_compute_memory_mib_after_run": 2837,
+    "active_gpu_temperature_c_sample": 58,
+    "active_gpu_power_w_sample": 47.25,
+    "note": "온도와 전력은 전체 구간의 최대값이 아니라 인덱싱 중 한 시점의 표본이다."
+  },
+  "retrieval_development_set": {
+    "dataset": "robot-diagnostics-dev-v0.1.0",
+    "dataset_sha256": "c376e07b8ebe7f85d5630c7dca469199d4835ada59e31b3380d04826641b26b4",
+    "case_count": 7,
+    "k": 5,
+    "query_instruction": "Retrieve evidence for a robot operations diagnostic question.",
+    "query_instruction_sha256_prefix": "19fa32886ada",
+    "methods": {
+      "keyword": {
+        "evidence": "evaluations/evidence/2026-08-28_keyword_dev_semantic_corpus_raw.json",
+        "hit_rate_at_5": 1.0,
+        "recall_at_5": 0.9285714285714286,
+        "mrr": 1.0,
+        "source_precision_at_5": 0.2833333333333333,
+        "chunk_precision_at_5": 0.31428571428571433
+      },
+      "vector_without_instruction": {
+        "evidence": "evaluations/evidence/2026-08-28_qwen3_embedding_0.6b_q8_vector_dev_raw.json",
+        "hit_rate_at_5": 1.0,
+        "recall_at_5": 0.9285714285714286,
+        "mrr": 0.9285714285714286,
+        "source_precision_at_5": 0.24285714285714285,
+        "chunk_precision_at_5": 0.31428571428571433
+      },
+      "hybrid_without_instruction": {
+        "evidence": "evaluations/evidence/2026-08-28_qwen3_embedding_0.6b_q8_hybrid_dev_raw.json",
+        "hit_rate_at_5": 1.0,
+        "recall_at_5": 0.9285714285714286,
+        "mrr": 0.9285714285714286,
+        "source_precision_at_5": 0.29047619047619044,
+        "chunk_precision_at_5": 0.4
+      },
+      "vector_with_instruction": {
+        "evidence": "evaluations/evidence/2026-08-28_qwen3_embedding_0.6b_q8_vector_instructed_dev_raw.json",
+        "hit_rate_at_5": 1.0,
+        "recall_at_5": 0.9285714285714286,
+        "mrr": 0.9047619047619048,
+        "source_precision_at_5": 0.2357142857142857,
+        "chunk_precision_at_5": 0.2857142857142857
+      },
+      "hybrid_with_instruction": {
+        "evidence": "evaluations/evidence/2026-08-28_qwen3_embedding_0.6b_q8_hybrid_instructed_dev_raw.json",
+        "hit_rate_at_5": 1.0,
+        "recall_at_5": 0.9285714285714286,
+        "mrr": 0.9285714285714286,
+        "source_precision_at_5": 0.2785714285714286,
+        "chunk_precision_at_5": 0.37142857142857144
+      }
+    }
+  },
+  "edge_devices": {
+    "raspberry_pi": "not_measured_no_device_access",
+    "jetson": "not_measured_no_device_access"
+  },
+  "network_isolation": {
+    "runtime_offline_flag": true,
+    "server_bind": "127.0.0.1",
+    "client_loopback_only": true,
+    "client_proxy_disabled": true,
+    "client_redirect_disabled": true,
+    "os_level_block": "not_verified_user_network_namespace_not_permitted"
+  }
+}

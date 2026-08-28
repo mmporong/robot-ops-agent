@@ -1,0 +1,410 @@
+{
+  "case_count": 7,
+  "cases": [
+    {
+      "category": "diagnosis",
+      "expected_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+      ],
+      "id": "jdamr-progress-rotation",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "JD-AMR",
+      "top_hits": [
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+          "rank": 1,
+          "score": 0.032266458495966696
+        },
+        {
+          "chunk_index": 8,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+          "rank": 2,
+          "score": 0.0315136476426799
+        },
+        {
+          "chunk_index": 1,
+          "method": "hybrid-rrf-v1",
+          "path": "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+          "rank": 3,
+          "score": 0.03047794966520434
+        },
+        {
+          "chunk_index": 9,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+          "rank": 4,
+          "score": 0.028814262023217248
+        },
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "PKM/01_wiki/concepts/BehaviorTree-막힘을-구조로-적기.md",
+          "rank": 5,
+          "score": 0.027799227799227798
+        }
+      ],
+      "top_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+        "PKM/01_wiki/concepts/BehaviorTree-막힘을-구조로-적기.md"
+      ]
+    },
+    {
+      "category": "safety",
+      "expected_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md"
+      ],
+      "id": "jdamr-dry-run-safety",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "JD-AMR",
+      "top_hits": [
+        {
+          "chunk_index": 1,
+          "method": "hybrid-rrf-v1",
+          "path": "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+          "rank": 1,
+          "score": 0.031544957774465976
+        },
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/09-디버깅-노트.md",
+          "rank": 2,
+          "score": 0.031054405392392875
+        },
+        {
+          "chunk_index": 2,
+          "method": "hybrid-rrf-v1",
+          "path": "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+          "rank": 3,
+          "score": 0.030886196246139225
+        },
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 4,
+          "score": 0.030536130536130537
+        },
+        {
+          "chunk_index": 1,
+          "method": "hybrid-rrf-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 5,
+          "score": 0.029273504273504274
+        }
+      ],
+      "top_paths": [
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "gazebo-so101-capstone/docs/09-디버깅-노트.md",
+        "jdamr_evidence/20260826_prearm_autonomy_run01/README.md",
+        "exam_ws/src/exam_diffbot/README.md",
+        "exam_ws/src/exam_diffbot/README.md"
+      ]
+    },
+    {
+      "category": "diagnosis",
+      "expected_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "gazebo-so101-capstone/README.md"
+      ],
+      "id": "so101-false-success",
+      "path_recall": 0.5,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "SO-101 mobile manipulator",
+      "top_hits": [
+        {
+          "chunk_index": 3,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+          "rank": 1,
+          "score": 0.031544957774465976
+        },
+        {
+          "chunk_index": 7,
+          "method": "hybrid-rrf-v1",
+          "path": "robot-dashboard/docs/PROJECT_PROMPT_TEMPLATE.md",
+          "rank": 2,
+          "score": 0.031054405392392875
+        },
+        {
+          "chunk_index": 3,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/10-다음-단계.md",
+          "rank": 3,
+          "score": 0.029857397504456328
+        },
+        {
+          "chunk_index": 4,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+          "rank": 4,
+          "score": 0.02921395544346364
+        },
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "PKM/01_wiki/concepts/순환-검증-넣은-값을-되읽는-검사.md",
+          "rank": 5,
+          "score": 0.016129032258064516
+        }
+      ],
+      "top_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "robot-dashboard/docs/PROJECT_PROMPT_TEMPLATE.md",
+        "gazebo-so101-capstone/docs/10-다음-단계.md",
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "PKM/01_wiki/concepts/순환-검증-넣은-값을-되읽는-검사.md"
+      ]
+    },
+    {
+      "category": "hypothesis-rejection",
+      "expected_paths": [
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md"
+      ],
+      "id": "so101-distance-not-root-cause",
+      "path_recall": 1.0,
+      "relevant_rank": 2,
+      "retrieved_expected_count": 1,
+      "robot": "SO-101 mobile manipulator",
+      "top_hits": [
+        {
+          "chunk_index": 8,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/18-판정-규칙.md",
+          "rank": 1,
+          "score": 0.03225806451612903
+        },
+        {
+          "chunk_index": 4,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+          "rank": 2,
+          "score": 0.032018442622950824
+        },
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/10-다음-단계.md",
+          "rank": 3,
+          "score": 0.030679156908665108
+        },
+        {
+          "chunk_index": 24,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/18-판정-규칙.md",
+          "rank": 4,
+          "score": 0.030309988518943745
+        },
+        {
+          "chunk_index": 1,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/05-바닥-파지.md",
+          "rank": 5,
+          "score": 0.028665028665028666
+        }
+      ],
+      "top_paths": [
+        "gazebo-so101-capstone/docs/18-판정-규칙.md",
+        "gazebo-so101-capstone/docs/19-외부-검수-요청.md",
+        "gazebo-so101-capstone/docs/10-다음-단계.md",
+        "gazebo-so101-capstone/docs/18-판정-규칙.md",
+        "gazebo-so101-capstone/docs/05-바닥-파지.md"
+      ]
+    },
+    {
+      "category": "safety",
+      "expected_paths": [
+        "exam_ws/src/exam_diffbot/README.md"
+      ],
+      "id": "diffbot-command-timeout",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "differential drive robot",
+      "top_hits": [
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 1,
+          "score": 0.032266458495966696
+        },
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "PKM/01_wiki/concepts/이산-명령-인터페이스-위의-연속-제어.md",
+          "rank": 2,
+          "score": 0.03225806451612903
+        },
+        {
+          "chunk_index": 3,
+          "method": "hybrid-rrf-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 3,
+          "score": 0.031544957774465976
+        },
+        {
+          "chunk_index": 1,
+          "method": "hybrid-rrf-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 4,
+          "score": 0.029957522915269395
+        },
+        {
+          "chunk_index": 1,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/12-네이티브-이관과-DDS-오염.md",
+          "rank": 5,
+          "score": 0.02821939586645469
+        }
+      ],
+      "top_paths": [
+        "exam_ws/src/exam_diffbot/README.md",
+        "PKM/01_wiki/concepts/이산-명령-인터페이스-위의-연속-제어.md",
+        "exam_ws/src/exam_diffbot/README.md",
+        "exam_ws/src/exam_diffbot/README.md",
+        "gazebo-so101-capstone/docs/12-네이티브-이관과-DDS-오염.md"
+      ]
+    },
+    {
+      "category": "diagnosis",
+      "expected_paths": [
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md"
+      ],
+      "id": "diffbot-dead-gyro",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "differential drive robot",
+      "top_hits": [
+        {
+          "chunk_index": 2,
+          "method": "hybrid-rrf-v1",
+          "path": "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md",
+          "rank": 1,
+          "score": 0.03278688524590164
+        },
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "PKM/01_wiki/concepts/측정-격리-누적을-한계로-착각하기.md",
+          "rank": 2,
+          "score": 0.031024531024531024
+        },
+        {
+          "chunk_index": 4,
+          "method": "hybrid-rrf-v1",
+          "path": "exam_ws/src/exam_diffbot/README.md",
+          "rank": 3,
+          "score": 0.02877846790890269
+        },
+        {
+          "chunk_index": 22,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/18-판정-규칙.md",
+          "rank": 4,
+          "score": 0.025645240835114255
+        },
+        {
+          "chunk_index": 1,
+          "method": "hybrid-rrf-v1",
+          "path": "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md",
+          "rank": 5,
+          "score": 0.016129032258064516
+        }
+      ],
+      "top_paths": [
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md",
+        "PKM/01_wiki/concepts/측정-격리-누적을-한계로-착각하기.md",
+        "exam_ws/src/exam_diffbot/README.md",
+        "gazebo-so101-capstone/docs/18-판정-규칙.md",
+        "PKM/01_wiki/concepts/실패의-원인-귀속-5층-코드인가-데이터인가.md"
+      ]
+    },
+    {
+      "category": "data-quality",
+      "expected_paths": [
+        "PKM/01_wiki/concepts/rosbag2-기록과-명령응답-짝짓기.md"
+      ],
+      "id": "rosbag-clock-axis",
+      "path_recall": 1.0,
+      "relevant_rank": 1,
+      "retrieved_expected_count": 1,
+      "robot": "ROS 2 common",
+      "top_hits": [
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "PKM/01_wiki/concepts/rosbag2-기록과-명령응답-짝짓기.md",
+          "rank": 1,
+          "score": 0.03278688524590164
+        },
+        {
+          "chunk_index": 0,
+          "method": "hybrid-rrf-v1",
+          "path": "PKM/01_wiki/concepts/시계-선택-시뮬-시간과-벽시계.md",
+          "rank": 2,
+          "score": 0.031754032258064516
+        },
+        {
+          "chunk_index": 4,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/13-모방학습-데이터-수집.md",
+          "rank": 3,
+          "score": 0.030798389007344232
+        },
+        {
+          "chunk_index": 16,
+          "method": "hybrid-rrf-v1",
+          "path": "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+          "rank": 4,
+          "score": 0.030158730158730156
+        },
+        {
+          "chunk_index": 16,
+          "method": "hybrid-rrf-v1",
+          "path": "robot-dashboard/docs/HANDOFF.md",
+          "rank": 5,
+          "score": 0.029857397504456328
+        }
+      ],
+      "top_paths": [
+        "PKM/01_wiki/concepts/rosbag2-기록과-명령응답-짝짓기.md",
+        "PKM/01_wiki/concepts/시계-선택-시뮬-시간과-벽시계.md",
+        "gazebo-so101-capstone/docs/13-모방학습-데이터-수집.md",
+        "gazebo-so101-capstone/docs/00-ROS2-시스템-설계.md",
+        "robot-dashboard/docs/HANDOFF.md"
+      ]
+    }
+  ],
+  "dataset_id": "robot-diagnostics-dev-v0.1.0",
+  "dataset_sha256": "c376e07b8ebe7f85d5630c7dca469199d4835ada59e31b3380d04826641b26b4",
+  "dataset_split": "development",
+  "evaluated_at": "2026-08-28T05:52:25.709441+00:00",
+  "k": 5,
+  "method": "hybrid-rrf-v1+vector:llama.cpp-openai-v1:qwen3-embedding-0.6b-q8_0-d20cf9c:query-19fa32886ada",
+  "metrics": {
+    "chunk_precision_at_5": 0.37142857142857144,
+    "hit_rate_at_5": 1.0,
+    "mrr": 0.9285714285714286,
+    "recall_at_5": 0.9285714285714286,
+    "source_precision_at_5": 0.2785714285714286
+  },
+  "schema_version": 1,
+  "unmeasured": [
+    "answer_citation_accuracy",
+    "diagnosis_accuracy",
+    "generation_latency"
+  ]
+}

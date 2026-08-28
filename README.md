@@ -1,6 +1,6 @@
 # Robot Ops Agent
 
-로봇 운용 문서와 실험 기록을 로컬에서 찾고, 답변이 어떤 파일을 근거로 했는지 확인하기 위한 프로젝트입니다. Markdown 증분 인덱서, 키워드 검색 기준선, 조회 전용 MCP 도구, 로컬 LLM 측정 하네스까지 구현했습니다.
+로봇 운용 문서와 실험 기록을 로컬에서 찾고, 답변이 어떤 파일을 근거로 했는지 확인하기 위한 프로젝트입니다. Markdown 증분 인덱서, 키워드·의미 검색, 조회 전용 MCP 도구, 로컬 LLM 측정 하네스까지 구현했습니다.
 
 이 프로젝트는 로봇을 움직이지 않습니다. ROS 2 상태와 로그를 읽을 뿐이며 토픽 발행, 서비스 호출, 프로세스 재시작, 임의 셸은 제공하지 않습니다. 자세한 경계는 [시스템 경계와 안전 원칙](docs/architecture-and-safety.md)에 정리했습니다.
 
@@ -19,6 +19,8 @@ JD-AMR 한 대의 로그 분석 기능으로 시작했지만, 검색·출처 평
 - 파일 하나의 임베딩이 실패해도 이전 인덱스를 보존합니다.
 - 자격증명 경로와 비밀값 패턴이 있는 파일은 인덱스에서 제외합니다.
 - 한국어 문자 3-gram을 포함한 BM25 키워드 기준선을 실행합니다.
+- llama.cpp의 로컬 `/v1/embeddings`에 문서 청크를 묶어 보내고 벡터·하이브리드 검색에 사용합니다.
+- 임베딩 요청은 명시한 루프백 IP로만 보냅니다. 외부 주소, 시스템 프록시, HTTP 리다이렉트는 차단합니다.
 - 개발용 고정 평가셋의 해시와 Hit Rate·Recall@k·MRR·출처 정밀도를 JSON으로 남깁니다.
 - ROS 2 상태·rosbag 메타데이터·허용된 로그만 읽는 진단 도구 계층이 있습니다.
 - 이동 명령, 서비스 호출, 프로세스 재시작, 임의 셸은 도구 allowlist에 없습니다.
@@ -26,6 +28,46 @@ JD-AMR 한 대의 로그 분석 기능으로 시작했지만, 검색·출처 평
 - llama.cpp의 스트리밍 응답에서 TTFT·처리량·서버 RSS·답변 개념·인용 경로를 함께 측정합니다.
 
 기본 `hash` 임베더는 오프라인 회귀 테스트용입니다. 의미 기반 검색 성능을 나타내지 않으며, 검색 정확도 근거로 사용하지 않습니다.
+
+## 의미 임베딩 연결
+
+llama.cpp 서버를 전용 임베딩 모델과 pooling이 활성화된 상태로 실행한 뒤 별도 DB를 만듭니다. `--embedding-model` 값은 모델 파일명이나 고정 revision을 구분할 수 있는 식별자로 정합니다. 모델을 바꾸면 기존 DB를 재사용하지 않습니다.
+
+```bash
+cd "$HOME/robot-ops-agent"
+export ROBOT_OPS_EMBEDDING_API_KEY="$(openssl rand -hex 32)"
+export LLAMA_API_KEY="$ROBOT_OPS_EMBEDDING_API_KEY"
+llama-server \
+  -m "$EMBEDDING_MODEL_PATH" \
+  --embedding \
+  --pooling last \
+  --host 127.0.0.1 \
+  --port 8081
+
+uv run robot-ops index \
+  --root "$PWD" \
+  --db "$PWD/.local/semantic.db" \
+  --include docs \
+  --embedder llama-cpp \
+  --embedding-endpoint http://127.0.0.1:8081/v1/embeddings \
+  --embedding-model embedding-model-fixed-revision
+
+uv run robot-ops evaluate \
+  --root "$PWD" \
+  --db "$PWD/.local/semantic.db" \
+  --include docs \
+  --embedder llama-cpp \
+  --embedding-endpoint http://127.0.0.1:8081/v1/embeddings \
+  --embedding-model embedding-model-fixed-revision \
+  --embedding-query-instruction "Retrieve evidence for a robot operations diagnostic question." \
+  --dataset evaluations/datasets/robot_diagnostics_dev_v0.1.0.json \
+  --method hybrid \
+  -k 5
+```
+
+pooling 방식은 사용하는 모델의 배포 문서를 따릅니다. 클라이언트는 숫자 루프백 주소만 허용하고 시스템 프록시와 HTTP 리다이렉트를 사용하지 않습니다. API 키는 `ROBOT_OPS_EMBEDDING_API_KEY` 환경변수로만 받습니다.
+
+Qwen3-Embedding 0.6B Q8의 Vulkan 개발 기준선도 측정했습니다. 2,321개 문서와 3,075개 청크의 첫 인덱싱은 162.33초, 변경 없는 재실행은 0.75초였습니다. 개발 질문 7개에서 하이브리드 검색의 Chunk Precision@5는 0.4000으로 키워드 기준선 0.3143보다 높았지만, MRR은 1.0에서 0.9286으로 낮았습니다. 벡터 검색만으로는 키워드 기준선을 넘지 못했습니다. 자세한 조건과 실패 결과는 [의미 검색 개발 기준선](docs/semantic-retrieval-2026-08-28.md)에 있습니다.
 
 ## 5분 스모크 테스트
 
@@ -68,6 +110,8 @@ stdout은 MCP 프로토콜 전용입니다. 실행 로그와 감사 기록은 `R
 검색은 개발 질문 7개 모두 상위 5개 안에서 정답 문서를 하나 이상 찾았지만, 여러 정답 경로를 모두 찾는 Recall@5는 0.9286이었습니다. 생성 답변은 모든 필수 개념을 맞힌 질문이 2/7에 그쳤습니다. 경로 인용 정밀도는 0.7143이었고, 요구한 인용 형식 준수율은 0.0714였습니다. 작은 모델을 실제 진단에 바로 쓰기에는 정확도와 첫 응답 지연이 부족합니다.
 
 전체 조건과 원본 해시는 [로컬 CPU 기준선](docs/benchmark-2026-08-28.md), 집계 JSON은 [2026-08-28 기준선](evaluations/baselines/2026-08-28_x86_64_cpu_qwen3_0.6b_q8.json)에서 확인할 수 있습니다. 질문별 검색 순위·점수는 [검색 원시 증거](evaluations/evidence/2026-08-28_keyword_dev_top5_raw.json), 모델 답변·지연은 [생성 원시 증거](evaluations/evidence/2026-08-28_qwen3_0.6b_q8_cpu_dev_raw.json)에 남겼습니다. 모델과 런타임 바이너리는 저장소에 포함하지 않습니다.
+
+의미 검색의 모델 해시, 인덱싱 시간, GPU 메모리 표본과 검색 방식별 결과는 [Vulkan 의미 검색 기준선](evaluations/baselines/2026-08-28_x86_64_vulkan_qwen3_embedding_0.6b_q8.json)에 따로 기록했습니다.
 
 단계별 완료 여부와 공개할 수 있는 주장 범위는 [검증 상태와 다음 단계](docs/validation-status.md)에 분리했습니다.
 
