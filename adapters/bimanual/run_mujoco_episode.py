@@ -7,7 +7,7 @@
 - TCP = `graspframe` site를 미러의 `sim_to_panel`로 팔 기준(팬 축 원점) 좌표로 옮긴 값(m).
 - 고스트: 작업 물체(piece·piece_cyl·dropbox)를 장면 밖으로 치우고, 같은 카메라로
   명령 자세와 관측 자세를 각각 오프스크린 렌더한다. 명령 렌더의 팔 픽셀(세그멘테이션)만
-  alpha 0.4로 관측 렌더 위에 합성한다. `mj_step`은 부르지 않는다(물리 스텝 0회,
+  alpha 0.55로 관측 렌더 위에 합성하고, 명령 팔 윤곽 2 px를 진한 파랑으로 칠해 구분을 돕는다. `mj_step`은 부르지 않는다(물리 스텝 0회,
   호출 횟수를 세어 결과에 남긴다).
 """
 
@@ -30,9 +30,12 @@ import numpy as np  # noqa: E402
 DEFAULT_MIRROR_ROOT = Path.home() / "so101_tools" / "sim"
 ARM_JOINTS = ("shoulder_pan", "shoulder_lift", "elbow_flex", "wrist_flex", "wrist_roll")
 TASK_OBJECTS = ("piece", "piece_cyl", "dropbox")
-GHOST_ALPHA = 0.4
-GHOST_TINT = np.array([30.0, 110.0, 255.0])  # 명령 팔 색(파랑) — 관측 팔(원래 색)과 구분
-TINT_WEIGHT = 0.6
+GHOST_ALPHA = 0.55
+GHOST_TINT = np.array([20.0, 90.0, 255.0])  # 명령 팔 색(채도 높은 파랑) — 관측 팔(원래 색)과 구분
+TINT_WEIGHT = 0.75
+GHOST_OUTLINE = np.array([10.0, 60.0, 210.0])  # 명령 팔 윤곽
+OUTLINE_PX = 2
+OUTLINE_ALPHA = 0.9
 WIDTH, HEIGHT = 640, 480
 # 실측 3인칭 카메라(teleop_bench depth 키)와 비슷한 시점. 팔 기준(패널) 좌표로 lookat을 준다.
 # 후보 격자(방위 120~320°, 고도 -20~-50°)를 렌더해 `.local/m0/so101_teleop_bench_ep0_depth.png`와 육안 대조로 골랐다.
@@ -168,6 +171,19 @@ def _render(renderer, data, cam, segmentation: bool):
     return renderer.render()
 
 
+def _outline(mask: np.ndarray, px: int = OUTLINE_PX) -> np.ndarray:
+    """마스크 안쪽 가장자리 `px` 픽셀(4-이웃 침식을 px번 한 뒤의 차)."""
+    inner = mask.copy()
+    for _ in range(px):
+        eroded = inner.copy()
+        eroded[1:, :] &= inner[:-1, :]
+        eroded[:-1, :] &= inner[1:, :]
+        eroded[:, 1:] &= inner[:, :-1]
+        eroded[:, :-1] &= inner[:, 1:]
+        inner = eroded
+    return mask & ~inner
+
+
 def _write_png(path: Path, rgb: np.ndarray) -> None:
     from PIL import Image  # noqa: PLC0415
 
@@ -272,6 +288,8 @@ def run(request: dict, workdir: Path) -> dict:
                 tinted = cmd_rgb * (1 - TINT_WEIGHT) + GHOST_TINT * TINT_WEIGHT
                 out = obs_rgb.copy()
                 out[mask] = obs_rgb[mask] * (1 - GHOST_ALPHA) + tinted[mask] * GHOST_ALPHA
+                edge = _outline(mask)
+                out[edge] = out[edge] * (1 - OUTLINE_ALPHA) + GHOST_OUTLINE * OUTLINE_ALPHA
                 _write_png(frames_dir / f"{i:05d}.png", out)
                 if i == hero:
                     _write_png(composite_png, out)
@@ -287,6 +305,9 @@ def run(request: dict, workdir: Path) -> dict:
                 "composite_t_s": float(rows[hero]["t"]) if rows else None,
                 "alpha": GHOST_ALPHA,
                 "command_tint_rgb": GHOST_TINT.tolist(),
+                "tint_weight": TINT_WEIGHT,
+                "outline_rgb": GHOST_OUTLINE.tolist(),
+                "outline_px": OUTLINE_PX,
                 "camera_command": cam_cmd,
                 "camera_observed": cam_obs,
                 "camera_matrices_equal": matrices_equal,

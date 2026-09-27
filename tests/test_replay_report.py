@@ -18,6 +18,8 @@ from robot_ops.replay.report import (  # noqa: E402
     OUT_OF_SCOPE,
     build,
     check_no_private_paths,
+    failed_lines,
+    grid_patterns,
     latest_regress_results,
 )
 from robot_ops.replay.schema import validate_regress_result  # noqa: E402
@@ -254,6 +256,22 @@ class ReportBuildTest(unittest.TestCase):
         card = next(c for c in self._json("data/scenarios.json") if c["scenario_id"] == "cup-a")
         self.assertTrue(card["has_regress"])
 
+    def test_grid_patterns_from_data(self) -> None:
+        doc = json.loads(FIXTURE.read_text(encoding="utf-8"))
+        g = [-5.0, -2.5, 0.0, 2.5, 5.0]
+        a, b = doc["conditions"]["A"], doc["conditions"]["B"]
+        self.assertEqual(failed_lines(a, g, g), ([-5.0, -2.5], []))
+        self.assertEqual(
+            grid_patterns(a, g, g),
+            ["y −5 mm 행 5점 전부 조기 접촉", "y −2.5 mm 행 5점 전부 조기 접촉", "그 밖 실패 1점(조기 접촉)"],
+        )
+        self.assertEqual(grid_patterns(b, g, g), ["실패 없음"])
+        self._use_fixture()
+        build(self.profile, media=False)
+        reg = self._json("data/regress/cup-a.json")
+        self.assertEqual(reg["conditions"]["A"]["failed_rows_mm"], [-5.0, -2.5])
+        self.assertEqual(self._json("data/hero.json")["cup_grid"]["measured"], True)
+
     def test_partial_and_record_results_do_not_replace_complete_grid(self) -> None:
         self._use_fixture()
         runs = self.root / "artifacts" / "runs"
@@ -335,8 +353,9 @@ class ReportMediaBuildTest(unittest.TestCase):
         stream = probe["streams"][0]
         self.assertEqual((stream["codec_name"], stream["width"], stream["height"], stream["pix_fmt"]),
                          ("h264", 1200, 600, "yuv420p"))
-        # A 4초 + B 4초 + 통과 지도 5.5초
-        self.assertAlmostEqual(float(probe["format"]["duration"]), 13.5, delta=0.3)
+        # A 실패 4초 + 판정 순간 정지 1초, B 통과 4초(마지막 6초 이내), 통과 지도 5.5초
+        self.assertAlmostEqual(float(probe["format"]["duration"]), 14.5, delta=0.3)
+        self.assertEqual(hero["pattern_ko"]["A"][0], "y −5 mm 행 5점 전부 조기 접촉")
         self.assertTrue((out / "media" / "cup-a--passmap.png").exists())
         reg = json.loads((out / "data" / "regress" / "cup-a.json").read_text())
         cell = next(c for c in reg["conditions"]["A"]["cells"] if (c["x_mm"], c["y_mm"]) == (0, -5))

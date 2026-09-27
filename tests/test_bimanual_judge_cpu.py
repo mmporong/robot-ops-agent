@@ -69,7 +69,11 @@ class CupJudgeAgreementTest(unittest.TestCase):
                 if out["verdict"] == "fail":
                     self.assertIsNotNone(out["failure_code"])
                 for check in out["checks"]:
-                    self.assertEqual(set(check), {"id", "pass", "value", "threshold", "unit"})
+                    base = {"id", "pass", "value", "threshold", "unit"}
+                    self.assertEqual(set(check) - {"t_s"}, base)
+                    self.assertIn(check["pass"], (True, False, None))
+                if out["verdict"] == "pass":
+                    self.assertNotIn(None, [c["pass"] for c in out["checks"]])
             recheck = out["sample_recheck"]
             if recheck is None:
                 no_recheck.append(str(path))
@@ -81,6 +85,69 @@ class CupJudgeAgreementTest(unittest.TestCase):
         for item in findings:
             print("  -", json.dumps(item, ensure_ascii=False))
         self.assertGreaterEqual(len(results), 30)
+
+
+class CupEarlyStopTest(unittest.TestCase):
+    """조기 종료(실패 이벤트로 LIFT_HOLD 샘플 없음) → 측정 안 된 검사는 pass=None, 원인은 첫 행."""
+
+    CONFIG = {
+        "physics_dt_s": 0.1, "minimum_lift_m": 0.04, "minimum_contact_force_n": 0.02,
+        "maximum_tracking_error_rad": 0.12, "maximum_midbody_height_error_m": 0.015,
+        "maximum_contact_center_error_m": 0.015, "maximum_cup_lateral_drift_m": 0.02,
+        "maximum_cup_tilt_deg": 15.0, "cup_center_m": [0.0, 0.0, 0.0],
+    }
+
+    def setUp(self) -> None:
+        self.judge = _load_judge()
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+        (self.dir / "plan.json").write_text(json.dumps({"config": self.CONFIG, "recovery_enabled": False}))
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+
+    @staticmethod
+    def _sample(phase: str, z: float) -> dict:
+        return {"attempt": 0, "phase": phase, "cup_position_m": [0.0, 0.0, z], "contact_force_n": [0.5, 0.5],
+                "arm_error_rad": 0.01, "midbody_height_error_m": 0.001, "contact_center_error_m": 0.001,
+                "cup_tilt_deg": 1.0}
+
+    def _judge(self, **fields) -> dict:
+        path = self.dir / "result.json"
+        path.write_text(json.dumps(fields), encoding="utf-8")
+        return self.judge.judge_cup(path)
+
+    def test_early_stop_marks_unmeasured_checks_none(self) -> None:
+        out = self._judge(
+            completed=False, task_pass=False, lift_stage_pass=False, stop_reason="premature_cup_contact",
+            samples=[self._sample("APPROACH", 0.0)],
+            events=[{"type": "preclose_failure", "time_s": 6.425, "failure_code": "premature_cup_contact"}],
+        )
+        self.assertEqual(out["verdict"], "fail")
+        first = out["checks"][0]
+        self.assertEqual((first["id"], first["pass"], first["value"], first["t_s"]),
+                         ("failure_event", False, "premature_cup_contact", 6.425))
+        by_id = {c["id"]: c for c in out["checks"]}
+        self.assertIs(by_id["stored_task_pass"]["pass"], False)
+        for cid in ("hold_window_samples", "samples_finite", "proxy_lift_height", "cup_tilt_max"):
+            self.assertIsNone(by_id[cid]["pass"], cid)
+        # 재계산 비교는 내부 bool로 한다 → 저장값(False)과 일치
+        self.assertTrue(out["sample_recheck"]["agrees"])
+
+    def test_pass_result_has_no_none(self) -> None:
+        hold = [self._sample("LIFT_HOLD", 0.05) for _ in range(10)]
+        out = self._judge(completed=True, task_pass=True, lift_stage_pass=True, samples=hold, events=[])
+        self.assertEqual(out["verdict"], "pass")
+        self.assertEqual(out["checks"][0]["id"], "stored_task_pass")
+        self.assertTrue(all(c["pass"] is True for c in out["checks"]))
+
+    def test_completed_failure_keeps_measured_false(self) -> None:
+        hold = [self._sample("LIFT_HOLD", 0.01) for _ in range(10)]
+        out = self._judge(completed=True, task_pass=False, lift_stage_pass=False, samples=hold, events=[])
+        by_id = {c["id"]: c for c in out["checks"]}
+        self.assertNotIn("failure_event", by_id)
+        self.assertIs(by_id["proxy_lift_height"]["pass"], False)
+        self.assertIs(by_id["hold_window_samples"]["pass"], True)
 
 
 class JudgeStdlibOnlyTest(unittest.TestCase):

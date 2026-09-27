@@ -114,6 +114,37 @@ class MediaCommandTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             media.hero_sequence_command([], Path("o"), fps=10, font_path="/f")
 
+    def test_color_bbox_and_roi(self) -> None:
+        w, h = 200, 100
+        buf = bytearray(b"\xc8" * (w * h * 3))  # 회색 배경
+        for y in range(40, 80):
+            for x in range(60, 80):
+                i = (y * w + x) * 3
+                buf[i:i + 3] = bytes((230, 210, 60))  # 노란 컵
+        bbox = media.color_bbox(bytes(buf), w, h, media.is_cup_yellow, step=1)
+        self.assertEqual(bbox, (60, 40, 79, 79))
+        roi = media.roi_around(bbox, (w, h))
+        rw, rh, rx, ry = roi
+        self.assertTrue(rw % 2 == 0 and rh % 2 == 0 and rx >= 0 and ry >= 0)
+        self.assertLessEqual(rx + rw, w)
+        self.assertLessEqual(ry + rh, h)
+        self.assertLessEqual(rx, 60)  # 컵이 ROI 안에 들어온다
+        self.assertGreaterEqual(rx + rw, 79)
+        self.assertIsNone(media.color_bbox(bytes(w * h * 3), w, h, media.is_cup_yellow))
+        self.assertEqual(media.crop_filter((524, 262, 444, 318)), "crop=524:262:444:318")
+        with self.assertRaises(ValueError):
+            media.crop_filter((523, 262, 0, 0))
+        argv = media.clip_command(Path("s.mp4"), Path("o.mp4"), fps=10, crop=(524, 262, 444, 318))
+        self.assertTrue(argv[argv.index("-vf") + 1].startswith("crop=524:262:444:318,scale=-2:480"))
+
+    def test_pass_map_outlines_failed_row(self) -> None:
+        grid = [-5, -2.5, 0, 2.5, 5]
+        argv = media.pass_map_command(
+            [{"title": "A", "subtitle": "", "x_mm": grid, "y_mm": grid, "cells": {}, "outline_rows": [-5.0]}],
+            Path("m.png"), font_path="/f.ttc",
+        )
+        self.assertEqual(argv[argv.index("-vf") + 1].count("color=0x161B22:t=4"), 1)
+
     def test_pass_map_command_labels_every_cell(self) -> None:
         grid = [-5, -2.5, 0, 2.5, 5]
         cells = {(float(x), float(y)): "pass" for x in grid for y in grid}

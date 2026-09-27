@@ -5,6 +5,9 @@ cup_contact
 - checks = 저장값 + 같은 폴더 `plan.json`의 config로 `samples`에서 다시 계산한 상승 판정 항목
   (팀 `cup_contact_model.evaluate_lift`와 같은 식: 마지막 시도의 LIFT_HOLD 끝 1초 창).
   다시 계산한 값이 저장값과 다르면 `sample_recheck.agrees=false`로 남긴다(발견 목록용, 수정하지 않음).
+- 조기 종료(실패 이벤트로 시뮬이 끝나 LIFT_HOLD 샘플이 없음)면 샘플로 잴 수 없는 검사는 `pass=None`
+  (측정 안 됨)으로 낸다. 판정을 결정한 원인은 첫 행 `failure_event`(값 = 실패 코드, `t_s` = 이벤트 시각)로
+  남긴다. `sample_recheck`의 재계산·일치 비교는 내부 bool로 하므로 영향이 없다.
 - judgement_basis = recovery_enabled가 참이면 `oracle_recovery_sim_coordinates`, 아니면 `rigid_proxy_lift`.
 - assembly = `left_arm_proxy`(assembly_mode `left_contact_proxy` 또는 기록 없음).
 
@@ -47,6 +50,29 @@ def _cup_failure_code(result: dict) -> str | None:
     if isinstance(reason, str) and reason and reason != "sequence_finished":
         return reason
     return None
+
+
+def _cup_failure_event(result: dict) -> dict | None:
+    """마지막 실패 이벤트(코드·시각)."""
+    for event in reversed(result.get("events") or []):
+        if isinstance(event, dict) and event.get("failure_code"):
+            t = event.get("time_s")
+            return {"code": str(event["failure_code"]),
+                    "t_s": float(t) if isinstance(t, (int, float)) and not isinstance(t, bool) else None}
+    return None
+
+
+NOT_MEASURED_ON_EARLY_STOP = ("hold_window_samples", "samples_finite")
+
+
+def _mark_not_measured(checks: list[dict]) -> list[dict]:
+    """조기 종료로 잴 수 없었던 검사를 pass=None으로 바꾼 사본(값이 없는 검사 + 샘플 창 검사)."""
+    out = []
+    for check in checks:
+        if check["value"] is None or check["id"] in NOT_MEASURED_ON_EARLY_STOP:
+            check = {**check, "pass": None}
+        out.append(check)
+    return out
 
 
 def _first_failed(recheck: dict | None) -> str | None:
@@ -144,9 +170,14 @@ def judge_cup(result_path: Path) -> dict:
     if assembly_mode != "left_contact_proxy":
         raise ValueError(f"알 수 없는 assembly_mode: {assembly_mode}")
     recheck = recheck_lift(result, plan.get("config") or {})
-    checks = [_check(f"stored_{key}", stored, stored, True, "bool")]
+    event = None if stored else _cup_failure_event(result)
+    checks = []
+    if event is not None:
+        checks.append({**_check("failure_event", False, event["code"], None, None), "t_s": event["t_s"]})
+    checks.append(_check(f"stored_{key}", stored, stored, True, "bool"))
     if recheck:
-        checks += recheck["checks"]
+        early_stop = event is not None and not result.get("completed") and recheck["checks"][0]["value"] == 0
+        checks += _mark_not_measured(recheck["checks"]) if early_stop else recheck["checks"]
     return {
         "verdict": "pass" if stored else "fail",
         "judgement_basis": "oracle_recovery_sim_coordinates" if recovery is True else "rigid_proxy_lift",

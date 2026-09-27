@@ -77,6 +77,53 @@ class ReplayCliTest(unittest.TestCase):
         self.assertEqual(code, 0, out)
         self.assertEqual((out["build"], out["scenario_count"], out["regress_count"]), ("public", 1, 1))
 
+    def test_report_build_hero_option(self) -> None:
+        save_scenario(self.root, make_scenario())
+        code, out = self._main(
+            "report", "build", "--profile", str(self.profile.path), "--hero", "observation_freeze",
+        )
+        self.assertEqual(code, 0, out)
+        self.assertEqual(out["hero_request"], "observation_freeze")
+        with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
+            main(["report", "build", "--profile", str(self.profile.path), "--hero", "banner"])
+
+    def test_report_serve_requires_built_report(self) -> None:
+        code, out = self._main("report", "serve", "--dir", str(self.root / "missing"))
+        self.assertEqual(code, 2)
+        self.assertIn("report build", out["error"])
+
+    def test_report_serve_supports_range_requests(self) -> None:
+        import http.client
+        import threading
+
+        from robot_ops.replay.report import serve_in_thread
+
+        site = self.root / "site"
+        site.mkdir()
+        (site / "index.html").write_text("<!doctype html>", encoding="utf-8")
+        (site / "clip.mp4").write_bytes(bytes(range(256)) * 4)
+        httpd = serve_in_thread(site, port=0)
+        try:
+            conn = http.client.HTTPConnection("127.0.0.1", httpd.server_address[1], timeout=5)
+            conn.request("GET", "/clip.mp4", headers={"Range": "bytes=10-19"})
+            resp = conn.getresponse()
+            self.assertEqual(resp.status, 206)
+            self.assertEqual(resp.getheader("Content-Range"), "bytes 10-19/1024")
+            self.assertEqual(resp.read(), bytes(range(10, 20)))
+            conn.request("GET", "/clip.mp4")
+            resp = conn.getresponse()
+            self.assertEqual((resp.status, len(resp.read())), (200, 1024))
+            self.assertEqual(resp.getheader("Accept-Ranges"), "bytes")
+            conn.request("GET", "/clip.mp4", headers={"Range": "bytes=5000-"})
+            resp = conn.getresponse()
+            resp.read()
+            self.assertEqual(resp.status, 416)
+            conn.close()
+        finally:
+            httpd.shutdown()
+            httpd.server_close()
+        self.assertFalse(any(t.name == "robot-ops-report-serve" and t.is_alive() for t in threading.enumerate()))
+
     def test_hardware_guard_returns_error(self) -> None:
         save_scenario(self.root, make_scenario(params={"A": {"hardware_accessed": "true"}}))
         code, out = self._main(

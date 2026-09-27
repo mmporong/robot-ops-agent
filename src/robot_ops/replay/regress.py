@@ -385,6 +385,68 @@ def run_regress(
     return result
 
 
+def rejudge_regress(profile: Profile, scenario: dict[str, Any]) -> list[dict[str, Any]]:
+    """저장된 결과 파일로 `judge`만 다시 돌려 regress_result의 checks·failure_code를 갱신한다.
+
+    시뮬은 다시 돌리지 않는다. 대상은 이 시나리오의 모든 regress_result(격자·녹화 패스).
+    판정(verdict)이 바뀌면 파일을 쓰지 않고 `RegressRefused`로 멈춘다. 처음 갱신할 때 원본을
+    `regress_result.before-rejudge.json`으로 한 번만 보존한다.
+    """
+    sid = scenario["scenario_id"]
+    task = scenario["task"]
+    summaries = []
+    runs = profile.artifacts_root / "runs"
+    for path in sorted(runs.glob("*/regress_result.json")):
+        try:
+            doc = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if doc.get("scenario_id") != sid:
+            continue
+        changed = 0
+        updates: list[tuple[dict[str, Any], dict[str, Any]]] = []
+        for cond in (doc.get("conditions") or {}).values():
+            for cell in cond.get("cells") or []:
+                if cell.get("status") != "ok" or not cell.get("run_id"):
+                    continue
+                run_dir = runs / str(cell["run_id"])
+                try:
+                    response = json.loads((run_dir / "run.response.json").read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError):
+                    continue
+                result_path = Path(str(response.get("result_path") or ""))
+                if not result_path.is_absolute():
+                    result_path = run_dir / result_path
+                if not result_path.is_file():
+                    continue
+                judge = call_adapter(
+                    profile, "judge", task, {"result_path": str(result_path), "task": task}, run_dir,
+                    run_id=str(cell["run_id"]),
+                )
+                if judge.status != "ok":
+                    raise RegressRefused(f"다시 판정 실패({cell['run_id']}): {judge.error}")
+                if judge.response["verdict"] != cell.get("verdict"):
+                    raise RegressRefused(
+                        f"다시 판정에서 verdict가 바뀌었습니다({cell['run_id']}: "
+                        f"{cell.get('verdict')} → {judge.response['verdict']}). 파일을 쓰지 않습니다"
+                    )
+                updates.append((cell, judge.response))
+        for cell, response in updates:
+            new = {"failure_code": response.get("failure_code"), "checks": response.get("checks", [])}
+            if any(cell.get(k) != v for k, v in new.items()):
+                cell.update(new)
+                changed += 1
+        if changed:
+            backup = path.with_name("regress_result.before-rejudge.json")
+            if not backup.exists():
+                backup.write_text(path.read_text(encoding="utf-8"), encoding="utf-8")
+            doc["rejudged_at"] = time.strftime("%Y-%m-%dT%H:%M:%S%z")
+            path.write_text(json.dumps(doc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        summaries.append({"regress_id": doc.get("regress_id"), "mode": doc.get("mode", "grid"),
+                          "cells_rejudged": len(updates), "cells_changed": changed})
+    return summaries
+
+
 def strip_timestamps(doc: Any) -> Any:
     """결정성 비교용: 시각 필드를 재귀적으로 뺀다."""
     if isinstance(doc, dict):

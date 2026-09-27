@@ -108,6 +108,11 @@ def build_parser() -> argparse.ArgumentParser:
     regress_parser.add_argument("--scenario", required=True, help="scenarios/<id>/scenario.json의 id")
     regress_parser.add_argument("--condition", choices=("A", "B", "both"), default="both")
     regress_parser.add_argument(
+        "--rejudge",
+        action="store_true",
+        help="시뮬을 다시 돌리지 않고 저장된 결과 파일로 judge만 다시 실행해 checks를 갱신(verdict 불변 확인)",
+    )
+    regress_parser.add_argument(
         "--record-cells",
         help="녹화 패스: 지정 격자점만 record=true로 다시 실행(반복 없음). "
         "형식 'x,y;x,y'(선택 조건 전부) 또는 'A:x,y;B:x,y'",
@@ -122,6 +127,16 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="after_fix_regression 시나리오까지 전체 포함(로컬 확인용, 배포 금지)",
     )
+    report_build.add_argument(
+        "--hero",
+        choices=("auto", "cup_grid", "observation_freeze"),
+        default=None,
+        help="히어로 영상 소스(기본 auto: 컵 격자 결과·녹화가 있으면 cup_grid, 없으면 observation_freeze)",
+    )
+    report_serve = report_sub.add_parser("serve", help="Range 지원 로컬 미리보기 서버(영상 seek 동작)")
+    report_serve.add_argument("--dir", type=Path, default=Path(".local/report"))
+    report_serve.add_argument("--port", type=int, default=8766)
+    report_serve.add_argument("--bind", default="127.0.0.1")
     return parser
 
 
@@ -138,6 +153,19 @@ def _replay_main(args: argparse.Namespace) -> int:
     )
     from .replay.scenario_bank import load_scenario
 
+    if args.command == "report" and args.report_command == "serve":
+        from .replay.report import serve
+
+        directory = args.dir.expanduser()
+        if not (directory / "index.html").is_file():
+            print(json.dumps({"error": f"리포트가 없습니다: {directory} (먼저 report build)", "type": "FileNotFoundError"},
+                             ensure_ascii=False))
+            return 2
+        try:
+            serve(directory, port=args.port, bind=args.bind)
+        except KeyboardInterrupt:
+            pass
+        return 0
     try:
         profile = load_profile(args.profile)
         if args.command == "replay":
@@ -161,6 +189,11 @@ def _replay_main(args: argparse.Namespace) -> int:
             scenario = load_scenario(
                 profile.base_dir / "scenarios" / args.scenario / "scenario.json"
             )
+            if args.rejudge:
+                from .replay.regress import rejudge_regress
+
+                print(json.dumps({"rejudged": rejudge_regress(profile, scenario)}, ensure_ascii=False, indent=2))
+                return 0
             conditions = ("A", "B") if args.condition == "both" else (args.condition,)
             record_cells = (
                 parse_record_cells(args.record_cells, conditions) if args.record_cells else None
@@ -174,7 +207,7 @@ def _replay_main(args: argparse.Namespace) -> int:
             return 0
         from .replay.report import build
 
-        print(json.dumps(build(profile, private=args.private), ensure_ascii=False, indent=2))
+        print(json.dumps(build(profile, private=args.private, hero_source=args.hero), ensure_ascii=False, indent=2))
         return 0
     except (
         AdapterError,

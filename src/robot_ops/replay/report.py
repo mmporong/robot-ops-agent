@@ -445,6 +445,61 @@ def _replay_view(
 
 # ---------------------------------------------------------------- 격자(regress) 데이터·통과 지도
 
+FAILURE_KO = {
+    "premature_cup_contact": "조기 접촉",
+    "not_arrived_within_horizon": "시간 내 미도착",
+    "reversal_rate_exceeded": "반전율 초과",
+}
+
+
+def _mm(value: float) -> str:
+    return f"{float(value):g}".replace("-", "−")
+
+
+def _short_label(label: str) -> str:
+    """'복구 켬(정답 좌표 조건)' → '복구 켬'."""
+    return label.split("(")[0].strip() or label
+
+
+def failed_lines(cond: dict[str, Any], xs: list[float], ys: list[float]) -> tuple[list[float], list[float]]:
+    """모든 칸이 실패인 행(y 값)과 열(x 값)."""
+    fails = {_cell_key(c) for c in cond.get("cells") or [] if _cell_state(c) == "fail"}
+    rows = [y for y in sorted(ys) if len(xs) > 1 and all((x, y) in fails for x in xs)]
+    cols = [x for x in sorted(xs) if len(ys) > 1 and all((x, y) in fails for y in ys)]
+    return rows, cols
+
+
+def grid_patterns(cond: dict[str, Any], xs: list[float], ys: list[float]) -> list[str]:
+    """통과 지도에서 행·열 단위로 전부 실패한 패턴을 데이터에서 찾아 문장으로 만든다."""
+    cells = {_cell_key(c): c for c in cond.get("cells") or []}
+    fails = {k for k, c in cells.items() if _cell_state(c) == "fail"}
+    if not cells:
+        return []
+    if not fails:
+        return ["실패 없음"]
+    out: list[str] = []
+    covered: set[tuple[float, float]] = set()
+
+    def phrase(keys: list[tuple[float, float]]) -> str:
+        codes = {cells[k].get("failure_code") for k in keys}
+        return FAILURE_KO.get(next(iter(codes)), "실패") if len(codes) == 1 else "실패"
+
+    for y in sorted(ys):
+        row = [(x, y) for x in xs]
+        if len(row) > 1 and all(k in fails for k in row):
+            out.append(f"y {_mm(y)} mm 행 {len(row)}점 전부 {phrase(row)}")
+            covered.update(row)
+    for x in sorted(xs):
+        col = [(x, y) for y in ys]
+        if len(col) > 1 and all(k in fails for k in col):
+            out.append(f"x {_mm(x)} mm 열 {len(col)}점 전부 {phrase(col)}")
+            covered.update(col)
+    rest = sorted(fails - covered)
+    if rest:
+        out.append(f"{'그 밖 ' if out else ''}실패 {len(rest)}점({phrase(rest)})")
+    return out
+
+
 
 def _cell_key(cell: dict[str, Any]) -> tuple[float, float]:
     return (float(cell.get("x_mm", 0)), float(cell.get("y_mm", 0)))
@@ -536,31 +591,47 @@ def _regress_view(
             if video is None:
                 continue
             stem = f"{sid}--{name}--x{x:g}--y{y:g}".replace(".", "p")
+            # 원거리 카메라라 컵·그리퍼 주변만 고정 ROI로 잘라 확대한다(컵 색으로 첫 프레임에서 찾음)
+            roi = mediacmd.find_object_roi(video, 0.5) if media.enabled and scenario["task"] == "cup_contact" else None
+            verdict = cell.get("record_verdict") or _cell_state(cell)
             cell["video"] = media.make(
                 f"{stem}.mp4",
-                lambda out, crf, v=video: mediacmd.clip_command(v, out, fps=FPS, crf=crf),
+                lambda out, crf, v=video, r=roi: mediacmd.clip_command(v, out, fps=FPS, crop=r, crf=crf),
                 [video],
                 budget=CLIP_BUDGET,
             )
-            cell["poster"] = media.make(
-                f"{stem}.webp",
-                lambda out, crf, v=video, t=incident_t: mediacmd.poster_command(v, out, at_s=t or 0.0),
-                [video],
-            )
-            recordings[(name, x, y)] = {"path": video, "incident_t_s": incident_t, "cell": cell}
+            if cell["video"]:
+                clip = media.dir / f"{stem}.mp4"
+                at = (incident_t if verdict == "fail" and incident_t else mediacmd.probe_duration(clip) - 0.5)
+                cell["poster"] = media.make(
+                    f"{stem}.webp",
+                    lambda out, crf, c=clip, t=max(0.0, at - 0.1): mediacmd.poster_command(c, out, at_s=t),
+                    [clip],
+                )
+            cell["roi"] = list(roi) if roi else None
+            recordings[(name, x, y)] = {"path": video, "incident_t_s": incident_t, "cell": cell, "roi": roi}
+    for cond in (doc.get("conditions") or {}).values():
+        cond["pattern_ko"] = grid_patterns(cond, xs, ys) if doc["complete"] else []
+        rows, cols = failed_lines(cond, xs, ys) if doc["complete"] else ([], [])
+        cond["failed_rows_mm"], cond["failed_cols_mm"] = rows, cols
     panels = []
     for name in ("A", "B"):
         cond = (doc.get("conditions") or {}).get(name)
         if cond is None:
             continue
         label = scenario["conditions"].get(name, {}).get("label_ko") or name
+        subtitle = _map_subtitle(cond)
+        if cond.get("pattern_ko"):
+            subtitle += "   " + ", ".join(cond["pattern_ko"])
         panels.append(
             {
                 "title": f"조건 {name}  {label}",
-                "subtitle": _map_subtitle(cond),
+                "subtitle": subtitle,
                 "x_mm": xs,
                 "y_mm": ys,
                 "cells": {_cell_key(c): _cell_state(c) for c in cond.get("cells") or []},
+                "outline_rows": failed_lines(cond, xs, ys)[0] if doc["complete"] else [],
+                "outline_cols": failed_lines(cond, xs, ys)[1] if doc["complete"] else [],
             }
         )
     if panels and media.enabled and media.font:
@@ -606,31 +677,35 @@ def _cup_hero(
     x, y = _cell_key(chosen)
     default_t = float((scenario.get("incident") or {}).get("t_start_s") or 0.0)
     segments = []
-    for name, cell in (("A", chosen), ("B", None)):
+    for name in ("A", "B"):
         rec = recordings.get((name, x, y))
         if rec is None:
             continue
         cell = rec["cell"]
         duration = mediacmd.probe_duration(rec["path"])
-        t_contact = rec["incident_t_s"] if rec["incident_t_s"] is not None else default_t
-        start = max(0.0, min(t_contact - 3.0, max(0.0, duration - 5.0)))
-        length = max(1.0, min(5.0, duration - start))
-        label = scenario["conditions"].get(name, {}).get("label_ko") or name
+        label = _short_label(scenario["conditions"].get(name, {}).get("label_ko") or name)
         verdict = cell.get("record_verdict") or _cell_state(cell) or ""
-        state = {"pass": "통과", "fail": "실패"}.get(verdict, "infra")
-        code = f" ({cell.get('failure_code')})" if cell.get("failure_code") and state == "실패" else ""
-        seg = {
-            "path": rec["path"],
-            "start_s": round(start, 3),
-            "length_s": round(length, 3),
-            "label": f"조건 {name} {label}   x {x:g} mm, y {y:g} mm   {state}{code}",
-        }
-        rel = t_contact - start
-        if name == "A" and 0.0 <= rel <= length:
-            seg["highlight"] = (round(max(0.0, rel - 0.3), 3), round(min(length, rel + 1.0), 3))
-            seg["highlight_label"] = (
-                "조기 접촉 판정" if cell.get("failure_code") == "premature_cup_contact" else "실패 판정 시각"
-            )
+        seg: dict[str, Any] = {"path": rec["path"], "crop": rec.get("roi")}
+        if verdict == "fail":
+            # 판정 시각 앞 4.5초 + 마지막 프레임 1초 정지(판정 순간을 멈춰 보여 준다)
+            t_mark = rec["incident_t_s"] if rec["incident_t_s"] is not None else default_t
+            start = max(0.0, t_mark - 4.5)
+            length = min(6.0, max(1.0, duration - start) + 1.0)
+            code = cell.get("failure_code")
+            seg["label"] = f"조건 {name} {label} · x {_mm(x)} mm, y {_mm(y)} mm · {FAILURE_KO.get(code, '실패')}"
+            rel = t_mark - start
+            if 0.0 <= rel <= length:
+                seg["highlight"] = (round(max(0.0, rel - 0.3), 3), round(length, 3))
+                seg["highlight_label"] = f"{FAILURE_KO.get(code, '실패')} 판정 {t_mark:.1f} s"
+        else:
+            # 통과 셀은 결과(파지·들어 올림)가 끝부분에 있으므로 마지막 6초
+            start = max(0.0, duration - 6.0)
+            length = max(1.0, min(6.0, duration))
+            recover = bool((scenario["conditions"].get(name, {}).get("params") or {}).get("recover"))
+            outcome = "재계획 후 파지" if recover and verdict == "pass" else {"pass": "통과"}.get(verdict, "infra")
+            seg["label"] = f"조건 {name} {label} · 같은 격자점 · {outcome}"
+        seg["start_s"] = round(start, 3)
+        seg["length_s"] = round(length, 3)
         segments.append(seg)
     passmap = media.dir / f"{sid}--passmap.png"
     if passmap.exists():
@@ -642,8 +717,11 @@ def _cup_hero(
         inputs,
         budget=HERO_BUDGET,
     )
+    # 포스터 = 조건 A 판정 강조 구간 한가운데(판정 순간이 첫 화면에 보이게)
+    mark = segments[0].get("highlight") if segments else None
+    poster_at = (mark[0] + mark[1]) / 2 if mark else 1.0
     poster = media.make(
-        "hero.webp", lambda out, crf: mediacmd.poster_command(media.dir / "hero.mp4", out, at_s=1.0),
+        "hero.webp", lambda out, crf: mediacmd.poster_command(media.dir / "hero.mp4", out, at_s=poster_at),
         [media.dir / "hero.mp4"],
     )
     xs, ys = _grid_axes(scenario)
@@ -667,6 +745,7 @@ def _cup_hero(
             if c
         },
         "assembly": scenario.get("assembly"),
+        "pattern_ko": {name: c.get("pattern_ko") or [] for name, c in (("A", cond_a), ("B", cond_b)) if c},
         "length_s": round(sum(float(s["length_s"]) for s in segments), 2),
     }
 
@@ -816,7 +895,11 @@ def build(
             if poster:
                 break
         if poster is None and sid in regress_views:
-            poster = regress_views[sid].get("pass_map_webp")
+            a_cells = ((regress_views[sid].get("conditions") or {}).get("A") or {}).get("cells") or []
+            fail_posters = [c["poster"] for c in a_cells if c.get("poster") and _cell_state(c) == "fail"]
+            poster = (fail_posters[len(fail_posters) // 2] if fail_posters else None) or regress_views[sid].get(
+                "pass_map_webp"
+            )
         card["poster"] = poster
         card["view_count"] = len(detail["views"])
         card["has_regress"] = sid in regress_views
@@ -956,6 +1039,20 @@ def _range_handler():
             super().end_headers()
 
     return RangeRequestHandler
+
+
+def serve_in_thread(directory: Path, *, port: int = 0, bind: str = "127.0.0.1"):
+    """테스트용: 백그라운드 스레드에서 미리보기 서버를 띄우고 서버 객체를 돌려준다(shutdown 필요)."""
+    import functools
+    import http.server
+    import threading
+
+    handler = functools.partial(_range_handler(), directory=str(directory))
+    httpd = http.server.ThreadingHTTPServer((bind, port), handler)
+    thread = threading.Thread(target=httpd.serve_forever, name="robot-ops-report-serve", daemon=True)
+    thread.start()
+    httpd._thread = thread  # type: ignore[attr-defined]
+    return httpd
 
 
 def serve(directory: Path, *, port: int = 8766, bind: str = "127.0.0.1") -> None:

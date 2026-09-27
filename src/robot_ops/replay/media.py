@@ -143,10 +143,20 @@ def label_bar_filter(
     )
 
 
-def incident_label_filter(text: str, font_path: str, t_start: float, t_end: float, *, band_height: int = 8) -> str:
-    """사고 구간 동안 하단 띠 위에 표시하는 글자."""
+def incident_label_filter(
+    text: str,
+    font_path: str,
+    t_start: float,
+    t_end: float,
+    *,
+    band_height: int = 8,
+    x: str = "16",
+    y: str | None = None,
+    size: int = 20,
+) -> str:
+    """사고 구간 동안 표시하는 글자(기본: 하단 띠 바로 위 왼쪽)."""
     return drawtext_filter(
-        text, font_path, x="16", y=f"h-{band_height + 40}", size=20, color="white", box=True
+        text, font_path, x=x, y=y if y is not None else f"h-{band_height + 40}", size=size, color="white", box=True
     ).replace("boxcolor=black@0.55", "boxcolor=0xC9432B@0.9") + f":enable='between(t,{t_start:g},{t_end:g})'"
 
 
@@ -223,10 +233,13 @@ def clip_command(
     length_s: float | None = None,
     label: str | None = None,
     font_path: str | None = None,
+    crop: tuple[int, int, int, int] | None = None,
     crf: int = 23,
 ) -> list[str]:
     """한 영상을 구간으로 잘라 짝수 크기로 다시 인코딩(선택: 라벨 바)."""
     chain = f"{scale_filter(height)},{EVEN_PAD_FILTER},fps={int(fps)},setsar=1"
+    if crop is not None:
+        chain = crop_filter(crop) + "," + chain
     if label is not None:
         if not font_path:
             raise ValueError("라벨에는 CJK 글꼴 경로가 필요합니다")
@@ -239,6 +252,78 @@ def clip_command(
         *h264_args(fps, crf=crf),
         str(out),
     ]
+
+
+def crop_filter(crop: tuple[int, int, int, int]) -> str:
+    w, h, x, y = (int(v) for v in crop)
+    if w <= 0 or h <= 0 or w % 2 or h % 2 or x < 0 or y < 0:
+        raise ValueError(f"crop은 양의 짝수 크기·음이 아닌 위치여야 합니다: {crop}")
+    return f"crop={w}:{h}:{x}:{y}"
+
+
+def frame_rgb_command(video: Path, at_s: float, *, width: int, height: int) -> list[str]:
+    """한 프레임을 원본 크기 rgb24 raw로 stdout에 뽑는다."""
+    return [
+        "ffmpeg", "-v", "error", "-ss", f"{at_s:g}", "-i", str(video), "-frames:v", "1",
+        "-vf", f"scale={int(width)}:{int(height)}", "-f", "rawvideo", "-pix_fmt", "rgb24", "-",
+    ]
+
+
+def is_cup_yellow(r: int, g: int, b: int) -> bool:
+    """Isaac 컵 장면의 노란 컵 색(밝은 R·G, 낮은 B)."""
+    return r > 170 and g > 150 and b < 110 and r - b > 90
+
+
+def color_bbox(
+    rgb: bytes, width: int, height: int, predicate: Callable[[int, int, int], bool], *, step: int = 2
+) -> tuple[int, int, int, int] | None:
+    """rgb24 버퍼에서 조건을 만족하는 픽셀의 경계 상자(x0, y0, x1, y1). 없거나 너무 적으면 None."""
+    if len(rgb) < width * height * 3:
+        raise ValueError("프레임 버퍼 크기가 해상도와 맞지 않습니다")
+    xs: list[int] = []
+    ys: list[int] = []
+    for y in range(0, height, step):
+        row = y * width * 3
+        for x in range(0, width, step):
+            i = row + x * 3
+            if predicate(rgb[i], rgb[i + 1], rgb[i + 2]):
+                xs.append(x)
+                ys.append(y)
+    if len(xs) < 20:
+        return None
+    xs.sort()
+    ys.sort()
+    # 외곽 1 % 잡음을 버린다
+    k = len(xs) // 100
+    return xs[k], ys[k], xs[-1 - k], ys[-1 - k]
+
+
+def roi_around(
+    bbox: tuple[int, int, int, int],
+    frame: tuple[int, int],
+    *,
+    height_scale: float = 2.3,
+    aspect: float = 2.0,
+    x_bias: float = 0.22,
+    y_bias: float = -0.15,
+) -> tuple[int, int, int, int]:
+    """물체 상자 주변의 고정 ROI(w, h, x, y). 짝수 크기, 프레임 안으로 자른다.
+
+    ROI 높이 = 물체 높이 × height_scale, 너비 = 높이 × aspect. 중심은 물체 중심에서
+    너비의 x_bias·높이의 y_bias만큼 옮긴다(컵 과제는 팔이 컵 오른쪽 위에서 접근).
+    """
+    fw, fh = frame
+    x0, y0, x1, y1 = bbox
+    h = min(fh, int(round((y1 - y0) * height_scale)))
+    w = min(fw, int(round(h * aspect)))
+    h = min(h, int(w / aspect)) if w < h * aspect else h
+    w -= w % 2
+    h -= h % 2
+    cx = (x0 + x1) / 2 + w * x_bias
+    cy = (y0 + y1) / 2 + h * y_bias
+    x = int(min(max(0, cx - w / 2), fw - w))
+    y = int(min(max(0, cy - h / 2), fh - h))
+    return w, h, x - x % 2, y - y % 2
 
 
 HERO_SIZE = (1200, 600)
@@ -263,7 +348,7 @@ def hero_sequence_command(
 ) -> list[str]:
     """히어로 MP4: 구간 영상·정지 이미지를 같은 캔버스로 맞춰 이어 붙인다.
 
-    segment = {"path", "start_s"?, "length_s", "label"?, "image"?: bool,
+    segment = {"path", "start_s"?, "length_s", "label"?, "image"?: bool, "crop"?: (w, h, x, y),
                "highlight"?: (a, b) 구간 기준 시각, "highlight_label"?, "fade_in"?: bool}
     """
     if not segments:
@@ -283,7 +368,10 @@ def hero_sequence_command(
             argv += ["-loop", "1", "-framerate", str(int(fps)), "-t", f"{length:g}", "-i", str(seg["path"])]
         else:
             argv += _trim_input(Path(seg["path"]), seg.get("start_s"), length)
-        chain = f"[{i}:v]{_fit_canvas(width, height, fps)}"
+        chain = f"[{i}:v]"
+        if seg.get("crop") is not None:
+            chain += crop_filter(seg["crop"]) + ","
+        chain += _fit_canvas(width, height, fps)
         # 입력이 요청 길이보다 짧아도 이어 붙인 길이가 계획과 같도록 마지막 프레임을 늘린 뒤 자른다.
         chain += f",tpad=stop_mode=clone:stop_duration={length:g},trim=duration={length:g},setpts=PTS-STARTPTS"
         if seg.get("fade_in"):
@@ -297,7 +385,10 @@ def hero_sequence_command(
                 f",drawbox=x=0:y=0:w=iw:h=ih:color=0xE0452B:t=10:enable='between(t,{a:g},{b:g})'"
             )
             if seg.get("highlight_label"):
-                chain += "," + incident_label_filter(seg["highlight_label"], font_path, a, b, band_height=10)
+                # 재생 컨트롤이 덮지 않도록 라벨 바 아래 오른쪽에 둔다
+                chain += "," + incident_label_filter(
+                    seg["highlight_label"], font_path, a, b, x="w-tw-24", y="68", size=26
+                )
         graph.append(f"{chain}[v{i}]")
     joined = "".join(f"[v{i}]" for i in range(len(segments)))
     graph.append(f"{joined}concat=n={len(segments)}:v=1:a=0[c]")
@@ -335,7 +426,8 @@ def pass_map_command(
 ) -> list[str]:
     """5×5 통과 지도 PNG(조건 A | 조건 B)를 ffmpeg drawbox·drawtext만으로 그린다(추가 의존성 없음).
 
-    panel = {"title", "subtitle", "x_mm": [...], "y_mm": [...], "cells": {(x, y): "pass"|"fail"|"infra"|None}}
+    panel = {"title", "subtitle", "x_mm": [...], "y_mm": [...], "cells": {(x, y): "pass"|"fail"|"infra"|None},
+             "outline_rows"?: [y...], "outline_cols"?: [x...]}
     y는 위가 +가 되도록 그린다. 칸마다 색과 글자를 함께 쓴다(색만으로 구분하지 않음).
     """
     if not 1 <= len(panels) <= 2:
@@ -375,6 +467,17 @@ def pass_map_command(
                     drawtext_filter(word, bold, x=f"{cx}+({cell}-tw)/2", y=f"{cy}+({cell}-th)/2", size=19,
                                     color=ink, box=False)
                 )
+        # 전부 실패한 행·열은 굵은 테두리로 묶어 패턴이 한눈에 보이게 한다
+        for y in panel.get("outline_rows") or []:
+            row = ys.index(float(y))
+            filters.append(
+                f"drawbox=x={left - 6}:y={top + row * (cell + gap) - 6}:w={grid_w + 12}:h={cell + 12}:color=0x161B22:t=4"
+            )
+        for x in panel.get("outline_cols") or []:
+            col = xs.index(float(x))
+            filters.append(
+                f"drawbox=x={left + col * (cell + gap) - 6}:y={top - 6}:w={cell + 12}:h={grid_h + 12}:color=0x161B22:t=4"
+            )
         for col, x in enumerate(xs):
             cx = left + col * (cell + gap)
             filters.append(
@@ -431,6 +534,37 @@ def ffprobe_command(path: Path) -> list[str]:
 
 def decode_check_command(path: Path) -> list[str]:
     return ["ffmpeg", "-v", "error", "-i", str(path), "-f", "null", "-"]
+
+
+def probe_video(path: Path, runner: Callable[..., subprocess.CompletedProcess] = subprocess.run) -> dict:
+    result = run_media_command(ffprobe_command(path), runner=runner)
+    doc = json.loads(result.stdout or "{}")
+    stream = (doc.get("streams") or [{}])[0]
+    return {
+        "width": int(stream.get("width") or 0),
+        "height": int(stream.get("height") or 0),
+        "duration_s": float(doc.get("format", {}).get("duration") or 0.0),
+    }
+
+
+def find_object_roi(
+    video: Path,
+    at_s: float,
+    *,
+    predicate: Callable[[int, int, int], bool] = is_cup_yellow,
+    runner: Callable[..., subprocess.CompletedProcess] = subprocess.run,
+    **roi_kwargs,
+) -> tuple[int, int, int, int] | None:
+    """영상 한 프레임에서 물체(기본: 노란 컵)를 찾아 고정 ROI(w, h, x, y)를 돌려준다. 못 찾으면 None."""
+    info = probe_video(video, runner=runner)
+    width, height = info["width"], info["height"]
+    if not width or not height:
+        return None
+    result = runner(frame_rgb_command(video, at_s, width=width, height=height), capture_output=True, timeout=60, check=False)
+    if result.returncode != 0 or not result.stdout:
+        return None
+    bbox = color_bbox(result.stdout, width, height, predicate)
+    return roi_around(bbox, (width, height), **roi_kwargs) if bbox else None
 
 
 def probe_duration(path: Path, runner: Callable[..., subprocess.CompletedProcess] = subprocess.run) -> float:

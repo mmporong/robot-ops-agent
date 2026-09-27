@@ -34,6 +34,7 @@
     wrist_roll: "손목 회전"
   };
   var CELL = { pass: "통과", fail: "실패", infra: "infra" };
+  var FAILURE = { premature_cup_contact: "조기 접촉", not_arrived_within_horizon: "시간 내 미도착", reversal_rate_exceeded: "반전율 초과" };
   var SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"];
   var MIRROR_CAPTION = "궤적 모델 = SO-101 MuJoCo 미러(양팔 로봇 왼팔과 같은 SO-101 기구)";
   var GRID_TASKS = { cup_contact: true, drive_kinematic: true };
@@ -84,6 +85,15 @@
     }).then(function (doc) { state.cache[path] = doc; return doc; });
   }
 
+  // 받침 유무에 맞춘 조사 '으로/로'(받침 없음·ㄹ받침 → 로)
+  function withRo(word) {
+    var code = String(word).charCodeAt(String(word).length - 1) - 0xac00;
+    if (code < 0 || code > 11171) return word + "(으)로";
+    var jong = code % 28;
+    return word + (jong === 0 || jong === 8 ? "로" : "으로");
+  }
+  function shortLabel(label) { return String(label || "").split("(")[0].trim(); }
+
   function badge(kind, label, value) {
     return h("span", { class: "badge badge-" + kind }, h("span", { class: "badge-key", text: label }), h("span", { class: "badge-val", text: value }));
   }
@@ -117,10 +127,15 @@
       var a = (cup.conditions || {}).A || {}, b = (cup.conditions || {}).B || {};
       var head = "컵 위치 ±" + fmt(grid.range_mm, 0) + " mm 격자 " + grid.points + "점";
       var p = h("p", { class: hero.source === "cup_grid" ? "hero-facts" : "hero-facts hero-facts-minor" });
-      append(p, head + "  ");
+      append(p, head + " · ");
       if (cup.measured && a.valid !== undefined && b.valid !== undefined) {
-        append(p, [a.label_ko + " ", h("strong", { class: "num", text: a.pass + "/" + a.valid }), "  →  ",
-          b.label_ko + " ", h("strong", { class: "num", text: b.pass + "/" + b.valid })]);
+        append(p, [h("span", { class: "nowrap" }, shortLabel(a.label_ko) + " ", h("strong", { class: "num", text: a.pass + "/" + a.valid })), " → ",
+          h("span", { class: "nowrap" }, shortLabel(b.label_ko) + " ", h("strong", { class: "num", text: b.pass + "/" + b.valid }))]);
+        var pat = (hero.pattern_ko || {}).A || [];
+        if (hero.source === "cup_grid" && pat.length && pat[0] !== "실패 없음") {
+          lines.push(p);
+          p = h("p", { class: "hero-pattern", text: "조건 A " + shortLabel(a.label_ko) + ": " + pat.join(", ") + ". 조건 B에서는 같은 격자점이 " + (((hero.pattern_ko || {}).B || [])[0] === "실패 없음" ? "모두 통과했습니다." : "일부 실패했습니다.") });
+        }
       } else {
         append(p, [h("span", { class: "pending", text: "측정 전" }), " 격자 실행 결과가 들어오면 조건별 통과 수를 표시합니다."]);
       }
@@ -151,7 +166,7 @@
     });
     append(fig, btn);
     append(fig, h("figcaption", null, hero.source === "cup_grid"
-      ? "조건 A 격자점 녹화, 같은 격자점 조건 B 녹화, 통과 지도 순서로 이어 붙였습니다."
+      ? "조건 A 격자점 x " + mm((hero.point || {}).x_mm) + " mm, y " + mm((hero.point || {}).y_mm) + " mm 녹화, 같은 격자점 조건 B 녹화, 통과 지도 순서입니다. 녹화는 컵·그리퍼 주변을 잘라 확대했고 붉은 테두리가 판정 시각입니다."
       : "왼쪽 " + (hero.real_label_ko || "실측 카메라") + ", 오른쪽 고스트 렌더(명령 반투명, 관측 불투명). 붉은 띠가 관측 동결 구간입니다."));
     return fig;
   }
@@ -605,7 +620,12 @@
         ? h("span", { class: "sum-part" }, h("span", { class: "pending", text: "부분 실행" }),
           " 조건별 " + need + "점 중 " + names.map(function (n) { return "조건 " + n + " " + ((((reg.conditions || {})[n] || {}).cells || []).length) + "점"; }).join(", ") + "만 실행됐습니다.")
         : null;
+      var patterns = names.map(function (n) {
+        var pk = ((reg.conditions || {})[n] || {}).pattern_ko || [];
+        return pk.length ? "조건 " + n + " " + shortLabel(conds[n].label_ko) + ": " + pk.join(", ") : null;
+      }).filter(Boolean);
       main.appendChild(h("p", { class: "eval-summary" }, parts.length === 2 ? [parts[0], h("span", { class: "arrow", "aria-hidden": "true", text: "→" }), parts[1]] : parts, agree, partial));
+      if (patterns.length) main.appendChild(h("p", { class: "eval-pattern" }, patterns.map(function (t) { return h("span", { text: t }); })));
     } else {
       main.appendChild(h("p", { class: "eval-summary" }, h("span", { class: "pending", text: "측정 전" }), " 이 시나리오의 격자 실행 결과가 아직 없습니다. 아래 지도는 칸 배치만 보여 줍니다."));
     }
@@ -618,13 +638,17 @@
       ((cond && cond.cells) || []).forEach(function (c) { cells[Number(c.x_mm) + "," + Number(c.y_mm)] = c; });
       var gridEl = h("div", { class: "map-grid", role: "group", "aria-label": "조건 " + n + " 통과 지도" });
       gridEl.style.setProperty("--cols", xs.length);
+      var badRows = ((cond && cond.failed_rows_mm) || []).map(Number);
+      var badCols = ((cond && cond.failed_cols_mm) || []).map(Number);
       ys.forEach(function (y) {
-        gridEl.appendChild(h("span", { class: "axis-y num", text: mm(y) }));
+        var rowBad = badRows.indexOf(Number(y)) >= 0;
+        gridEl.appendChild(h("span", { class: rowBad ? "axis-y num line-fail" : "axis-y num", text: mm(y), title: rowBad ? "이 행 전부 실패" : null }));
         xs.forEach(function (x) {
           var c = cells[Number(x) + "," + Number(y)];
           var st = !c ? "none" : (c.status && c.status !== "ok") ? "infra" : (c.verdict === "pass" || c.verdict === "fail") ? c.verdict : "infra";
           var word = st === "none" ? "–" : CELL[st];
-          var btn = h("button", { type: "button", class: "cell cell-" + st, disabled: !c, "aria-label": "x " + mm(x) + " mm, y " + mm(y) + " mm, " + (st === "none" ? "측정 전" : word) },
+          var lineBad = badRows.indexOf(Number(y)) >= 0 || badCols.indexOf(Number(x)) >= 0;
+          var btn = h("button", { type: "button", class: "cell cell-" + st + (lineBad ? " in-line-fail" : ""), disabled: !c, "aria-label": "x " + mm(x) + " mm, y " + mm(y) + " mm, " + (st === "none" ? "측정 전" : word) },
             h("span", { class: "cell-word", text: word }), c && c.video ? h("span", { class: "cell-rec", "aria-hidden": "true", title: "녹화 있음" }) : null);
           if (c) btn.addEventListener("click", function () {
             maps.querySelectorAll(".cell.sel").forEach(function (b) { b.classList.remove("sel"); });
@@ -635,7 +659,7 @@
         });
       });
       gridEl.appendChild(h("span", { class: "axis-corner", "aria-hidden": "true" }));
-      xs.forEach(function (x) { gridEl.appendChild(h("span", { class: "axis-x num", text: mm(x) })); });
+      xs.forEach(function (x) { gridEl.appendChild(h("span", { class: badCols.indexOf(Number(x)) >= 0 ? "axis-x num line-fail" : "axis-x num", text: mm(x) })); });
       maps.appendChild(h("figure", { class: "map" },
         h("figcaption", null,
           h("span", { class: "map-name", text: "조건 " + n + "  " + (conds[n].label_ko || "") }),
@@ -686,16 +710,35 @@
     append(panel, h("h3", { text: "조건 " + name + "  x " + mm(cell.x_mm) + " mm, y " + mm(cell.y_mm) + " mm" }));
     append(panel, h("p", null, h("span", { class: "state state-" + (cell.status && cell.status !== "ok" ? "infra" : cell.verdict), text: st }),
       cell.failure_code ? h("code", { class: "code-inline", text: cell.failure_code }) : null));
+    if (cell.video) {
+      var cv = h("video", { src: cell.video, poster: cell.poster || null, controls: true, playsinline: true, muted: true, preload: "auto", class: "cell-video", "aria-label": "격자점 녹화(컵·그리퍼 주변 확대)" });
+      append(panel, h("figure", { class: "cell-figure" }, cv,
+        h("figcaption", { text: "녹화" + (cell.record_run_id ? "(녹화 전용 실행 " + cell.record_run_id + ")" : "") + ". 컵·그리퍼 주변을 잘라 확대했습니다." })));
+      cv.muted = true;
+      cv.play().catch(function () {});
+    } else if (reg.complete) {
+      append(panel, h("p", { class: "note", text: "이 격자점은 녹화하지 않았습니다. 녹화는 조건 A 실패점, 같은 점의 조건 B, 대표 통과점만 남깁니다." }));
+    }
+    var cause = (cell.checks || []).filter(function (c) { return c.id === "failure_event"; })[0];
+    var nUnmeasured = (cell.checks || []).filter(function (c) { return c.pass === null; }).length;
+    if (cause && nUnmeasured) {
+      append(panel, h("p", { class: "unmeasured-note", text: withRo(FAILURE[cause.value] || cause.value) + " 시뮬이 " +
+        (cause.t_s !== null && cause.t_s !== undefined ? fmt(cause.t_s, 1) + " s에 " : "") +
+        "끝나 이후 검사 " + nUnmeasured + "개는 측정되지 않았습니다." }));
+    }
     append(panel, h("div", { class: "table-wrap" }, h("table", { class: "table" },
       h("thead", null, h("tr", null, ["검사", "값", "임계", "결과"].map(function (t) { return h("th", { scope: "col", text: t }); }))),
       h("tbody", null, (cell.checks || []).map(function (c) {
-        return h("tr", null, h("td", null, h("code", { class: "check-id", text: c.id })), h("td", { class: "num", text: checkValue(c.value, c.unit) }),
-          h("td", { class: "num", text: checkValue(c.threshold, c.unit) }), h("td", { text: c.pass ? "통과" : "실패" }));
+        var unmeasured = c.pass === null || c.pass === undefined;
+        var value = c.id === "failure_event"
+          ? (FAILURE[c.value] || c.value) + (c.t_s !== null && c.t_s !== undefined ? ", " + fmt(c.t_s, 3) + " s" : "")
+          : unmeasured ? "–" : checkValue(c.value, c.unit);
+        return h("tr", { class: unmeasured ? "row-unmeasured" : c.id === "failure_event" ? "row-cause" : null },
+          h("td", null, h("code", { class: "check-id", text: c.id })), h("td", { class: "num", text: value }),
+          h("td", { class: "num", text: checkValue(c.threshold, c.unit) }),
+          h("td", { text: unmeasured ? "측정 안 됨" : c.pass ? "통과" : "실패" }));
       }))
     )));
-    if (cell.video) {
-      append(panel, h("video", { src: cell.video, poster: cell.poster || null, controls: true, playsinline: true, preload: "none", class: "cell-video", "aria-label": "격자점 녹화" }));
-    }
     append(panel, h("p", { class: "note" }, "실행 기록 ", h("code", { text: (reg.runs_root || "") + "/" + (cell.run_id || "") })));
     var target = panel.querySelector("h3");
     if (target && panel.getBoundingClientRect().top > window.innerHeight) panel.scrollIntoView({ block: "start" });
