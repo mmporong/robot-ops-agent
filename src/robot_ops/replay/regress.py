@@ -7,6 +7,14 @@ regress 흐름
 3. run마다 `<root>/runs/<run_id>/manifest.json`을 쓰고 `delete_patterns` 파일을 지운다.
 4. 하드웨어 가드 위반(`HardwareGuardError`)은 잡지 않고 그대로 올려 regress 전체를 즉시 멈춘다.
 5. `<root>/runs/<regress_id>/regress_result.json`을 쓴다.
+
+GPU 확인: profile `[limits] gpu_tasks`에 든 과제는 run마다 실행 전 `nvidia-smi memory.used`를
+기준으로 잡고, 실행·정리 뒤 `gpu_settle_s`(기본 20초) 동안 1초 간격으로 다시 읽어
+기준 + `gpu_tolerance_mib`(기본 200) 이내로 돌아와야 다음 셀로 간다. 못 돌아오거나 값을 읽을
+수 없으면 `GpuMemoryNotReleased`로 regress 전체를 멈춘다. 요약은 결과의 `gpu_check`에 남는다.
+
+녹화 패스(`record_cells`): 지정한 조건·격자점만 `record=true`로 다시 실행한다. 반복(판정 일치율)은
+돌리지 않으며 결과에 `mode: "record"`를 남긴다. 격자 판정은 본 패스(`mode: "grid"`) 결과를 쓴다.
 """
 
 from __future__ import annotations
@@ -15,11 +23,11 @@ import json
 import secrets
 import subprocess
 import time
-from collections.abc import Sequence
+from collections.abc import Callable, Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
-from .adapter import AdapterOutcome, call_adapter, run_lock
+from .adapter import AdapterOutcome, call_adapter, gpu_memory_used_mib, run_lock
 from .artifacts import (
     check_free_disk,
     delete_recorded_matches,
@@ -43,6 +51,70 @@ TIMESTAMP_KEYS = ("created_at", "finished_at", "wall_s")
 
 class RegressRefused(RuntimeError):
     pass
+
+
+class GpuMemoryNotReleased(RegressRefused):
+    pass
+
+
+GPU_POLL_S = 1.0
+
+
+def display_tree(doc: Any) -> Any:
+    """기록용: 문자열 값 중 홈·`/data/<user>` 아래 절대경로를 `~`·`/data/$USER`로 바꾼다."""
+    if isinstance(doc, dict):
+        return {k: display_tree(v) for k, v in doc.items()}
+    if isinstance(doc, list):
+        return [display_tree(v) for v in doc]
+    if isinstance(doc, str) and doc.startswith("/"):
+        return display_path(doc)
+    return doc
+
+
+def wait_gpu_release(
+    before: int,
+    reader: Callable[[], int | None],
+    *,
+    tolerance_mib: float,
+    settle_s: float,
+    sleep: Callable[[float], None] = time.sleep,
+    poll_s: float = GPU_POLL_S,
+) -> tuple[int | None, float]:
+    """실행 뒤 GPU 메모리가 기준 + 허용치 안으로 돌아올 때까지 최대 settle_s 동안 읽는다."""
+    waited = 0.0
+    after = reader()
+    while (after is None or after > before + tolerance_mib) and waited < settle_s:
+        sleep(poll_s)
+        waited += poll_s
+        after = reader()
+    return after, waited
+
+
+def parse_record_cells(text: str, conditions: Sequence[str]) -> dict[str, list[tuple[float, float]]]:
+    """`x,y;x,y` 또는 조건 접두 `A:x,y;B:x,y` → 조건별 격자점 목록.
+
+    접두가 없는 점은 선택된 모든 조건에 적용한다.
+    """
+    cells: dict[str, list[tuple[float, float]]] = {}
+    for raw in text.split(";"):
+        item = raw.strip()
+        if not item:
+            continue
+        cond_part, sep, coords = item.rpartition(":")
+        targets = [cond_part.strip()] if sep else list(conditions)
+        for cond in targets:
+            if cond not in conditions:
+                raise ValueError(f"--record-cells 조건 {cond}이 선택된 조건 {list(conditions)}에 없습니다")
+        parts = [p.strip() for p in coords.split(",")]
+        if len(parts) != 2:
+            raise ValueError(f"--record-cells 항목은 x,y 형식이어야 합니다: {item}")
+        point = (float(parts[0]), float(parts[1]))
+        for cond in targets:
+            if point not in cells.setdefault(cond, []):
+                cells[cond].append(point)
+    if not cells:
+        raise ValueError("--record-cells가 비어 있습니다")
+    return cells
 
 
 def new_run_id(prefix: str = "") -> str:
@@ -127,6 +199,9 @@ def run_regress(
     regress_id: str | None = None,
     isolation: str | None = None,
     check_source_repo: bool = True,
+    record_cells: Mapping[str, Sequence[tuple[float, float]]] | None = None,
+    gpu_reader: Callable[[], int | None] = gpu_memory_used_mib,
+    sleep: Callable[[float], None] = time.sleep,
 ) -> dict[str, Any]:
     task = scenario["task"]
     if task not in profile.tasks:
@@ -134,12 +209,23 @@ def run_regress(
     for name in conditions:
         if name not in scenario["conditions"]:
             raise RegressRefused(f"시나리오에 조건 {name}이 없습니다")
-    regress_id = regress_id or new_run_id("regress-")
+    regress_id = regress_id or new_run_id("record-" if record_cells is not None else "regress-")
     root = profile.artifacts_root
     min_free = float(profile.limits.get("min_free_disk_gb", 0))
     timeout_s = scenario.get("limits", {}).get("timeout_s") or profile.limits.get("timeout_s", 600)
     grid = scenario["grid"]
     points = grid_points(grid["spawn_x_offset_mm"], grid["spawn_y_offset_mm"])
+    if record_cells is not None:
+        for cond_name, cells_wanted in record_cells.items():
+            if cond_name not in conditions:
+                raise RegressRefused(f"녹화 조건 {cond_name}이 실행 조건 {list(conditions)}에 없습니다")
+            for point in cells_wanted:
+                if tuple(point) not in points:
+                    raise RegressRefused(f"녹화 격자점 {tuple(point)}이 시나리오 격자에 없습니다")
+    gpu_on = task in tuple(profile.limits.get("gpu_tasks", ()))
+    gpu_tol = float(profile.limits.get("gpu_tolerance_mib", 200))
+    gpu_settle = float(profile.limits.get("gpu_settle_s", 20))
+    gpu_log: list[dict[str, Any]] = []
     started = time.monotonic()
 
     with run_lock(profile.lock_file):
@@ -152,9 +238,14 @@ def run_regress(
         tool_sha: dict[str, Any] = {}
         sim_versions: set[str] = set()
 
-        def execute(cond_name: str, point: tuple[float, float], run_id: str, repeat: int | None) -> dict[str, Any]:
+        def execute(
+            cond_name: str, point: tuple[float, float], run_id: str, repeat: int | None, record: bool = False
+        ) -> dict[str, Any]:
             check_free_disk(root, min_free)
             x, y = point
+            gpu_before = gpu_reader() if gpu_on else None
+            if gpu_on and gpu_before is None:
+                raise GpuMemoryNotReleased("GPU 과제인데 nvidia-smi memory.used를 읽지 못해 실행을 멈춥니다")
             run_dir = root / "runs" / run_id
             request = {
                 "scenario_id": scenario["scenario_id"],
@@ -163,7 +254,7 @@ def run_regress(
                 "params": scenario["conditions"][cond_name]["params"],
                 "grid_point": {"x_mm": x, "y_mm": y},
                 "repeat": repeat,
-                "record": False,
+                "record": record,
             }
             run = call_adapter(
                 profile, "run", task, request, run_dir,
@@ -183,16 +274,45 @@ def run_regress(
                 )
             _finish_run_dir(
                 profile, run_dir, run_id,
-                {"condition": cond_name, "x_mm": x, "y_mm": y, "repeat": repeat},
+                {"condition": cond_name, "x_mm": x, "y_mm": y, "repeat": repeat, "record": record},
             )
-            return {"x_mm": x, "y_mm": y, **_cell_from_outcomes(run, judge), "run_id": run_id}
+            cell = {"x_mm": x, "y_mm": y, **_cell_from_outcomes(run, judge), "run_id": run_id}
+            if run.status == "ok":
+                cell["sim_time_s"] = run.response.get("sim_time_s")
+                cell["wall_s"] = round(run.wall_s, 3)
+                if run.response.get("video_path"):
+                    cell["video_path"] = display_path(run.response["video_path"])
+            if gpu_on:
+                assert gpu_before is not None
+                gpu_after, waited = wait_gpu_release(
+                    gpu_before, gpu_reader, tolerance_mib=gpu_tol, settle_s=gpu_settle, sleep=sleep
+                )
+                gpu_log.append({"run_id": run_id, "before_mib": gpu_before, "after_mib": gpu_after,
+                                "waited_s": waited})
+                if gpu_after is None or gpu_after > gpu_before + gpu_tol:
+                    raise GpuMemoryNotReleased(
+                        f"GPU 메모리가 {gpu_settle:g}초 안에 원복되지 않아 regress를 멈춥니다: "
+                        f"run {run_id} 실행 전 {gpu_before} MiB → 후 {gpu_after} MiB (허용 +{gpu_tol:g} MiB)"
+                    )
+            return cell
 
         result_conditions: dict[str, Any] = {}
+        recording = record_cells is not None
         for cond_name in conditions:
-            cells = [
-                execute(cond_name, p, f"{regress_id}_{cond_name}_x{_mm_token(p[0])}_y{_mm_token(p[1])}", None)
-                for p in points
-            ]
+            if recording:
+                wanted = [tuple(p) for p in (record_cells or {}).get(cond_name, [])]
+                if not wanted:
+                    continue
+                cells = [
+                    execute(cond_name, p, f"{regress_id}_{cond_name}_x{_mm_token(p[0])}_y{_mm_token(p[1])}_rec",
+                            None, True)
+                    for p in points if p in wanted
+                ]
+            else:
+                cells = [
+                    execute(cond_name, p, f"{regress_id}_{cond_name}_x{_mm_token(p[0])}_y{_mm_token(p[1])}", None)
+                    for p in points
+                ]
             result_conditions[cond_name] = {
                 "label_ko": scenario["conditions"][cond_name].get("label_ko"),
                 "judgement_basis": scenario["conditions"][cond_name]["judgement_basis"],
@@ -201,8 +321,8 @@ def run_regress(
             }
 
         det_cond = conditions[0]
-        repeat_points = select_repeat_points(points, int(grid.get("repeat_points", 0)))
-        n_repeats = int(grid.get("repeats", 0))
+        repeat_points = [] if recording else select_repeat_points(points, int(grid.get("repeat_points", 0)))
+        n_repeats = 0 if recording else int(grid.get("repeats", 0))
         repeats: dict[tuple[float, float], list[dict[str, Any]]] = {}
         for point in repeat_points:
             for r in range(n_repeats):
@@ -216,6 +336,7 @@ def run_regress(
         "profile": profile.id,
         "scenario_id": scenario["scenario_id"],
         "task": task,
+        "mode": "record" if recording else "grid",
         "conditions": result_conditions,
         "determinism": {
             "condition": det_cond,
@@ -241,6 +362,18 @@ def run_regress(
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
         "wall_s": round(time.monotonic() - started, 3),
     }
+    if gpu_on:
+        result["gpu_check"] = {
+            "tolerance_mib": gpu_tol,
+            "settle_s": gpu_settle,
+            "runs": len(gpu_log),
+            "all_released": True,
+            "max_excess_mib": max((g["after_mib"] - g["before_mib"] for g in gpu_log), default=None),
+            "max_waited_s": max((g["waited_s"] for g in gpu_log), default=None),
+            "baseline_range_mib": (
+                [min(g["before_mib"] for g in gpu_log), max(g["before_mib"] for g in gpu_log)] if gpu_log else None
+            ),
+        }
     updated = apply_status(scenario, result)
     result["scenario_status"] = {"status": updated["status"], "model_note": updated["model_note"]}
     validate_regress_result(result)
@@ -334,6 +467,7 @@ def run_replay(
         "warnings": warnings,
         "created_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"),
     }
+    result = display_tree(result)
     (run_dir / "replay_result.json").write_text(
         json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )

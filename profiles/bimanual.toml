@@ -34,7 +34,10 @@ root = "~/so101_tools/sim"
 remove_task_objects = true       # 미러 장면의 작업 물체(piece='cube') 제거
 
 [limits]
-timeout_s = 600                  # 첫 Isaac 1회 실측 후 max(180, 실측×2)로 확정
+timeout_s = 180                  # Isaac 컵 1회 실측 24.7초(rc 0) → max(180, 24.7×2) = 180
+gpu_tasks = ["cup_contact"]      # run 뒤 nvidia-smi memory.used가 실행 전 +200 MiB 안으로 돌아와야 다음 셀 진행
+gpu_tolerance_mib = 200
+gpu_settle_s = 20
 memory_max = "20G"
 min_free_disk_gb = 5
 lock_file = "/tmp/robot-ops-isaac.lock"
@@ -43,7 +46,7 @@ per_run_keep_mb = 5
 [artifacts]
 root = "/data/$USER/robot-ops/bimanual"
 report_dir = ".local/report"
-delete_patterns = ["scene.usda", "frames/*.png"]
+delete_patterns = ["scene.usda", "frames/*.png", "isaac/scene.usda", "isaac/frames/*.png"]  # cup_contact는 isaac/ 아래
 
 [replay]
 arm = "left"

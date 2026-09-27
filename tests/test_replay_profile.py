@@ -56,7 +56,10 @@ class LoadProfileTest(unittest.TestCase):
         self.assertEqual(profile.interpreter_for("cup_contact", "judge"), [sys.executable])
         self.assertEqual(profile.artifacts_root, Path(f"/data/{current_user()}/robot-ops/bimanual"))
         self.assertEqual(profile.interpreters["rlwalk"], Path.home() / "miniforge3/envs/rlwalk/bin/python")
-        self.assertEqual(profile.delete_patterns, ("scene.usda", "frames/*.png"))
+        self.assertEqual(
+            profile.delete_patterns,
+            ("scene.usda", "frames/*.png", "isaac/scene.usda", "isaac/frames/*.png"),
+        )
         self.assertEqual(profile.public_exclude_status, ("after_fix_regression",))
 
     def test_fake_profile_loads(self) -> None:

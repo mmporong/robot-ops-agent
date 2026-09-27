@@ -74,6 +74,29 @@ class DivergenceTest(unittest.TestCase):
     def test_short_freeze_below_min_frames_ignored(self) -> None:
         self.assertEqual(detect_freezes(_rows(freeze=(30, 32)), min_frames=3), [])
 
+    def test_gripper_counts_in_freeze_rule(self) -> None:
+        still = [0.0, 0.0, 0.0]
+        base = [{"t": i / 10.0, "q_cmd": list(still), "q_obs": list(still)} for i in range(20)]
+        # 관절은 전부 정지, 그리퍼 명령만 움직이고 그리퍼 관측은 멈춤 → 동결
+        cmd_only = [dict(r, gripper_cmd=float(i), gripper_obs=5.0) for i, r in enumerate(base)]
+        freezes = detect_freezes(cmd_only)
+        self.assertEqual(len(freezes), 1)
+        self.assertEqual((freezes[0]["frame_start"], freezes[0]["frame_end"]), (1, 19))
+        # 그리퍼 관측도 따라 움직이면 동결이 아니다(모든 관절 + 그리퍼 정지가 조건)
+        both = [dict(r, gripper_cmd=float(i), gripper_obs=float(i)) for i, r in enumerate(base)]
+        self.assertEqual(detect_freezes(both), [])
+        # 관절 동결 구간에서 그리퍼 관측이 움직이면 동결에서 빠진다
+        rows = _rows(freeze=(30, 45))
+        for i, row in enumerate(rows):
+            row["gripper_cmd"] = 0.0
+            row["gripper_obs"] = float(i) if 30 <= i < 45 else 0.0
+        self.assertEqual(detect_freezes(rows), [])
+        # None 그리퍼는 관절만 본다(기존 동작 유지)
+        rows = _rows(freeze=(30, 45))
+        for row in rows:
+            row["gripper_cmd"] = row["gripper_obs"] = None
+        self.assertEqual(len(detect_freezes(rows)), 1)
+
     def test_freeze_and_threshold_incidents(self) -> None:
         result = compute_divergence(HEADER, _rows(freeze=(30, 45), tcp=True))
         kinds = [i["kind"] for i in result["incidents"]]

@@ -4,8 +4,11 @@
    교정 차로 보고 빼서 텔레옵 리더·팔로워 교정 차를 제거한다.
 2. 관절별 추종 오차(도)와, TCP가 있으면 명령·관측 TCP 거리(mm)를 프레임마다 계산한다.
 3. 임계를 처음 넘은 시각을 관절·TCP 각각 기록한다.
-4. 관측 동결: 모든 관절 |Δq_obs| < eps 이고 어느 관절이든 |Δq_cmd| > delta 인 프레임이
-   k개 이상 이어지면 동결 구간으로 본다. 구간 시작은 조건이 처음 성립한 프레임(Δ가 i−1→i)이다.
+4. 관측 동결: 모든 관절(그리퍼 포함) |Δq_obs| < eps 이고 어느 관절이든(그리퍼 포함)
+   |Δq_cmd| > delta 인 프레임이 k개 이상 이어지면 동결 구간으로 본다. 구간 시작은 조건이 처음
+   성립한 프레임(Δ가 i−1→i)이다. M0 기준(`inventory_scan.freeze_stats`)과 같게 그리퍼는
+   LeRobot 원값(`gripper_units=lerobot_raw`) 차분에 같은 eps·delta 수치를 쓴다. 행에
+   `gripper_cmd`·`gripper_obs`가 없거나 None이면 그 프레임은 관절만 본다.
 5. `calibration_suspect`는 교정 차가 비정상적으로 크다는 표시로, TCP 지표에만 붙인다
    (관절 오차는 이미 교정 차를 뺐다).
 """
@@ -94,6 +97,10 @@ def detect_freezes(
         if i < len(rows):
             d_obs = [abs(_deg(a - b)) for a, b in zip(rows[i]["q_obs"], rows[i - 1]["q_obs"])]
             d_cmd = [abs(_deg(a - b)) for a, b in zip(rows[i]["q_cmd"], rows[i - 1]["q_cmd"])]
+            for key, target in (("gripper_obs", d_obs), ("gripper_cmd", d_cmd)):
+                now, prev = rows[i].get(key), rows[i - 1].get(key)
+                if now is not None and prev is not None:
+                    target.append(abs(float(now) - float(prev)))
             frozen = all(d < eps_deg for d in d_obs) and any(d > delta_deg for d in d_cmd)
         if frozen and run_start is None:
             run_start = i

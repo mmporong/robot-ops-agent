@@ -86,7 +86,7 @@ class RegressTest(unittest.TestCase):
         by_path = {f["path"]: f for f in manifest["files"]}
         self.assertTrue(by_path["scene.usda"]["deleted"])
         self.assertFalse(by_path["result.json"]["deleted"])
-        self.assertEqual(manifest["grid_offset"], {"condition": "A", "x_mm": -5, "y_mm": -5, "repeat": None})
+        self.assertEqual(manifest["grid_offset"], {"condition": "A", "x_mm": -5, "y_mm": -5, "repeat": None, "record": False})
 
     def test_four_infra_cells_mark_invalid(self) -> None:
         infra = [[-5, -5], [0, 0], [2.5, 5], [5, -5]]

@@ -107,6 +107,11 @@ def build_parser() -> argparse.ArgumentParser:
     regress_parser.add_argument("--profile", type=Path, required=True)
     regress_parser.add_argument("--scenario", required=True, help="scenarios/<id>/scenario.json의 id")
     regress_parser.add_argument("--condition", choices=("A", "B", "both"), default="both")
+    regress_parser.add_argument(
+        "--record-cells",
+        help="녹화 패스: 지정 격자점만 record=true로 다시 실행(반복 없음). "
+        "형식 'x,y;x,y'(선택 조건 전부) 또는 'A:x,y;B:x,y'",
+    )
 
     report_parser = subparsers.add_parser("report", help="정적 리포트")
     report_sub = report_parser.add_subparsers(dest="report_command", required=True)
@@ -124,7 +129,13 @@ def _replay_main(args: argparse.Namespace) -> int:
     from .replay.adapter import AdapterError
     from .replay.artifacts import DeletionRefused, InsufficientDisk
     from .replay.profile import expand_path, load_profile
-    from .replay.regress import RegressRefused, run_regress, run_replay, strip_timestamps
+    from .replay.regress import (
+        RegressRefused,
+        parse_record_cells,
+        run_regress,
+        run_replay,
+        strip_timestamps,
+    )
     from .replay.scenario_bank import load_scenario
 
     try:
@@ -151,7 +162,10 @@ def _replay_main(args: argparse.Namespace) -> int:
                 profile.base_dir / "scenarios" / args.scenario / "scenario.json"
             )
             conditions = ("A", "B") if args.condition == "both" else (args.condition,)
-            result = run_regress(profile, scenario, conditions=conditions)
+            record_cells = (
+                parse_record_cells(args.record_cells, conditions) if args.record_cells else None
+            )
+            result = run_regress(profile, scenario, conditions=conditions, record_cells=record_cells)
             view = strip_timestamps(result)
             for cond in view["conditions"].values():
                 cond.pop("cells", None)

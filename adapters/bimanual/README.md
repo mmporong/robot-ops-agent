@@ -20,7 +20,7 @@
 | run | drive_kinematic | lerobot | `run_drive_kinematic.py` | FAIL-20260921-1004 운동학 격자 셀 1개 → `result.json` + `trajectory.jsonl` |
 | judge | cup_contact | core | `judge.py` | 저장된 `task_pass`/`rigid_proxy_lift_pass`로 판정, samples 재계산 항목을 checks에 첨부 |
 | judge | drive_kinematic | core | `judge.py` | `final_alignment_bounded`(임계 `evaluations/replay/f1004_thresholds.json`) |
-| run | cup_contact | leisaac | (M3 `run_cup_contact.py`) | 아직 없음 → `unsupported` |
+| run | cup_contact | leisaac | `run_cup_contact.py` | allowlist `tools/simulate_cup_contact.py`를 `--headless --output-dir <workdir>/isaac --spawn-x/y-offset-mm`(+ 조건 B `--recover`, 녹화 요청 시 `--record`)로 실행 → `isaac/result.json`, 녹화 시 10 fps H.264 `cup_contact.mp4` |
 
 그 밖의 조합과 `convert|run|judge` 밖의 동사는 `unsupported`다.
 
@@ -47,6 +47,15 @@
 - 카메라(방위 150°, 고도 -35°, 거리 0.75 m)는 teleop_bench 3인칭 영상과 육안 대조로 골랐다. 실측 장면과
   정확히 맞춘 캘리브레이션 카메라가 아니다.
 - 캡션: "궤적 모델 = SO-101 MuJoCo 미러(양팔 로봇 왼팔과 같은 SO-101 기구)".
+
+## Isaac 컵 격자 (run, cup_contact)
+
+- 팀 스크립트 종료 코드 0 = 통과, 2 = 판정 실패(정상 종료). 그 밖이거나 `stop_reason`이
+  `exception:*`·`initializing`·`window_closed`이면 `infra_error`.
+- `isaac/scene.usda`(약 78 MB)와 `isaac/frames/*.png`는 코어가 manifest(SHA·크기) 기록 뒤
+  profile `delete_patterns`로 지운다. 어댑터는 지우지 않는다.
+- 시간 상한 180초(1회 실측 24.7초 × 2 < 180), GPU 과제라 run마다 `nvidia-smi` 원복(+200 MiB) 확인.
+- 녹화는 본 격자와 따로 한다: `robot-ops regress ... --record-cells "A:0,-5;B:0,-5"`.
 
 ## 재현
 

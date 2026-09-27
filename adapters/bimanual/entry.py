@@ -32,6 +32,7 @@ HANDLERS = {
     ("convert", "lerobot_episode"): "convert_lerobot",
     ("run", "lerobot_episode"): "run_mujoco_episode",
     ("run", "drive_kinematic"): "run_drive_kinematic",
+    ("run", "cup_contact"): "run_cup_contact",
     ("judge", "cup_contact"): "judge",
     ("judge", "drive_kinematic"): "judge",
 }
