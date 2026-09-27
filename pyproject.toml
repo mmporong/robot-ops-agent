@@ -20,3 +20,6 @@ robot-ops-benchmark = "robot_ops.model_benchmark:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"robot_ops.replay" = ["report_assets/*"]

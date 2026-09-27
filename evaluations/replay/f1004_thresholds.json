@@ -1,0 +1,12 @@
+{
+  "schema": "robot-ops-thresholds/1",
+  "scenario": "FAIL-20260921-1004",
+  "verifier": "final_alignment_bounded",
+  "horizon_s": 360,
+  "reversal_window_s": 60,
+  "reversal_rate_max_per_s": 2.45,
+  "yaw_rate_deadband_rad_s": 0.01,
+  "derivation": "EV-01 마지막 60초 회전 반전 295회 ≈ 4.9회/초의 절반",
+  "fixed_before_results": true,
+  "note_ko": "판별 결과를 본 뒤 이 값을 조정하지 않는다."
+}

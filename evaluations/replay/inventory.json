@@ -1,0 +1,3765 @@
+{
+  "schema": "robot-ops-inventory/1",
+  "generated_by": "adapters/bimanual/inventory_scan.py",
+  "so101": {
+    "root": "~/so101_datasets",
+    "datasets": {
+      "so101_car": {
+        "path": "~/so101_datasets/so101_car",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 1,
+        "frames": 515,
+        "total_frames_info": 515,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.wrist",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.wrist": {
+            "height": 288,
+            "width": 352,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "22e22ebb70f4a3e3f17486e15a76a0332f57e5cb866635171011bb0f0262279d"
+        },
+        "symlinks": null,
+        "static_calibration": {
+          "frames": 170,
+          "episodes_used": 1,
+          "mean_action_minus_state_deg": {
+            "shoulder_pan": -0.029,
+            "shoulder_lift": 1.697,
+            "elbow_flex": 1.041,
+            "wrist_flex": -3.42,
+            "wrist_roll": 0.141,
+            "gripper": 1.373
+          },
+          "std_deg": {
+            "shoulder_pan": 0.055,
+            "shoulder_lift": 14.227,
+            "elbow_flex": 10.721,
+            "wrist_flex": 11.411,
+            "wrist_roll": 0.055,
+            "gripper": 7.571
+          },
+          "calibration_suspect": []
+        }
+      },
+      "so101_cube": {
+        "path": "~/so101_datasets/so101_cube",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 2,
+        "frames": 7206,
+        "total_frames_info": 7206,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.depth",
+          "observation.images.wrist",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.wrist": {
+            "height": 288,
+            "width": 352,
+            "codec": "av1"
+          },
+          "observation.images.depth": {
+            "height": 480,
+            "width": 640,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "ebba2858611115e7fb295d7b455a091f3228f8934e861bc467f1d3d8e51bd5da",
+          "data/chunk-000/file-001.parquet": "0da2aadc091a2c3392f40f82b3716cc65fb45179000d03a253f8fe1095df142e"
+        },
+        "symlinks": null,
+        "static_calibration": {
+          "frames": 6046,
+          "episodes_used": 2,
+          "mean_action_minus_state_deg": {
+            "shoulder_pan": 5.627,
+            "shoulder_lift": 77.714,
+            "elbow_flex": -34.928,
+            "wrist_flex": -20.13,
+            "wrist_roll": -0.038,
+            "gripper": 14.041
+          },
+          "std_deg": {
+            "shoulder_pan": 12.908,
+            "shoulder_lift": 31.473,
+            "elbow_flex": 20.879,
+            "wrist_flex": 7.997,
+            "wrist_roll": 0.08,
+            "gripper": 4.326
+          },
+          "calibration_suspect": [
+            "shoulder_pan",
+            "shoulder_lift",
+            "elbow_flex",
+            "wrist_flex",
+            "gripper"
+          ]
+        }
+      },
+      "so101_pick_place": {
+        "path": "~/so101_datasets/so101_pick_place",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 19,
+        "frames": 9071,
+        "total_frames_info": 9071,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.depth",
+          "observation.images.wrist",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.wrist": {
+            "height": 288,
+            "width": 352,
+            "codec": "av1"
+          },
+          "observation.images.depth": {
+            "height": 480,
+            "width": 640,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "7f02bd251738c382698363c9496207ce9699b086e3e51515b9be6655ce3923a8",
+          "data/chunk-000/file-001.parquet": "5f59aba0caee8408f8cae6fe1b5d93b524a159ee8a64dd5ccaa2ad9bfbd7fbd8",
+          "data/chunk-000/file-002.parquet": "eb363aac313e0227348a0ca979c9898272589d7701e0693b7c64f3a5083ea403",
+          "data/chunk-000/file-003.parquet": "10cda70af30596ad0782d71f7bc98068995f28557734550479f674806a606519",
+          "data/chunk-000/file-004.parquet": "71619fa3163170195a030e200efca94a9768a5b2e35cda4cb8510ec162f95458",
+          "data/chunk-000/file-005.parquet": "35746157df0775cdc762b16301b812c29361580db261ca335606a014c81d21f6",
+          "data/chunk-000/file-006.parquet": "920360f0a5124f59f92976f1f11311222a6dc10149d7b3ca56cdeb768ed62b00",
+          "data/chunk-000/file-007.parquet": "a5e29f83853df2448b8ac6b30979029d15280c4139edaf17ed6103345afc7fb7",
+          "data/chunk-000/file-008.parquet": "01ad54630f46ca612c8b394c9997b45c5f4e08982b4e373fcdb8cce1f29fa32b",
+          "data/chunk-000/file-009.parquet": "e08ebc4394644ab9e1e27eb10ee931e0f2014931041763e49a728aab9bc02af1",
+          "data/chunk-000/file-010.parquet": "a7eabebd1d8f21d82f44916808996c0c656b09da1b8fde2a8c4b3610579675db",
+          "data/chunk-000/file-011.parquet": "27b6ef924ee592547399bdb966e31d1f7e6b1c0997f06932cc479104488c7e67",
+          "data/chunk-000/file-012.parquet": "04a891d7916a2fb08a7e3e8eed35291362f9a4c941b2ca5be163620319fef07e",
+          "data/chunk-000/file-013.parquet": "22689f1ddb51c68fdc2a188e75e7e098a4344b1282c338b24e49a378a0daada2",
+          "data/chunk-000/file-014.parquet": "5a4d4534f59e5d9959bec21cdad83fe6c9cf498364e35f8d517834b3d15ab568",
+          "data/chunk-000/file-015.parquet": "0098a7007c7a3fbaf6d10e27a3df58a1b0a74bae5e4599191f5749e532f1990a",
+          "data/chunk-000/file-016.parquet": "2588e4a4f0fec4fb1340225cb679888bd28c39cae4bd6d55b186603a04c66f64",
+          "data/chunk-000/file-017.parquet": "9b172aa0f132ac6758dad21185687f1be40c8249ea41bbde72803c2b499045e0",
+          "data/chunk-000/file-018.parquet": "69015970914c028a2e2e254849530f6b0a8c8b135d3c089c1e51120cb8fa2323"
+        },
+        "symlinks": null,
+        "static_calibration": {
+          "frames": 2670,
+          "episodes_used": 19,
+          "mean_action_minus_state_deg": {
+            "shoulder_pan": 0.187,
+            "shoulder_lift": -0.561,
+            "elbow_flex": -0.303,
+            "wrist_flex": -0.048,
+            "wrist_roll": 0.038,
+            "gripper": -0.912
+          },
+          "std_deg": {
+            "shoulder_pan": 3.125,
+            "shoulder_lift": 2.408,
+            "elbow_flex": 3.082,
+            "wrist_flex": 5.363,
+            "wrist_roll": 1.179,
+            "gripper": 11.222
+          },
+          "calibration_suspect": []
+        }
+      },
+      "so101_pick_place_fix": {
+        "path": "~/so101_datasets/so101_pick_place_fix",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 19,
+        "frames": 9071,
+        "total_frames_info": 9071,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.depth",
+          "observation.images.wrist",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.wrist": {
+            "height": 288,
+            "width": 352,
+            "codec": "av1"
+          },
+          "observation.images.depth": {
+            "height": 480,
+            "width": 640,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "bfc3c61cb33b306b1e5d387668defed9c61c1221e07e41721c2b980f522292c7"
+        },
+        "symlinks": null,
+        "static_calibration": {
+          "frames": 8885,
+          "episodes_used": 19,
+          "mean_action_minus_state_deg": {
+            "shoulder_pan": 0.0,
+            "shoulder_lift": 0.0,
+            "elbow_flex": 0.0,
+            "wrist_flex": 0.0,
+            "wrist_roll": 0.0,
+            "gripper": 0.0
+          },
+          "std_deg": {
+            "shoulder_pan": 0.0,
+            "shoulder_lift": 0.0,
+            "elbow_flex": 0.0,
+            "wrist_flex": 0.0,
+            "wrist_roll": 0.0,
+            "gripper": 0.002
+          },
+          "calibration_suspect": []
+        }
+      },
+      "so101_pick_pm": {
+        "path": "~/so101_datasets/so101_pick_pm",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 30,
+        "frames": 9413,
+        "total_frames_info": 9413,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.depth",
+          "observation.images.pointmap",
+          "observation.images.wrist",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.wrist": {
+            "height": 288,
+            "width": 352,
+            "codec": "av1"
+          },
+          "observation.images.depth": {
+            "height": 480,
+            "width": 640,
+            "codec": "av1"
+          },
+          "observation.images.pointmap": {
+            "height": 240,
+            "width": 320,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "918f6a23c45a17cffef4c279b1617e1c3bbef1cbb46ce2b2395e32a0095e8749",
+          "data/chunk-000/file-001.parquet": "f8f9e66cbee3991f3f9a0dfaf65c15ef1aed8d08e8f9a419b2355c26a6274d1e",
+          "data/chunk-000/file-002.parquet": "a273d450d17104b08494b77c91a30f77581efc41293827a3e658d3c6de2a8d3e",
+          "data/chunk-000/file-003.parquet": "1c84cb3e063ae289ad85073fe018167888a4025259d85994151100e2d4810f2c",
+          "data/chunk-000/file-004.parquet": "3ddde9ebd50168dba90c2cd6019567466b6c8df28272f3aa1c92f211b9e4e9f9",
+          "data/chunk-000/file-005.parquet": "1b77bd6854f2199029a47558db7f22d0d104c4851e01e4c06c1322c3b0fca75b",
+          "data/chunk-000/file-006.parquet": "4fc57ef3f66e7a80796a4e6930aa1043a194ed00ebf522efcf910e55d4f858f8",
+          "data/chunk-000/file-007.parquet": "a17264e82095a6051051a067fbfa5468d74a14ba1d6cb3f5d69df1f00f77c180",
+          "data/chunk-000/file-008.parquet": "c4f45f8f04ba2d986eca6551f50bba143a5159bdb64d94cab09e3fb3417f31d3",
+          "data/chunk-000/file-009.parquet": "19055c314a1523c29f6cc434a2198ca4b7c0dfdea9f606264a9d062e4773a594",
+          "data/chunk-000/file-010.parquet": "d649840838b89ace8b70f7848ad449838dd0a2a81560b17300e0872b960df424",
+          "data/chunk-000/file-011.parquet": "20db0980d2403105747ce5a76ab8f18fef6bd74dcb0c08f30839dcd7452b9e5e",
+          "data/chunk-000/file-012.parquet": "680c5a6ea46edba3153392d39beefb15507823f7396529cff502cace56d2cff0",
+          "data/chunk-000/file-013.parquet": "f3d602f878e0d59997ca2581f625883a014f8df18746c3fc6debe0945b398ade",
+          "data/chunk-000/file-014.parquet": "3f6263a741ce771dad8696dcfcf96b077978cf5098255f8d12c31206fc872a78",
+          "data/chunk-000/file-015.parquet": "b7f2291401fe42ad42314cfd397a963ecc34440025d70044b65ac32afc6560db",
+          "data/chunk-000/file-016.parquet": "30fcba107da648b24133a496a36d7c627c88fa37010e98dbbc266c4341624d7f",
+          "data/chunk-000/file-017.parquet": "6155d5b1475877bcccc29baccf107b080e25d469380b4e84bf3e8df1ea36235b",
+          "data/chunk-000/file-018.parquet": "5092aefef9829816d782785e83c8dce993693a7950fc02c7999f999c9ab18a32",
+          "data/chunk-000/file-019.parquet": "71fba15326af08dadf1752107a02afad0acc3731f430e5e2c6a6126283f8b33f",
+          "data/chunk-000/file-020.parquet": "67cd3ed3093317844fdd8aa4dd5c2cef0a303a3130dd8b9dd083b9134da4a412",
+          "data/chunk-000/file-021.parquet": "cedbb425f3b0ebde4ca0ec8940ab108c1be296d9ab3936bb88520a35a0c23211",
+          "data/chunk-000/file-022.parquet": "2d3e2deeb177ca4c412f9ed85f34ed6211113621b3536833b252e642ed7aa491",
+          "data/chunk-000/file-023.parquet": "9f7aecbf8c595b7d0723be91a10214669cb8ee11ba9b93cc430c042a254b6744",
+          "data/chunk-000/file-024.parquet": "a4bfdd93a85b123d6f13b58ec63792698b0587bb88d24d5b29846b0b5e5e2c30",
+          "data/chunk-000/file-025.parquet": "07b5f6e558aff9832424242a2ef9fc7e81d07e70855750b8078c13ab21d6730a",
+          "data/chunk-000/file-026.parquet": "6648d7f9c5a5517e664275e7fcfa83426222eeffd1b869acdd31dbda4a6b8403",
+          "data/chunk-000/file-027.parquet": "8fef77dac93a83ad53f22a95a8005d1f6bce72a10c0338515da48ecaf4bc911e",
+          "data/chunk-000/file-028.parquet": "e1b92e006a72f490a52ff5adc31f7f3b32341903e0e092c24e3d3ee0b0bec7a9",
+          "data/chunk-000/file-029.parquet": "8adebe808348c4dbd36d410a3bff6a5c325fff02e7951d8c6e75cfab8bad842f"
+        },
+        "symlinks": null,
+        "static_calibration": {
+          "frames": 3484,
+          "episodes_used": 30,
+          "mean_action_minus_state_deg": {
+            "shoulder_pan": -0.759,
+            "shoulder_lift": -0.513,
+            "elbow_flex": 1.819,
+            "wrist_flex": -2.467,
+            "wrist_roll": -0.725,
+            "gripper": -0.614
+          },
+          "std_deg": {
+            "shoulder_pan": 8.164,
+            "shoulder_lift": 7.094,
+            "elbow_flex": 9.026,
+            "wrist_flex": 7.917,
+            "wrist_roll": 7.76,
+            "gripper": 6.601
+          },
+          "calibration_suspect": []
+        }
+      },
+      "so101_pick_pm_wrist": {
+        "path": "~/so101_datasets/so101_pick_pm_wrist",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 22,
+        "frames": 6361,
+        "total_frames_info": 6361,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.wrist",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.wrist": {
+            "height": 288,
+            "width": 352,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "918f6a23c45a17cffef4c279b1617e1c3bbef1cbb46ce2b2395e32a0095e8749",
+          "data/chunk-000/file-001.parquet": "f8f9e66cbee3991f3f9a0dfaf65c15ef1aed8d08e8f9a419b2355c26a6274d1e",
+          "data/chunk-000/file-002.parquet": "a273d450d17104b08494b77c91a30f77581efc41293827a3e658d3c6de2a8d3e",
+          "data/chunk-000/file-003.parquet": "1c84cb3e063ae289ad85073fe018167888a4025259d85994151100e2d4810f2c",
+          "data/chunk-000/file-004.parquet": "3ddde9ebd50168dba90c2cd6019567466b6c8df28272f3aa1c92f211b9e4e9f9",
+          "data/chunk-000/file-005.parquet": "1b77bd6854f2199029a47558db7f22d0d104c4851e01e4c06c1322c3b0fca75b",
+          "data/chunk-000/file-006.parquet": "4fc57ef3f66e7a80796a4e6930aa1043a194ed00ebf522efcf910e55d4f858f8",
+          "data/chunk-000/file-007.parquet": "a17264e82095a6051051a067fbfa5468d74a14ba1d6cb3f5d69df1f00f77c180",
+          "data/chunk-000/file-008.parquet": "c4f45f8f04ba2d986eca6551f50bba143a5159bdb64d94cab09e3fb3417f31d3",
+          "data/chunk-000/file-009.parquet": "19055c314a1523c29f6cc434a2198ca4b7c0dfdea9f606264a9d062e4773a594",
+          "data/chunk-000/file-010.parquet": "d649840838b89ace8b70f7848ad449838dd0a2a81560b17300e0872b960df424",
+          "data/chunk-000/file-011.parquet": "20db0980d2403105747ce5a76ab8f18fef6bd74dcb0c08f30839dcd7452b9e5e",
+          "data/chunk-000/file-012.parquet": "680c5a6ea46edba3153392d39beefb15507823f7396529cff502cace56d2cff0",
+          "data/chunk-000/file-013.parquet": "f3d602f878e0d59997ca2581f625883a014f8df18746c3fc6debe0945b398ade",
+          "data/chunk-000/file-014.parquet": "3f6263a741ce771dad8696dcfcf96b077978cf5098255f8d12c31206fc872a78",
+          "data/chunk-000/file-015.parquet": "b7f2291401fe42ad42314cfd397a963ecc34440025d70044b65ac32afc6560db",
+          "data/chunk-000/file-016.parquet": "30fcba107da648b24133a496a36d7c627c88fa37010e98dbbc266c4341624d7f",
+          "data/chunk-000/file-017.parquet": "6155d5b1475877bcccc29baccf107b080e25d469380b4e84bf3e8df1ea36235b",
+          "data/chunk-000/file-018.parquet": "5092aefef9829816d782785e83c8dce993693a7950fc02c7999f999c9ab18a32",
+          "data/chunk-000/file-019.parquet": "71fba15326af08dadf1752107a02afad0acc3731f430e5e2c6a6126283f8b33f",
+          "data/chunk-000/file-020.parquet": "67cd3ed3093317844fdd8aa4dd5c2cef0a303a3130dd8b9dd083b9134da4a412",
+          "data/chunk-000/file-021.parquet": "cedbb425f3b0ebde4ca0ec8940ab108c1be296d9ab3936bb88520a35a0c23211"
+        },
+        "symlinks": {
+          "data": "/data/$USER/so101_datasets/so101_pick_pm/data",
+          "videos": "/data/$USER/so101_datasets/so101_pick_pm/videos"
+        },
+        "static_calibration": {
+          "frames": 2222,
+          "episodes_used": 22,
+          "mean_action_minus_state_deg": {
+            "shoulder_pan": 0.056,
+            "shoulder_lift": -0.803,
+            "elbow_flex": 1.075,
+            "wrist_flex": -1.308,
+            "wrist_roll": 0.31,
+            "gripper": -0.563
+          },
+          "std_deg": {
+            "shoulder_pan": 3.751,
+            "shoulder_lift": 5.209,
+            "elbow_flex": 6.897,
+            "wrist_flex": 6.627,
+            "wrist_roll": 3.903,
+            "gripper": 8.1
+          },
+          "calibration_suspect": []
+        }
+      },
+      "so101_pick_v3": {
+        "path": "~/so101_datasets/so101_pick_v3",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 2,
+        "frames": 791,
+        "total_frames_info": 791,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.depth",
+          "observation.images.pointmap",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.depth": {
+            "height": 480,
+            "width": 640,
+            "codec": "av1"
+          },
+          "observation.images.pointmap": {
+            "height": 240,
+            "width": 320,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "8c9a0d36d00535f51cb1d2233edffc38aed18401aec12a746d00d8164dcfe7f6",
+          "data/chunk-000/file-001.parquet": "feac11ed66713fbbeb49fb9714abe6da23b284e38185c98c011698f3f057a265"
+        },
+        "symlinks": null,
+        "static_calibration": {
+          "frames": 395,
+          "episodes_used": 2,
+          "mean_action_minus_state_deg": {
+            "shoulder_pan": 0.272,
+            "shoulder_lift": 0.606,
+            "elbow_flex": 1.758,
+            "wrist_flex": -3.513,
+            "wrist_roll": 0.256,
+            "gripper": -0.027
+          },
+          "std_deg": {
+            "shoulder_pan": 3.634,
+            "shoulder_lift": 2.899,
+            "elbow_flex": 5.203,
+            "wrist_flex": 7.805,
+            "wrist_roll": 1.557,
+            "gripper": 1.452
+          },
+          "calibration_suspect": []
+        }
+      },
+      "so101_pm_smoke": {
+        "path": "~/so101_datasets/so101_pm_smoke",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 1,
+        "frames": 31,
+        "total_frames_info": 31,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.depth",
+          "observation.images.pointmap",
+          "observation.images.wrist",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.wrist": {
+            "height": 288,
+            "width": 352,
+            "codec": "av1"
+          },
+          "observation.images.depth": {
+            "height": 480,
+            "width": 640,
+            "codec": "av1"
+          },
+          "observation.images.pointmap": {
+            "height": 240,
+            "width": 320,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "56e8e2fa71bc5a814c991a3314d0cd1b1c3fb251b3997b2888870e8b1805a956"
+        },
+        "symlinks": null,
+        "static_calibration": null
+      },
+      "so101_policy_rollout": {
+        "path": "~/so101_datasets/so101_policy_rollout",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 1,
+        "frames": 656,
+        "total_frames_info": 656,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.wrist",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.wrist": {
+            "height": 288,
+            "width": 352,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "2f7a6b9d12c7d772ae87a9e6156b5f3498402ddf0fd5beadf60a11f7a40de5e6"
+        },
+        "symlinks": null,
+        "static_calibration": {
+          "frames": 526,
+          "episodes_used": 1,
+          "mean_action_minus_state_deg": {
+            "shoulder_pan": 0.194,
+            "shoulder_lift": -5.463,
+            "elbow_flex": -0.319,
+            "wrist_flex": 78.23,
+            "wrist_roll": 0.0,
+            "gripper": 0.0
+          },
+          "std_deg": {
+            "shoulder_pan": 0.053,
+            "shoulder_lift": 1.671,
+            "elbow_flex": 0.192,
+            "wrist_flex": 26.13,
+            "wrist_roll": 0.0,
+            "gripper": 0.0
+          },
+          "calibration_suspect": [
+            "shoulder_lift",
+            "wrist_flex"
+          ]
+        }
+      },
+      "so101_teleop_bench": {
+        "path": "~/so101_datasets/so101_teleop_bench",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 9,
+        "frames": 2716,
+        "total_frames_info": 2716,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.depth",
+          "observation.images.wrist",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.wrist": {
+            "height": 288,
+            "width": 352,
+            "codec": "av1"
+          },
+          "observation.images.depth": {
+            "height": 480,
+            "width": 640,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "95e37651db9ff137ecdb7cad628958aeabd05123821c77761fbdede86f8f5dcd",
+          "data/chunk-000/file-001.parquet": "ed06ed88d40375f6d203ebfc2fbbfdba03d6655cdeca83d93ec3e43d3ef17a0d",
+          "data/chunk-000/file-002.parquet": "017edb1a1ac0ed992704c095634f06f051518ce651be4b0a0d2e38444400e49a",
+          "data/chunk-000/file-003.parquet": "0cafc0b013fd67ffd442048d0cc252a3eb36e607d42ba04918cefce1089faf4d",
+          "data/chunk-000/file-004.parquet": "9c60d6d093b3cc64e03cd34b51737d35660703b60278393df138b72073b6c234",
+          "data/chunk-000/file-005.parquet": "bbe60c64133acb49850532efd33c8fd73ff2166d0b8215d7c7c32097c15348a8",
+          "data/chunk-000/file-006.parquet": "c3372ce197ed11df43b1f1f0a5080490e73c72f77da559f5697de78f480ad432",
+          "data/chunk-000/file-007.parquet": "4a0d2d67828e3843b632ed7d1fd55a0ca75ceb8ca7bdf90f866989ec434348b1",
+          "data/chunk-000/file-008.parquet": "eb5c2a680aa29c7ff5e4a7535fefadd904888c78cba44ac614643d506030e8f6"
+        },
+        "symlinks": null,
+        "static_calibration": null
+      },
+      "so101_teleop_v2": {
+        "path": "~/so101_datasets/so101_teleop_v2",
+        "codebase_version": "v3.0",
+        "fps": 10,
+        "robot_type": "so101_follower",
+        "episodes": 7,
+        "frames": 1246,
+        "total_frames_info": 1246,
+        "features": [
+          "action",
+          "episode_index",
+          "frame_index",
+          "index",
+          "observation.images.wrist",
+          "observation.state",
+          "task_index",
+          "timestamp"
+        ],
+        "joint_names": [
+          "shoulder_pan",
+          "shoulder_lift",
+          "elbow_flex",
+          "wrist_flex",
+          "wrist_roll",
+          "gripper"
+        ],
+        "camera_keys": {
+          "observation.images.wrist": {
+            "height": 288,
+            "width": 352,
+            "codec": "av1"
+          }
+        },
+        "data_parquet_sha256": {
+          "data/chunk-000/file-000.parquet": "6b1fce2b4ce2766d6a33fc3a00fc47cf841ce599aea755e212f7bae88b839d4f",
+          "data/chunk-000/file-001.parquet": "d956e0c4c814b19db8bbad598eb80d4ad5b77e5e2c7445ac35f4afde83dcfd09",
+          "data/chunk-000/file-002.parquet": "ecde9aa65c5477e40de13ca4a4d1c91fd91dee464f683f5f566df7ac9651e3cb",
+          "data/chunk-000/file-003.parquet": "40641215e1344bff5a952deb7652db66a0eaa1e1b243f17267c8e1cbc15cafa3",
+          "data/chunk-000/file-004.parquet": "00ac4853ca3a69ce7eb700cac0f03625486765a20965a39be90b9072b17b4190",
+          "data/chunk-000/file-005.parquet": "87f30b5645fdf56eddeaed20ee904b535dfd737f7ebe45c1e0d5dc614c69ff0d",
+          "data/chunk-000/file-006.parquet": "ff603742a946fd0dc7bf5b154d88340bfe0abd58cecee2676f6f9052d35248cb"
+        },
+        "symlinks": null,
+        "static_calibration": {
+          "frames": 42,
+          "episodes_used": 3,
+          "mean_action_minus_state_deg": {
+            "shoulder_pan": 6.021,
+            "shoulder_lift": -0.569,
+            "elbow_flex": -0.418,
+            "wrist_flex": 0.959,
+            "wrist_roll": 1.268,
+            "gripper": 1.662
+          },
+          "std_deg": {
+            "shoulder_pan": 7.363,
+            "shoulder_lift": 1.029,
+            "elbow_flex": 0.626,
+            "wrist_flex": 1.322,
+            "wrist_roll": 3.117,
+            "gripper": 2.332
+          },
+          "calibration_suspect": [
+            "shoulder_pan"
+          ]
+        }
+      }
+    },
+    "totals": {
+      "datasets": 11,
+      "episodes": 113,
+      "frames": 47077,
+      "note": "_fix·심링크 파생(pick_pm_wrist→pick_pm) 중복 포함"
+    }
+  },
+  "freeze": {
+    "definition": "차분 프레임 i→i+1에서 모든 관절(그리퍼 포함) |Δstate| < ε 이고 어느 관절이든 |Δaction| > δ, 이런 프레임이 연속 k개 이상인 구간만 센다. ratio = 구간 프레임 합 / 차분 프레임 수. 단위 도",
+    "candidates": [
+      {
+        "eps_deg": 0.05,
+        "delta_deg": 0.5,
+        "k": 3
+      },
+      {
+        "eps_deg": 0.1,
+        "delta_deg": 0.5,
+        "k": 3
+      }
+    ],
+    "chosen": {
+      "eps_deg": 0.1,
+      "delta_deg": 0.5,
+      "k": 3
+    },
+    "chosen_reason": "두 후보가 모든 에피소드에서 같은 결과(ε 비민감). 계획 §6 M0 후보값 0.1°/0.5°/3을 확정 기준으로 쓴다",
+    "candidates_agree": true,
+    "per_episode": {
+      "so101_car": [
+        {
+          "episode": 0,
+          "frames": 515,
+          "meta_length": 515,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 105,
+          "state_constant_episode": false,
+          "static_frames": 170
+        }
+      ],
+      "so101_cube": [
+        {
+          "episode": 0,
+          "frames": 336,
+          "meta_length": 336,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 102,
+          "state_constant_episode": false,
+          "static_frames": 89
+        },
+        {
+          "episode": 1,
+          "frames": 6870,
+          "meta_length": 6870,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 358,
+          "state_constant_episode": false,
+          "static_frames": 5957
+        }
+      ],
+      "so101_pick_place": [
+        {
+          "episode": 0,
+          "frames": 460,
+          "meta_length": 460,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 106,
+          "state_constant_episode": false,
+          "static_frames": 134
+        },
+        {
+          "episode": 1,
+          "frames": 487,
+          "meta_length": 487,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 109,
+          "state_constant_episode": false,
+          "static_frames": 137
+        },
+        {
+          "episode": 2,
+          "frames": 487,
+          "meta_length": 487,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 103,
+          "state_constant_episode": false,
+          "static_frames": 166
+        },
+        {
+          "episode": 3,
+          "frames": 589,
+          "meta_length": 589,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 123,
+          "state_constant_episode": false,
+          "static_frames": 207
+        },
+        {
+          "episode": 4,
+          "frames": 452,
+          "meta_length": 452,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 101,
+          "state_constant_episode": false,
+          "static_frames": 136
+        },
+        {
+          "episode": 5,
+          "frames": 474,
+          "meta_length": 474,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 102,
+          "state_constant_episode": false,
+          "static_frames": 149
+        },
+        {
+          "episode": 6,
+          "frames": 479,
+          "meta_length": 479,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 102,
+          "state_constant_episode": false,
+          "static_frames": 171
+        },
+        {
+          "episode": 7,
+          "frames": 455,
+          "meta_length": 455,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 106,
+          "state_constant_episode": false,
+          "static_frames": 119
+        },
+        {
+          "episode": 8,
+          "frames": 466,
+          "meta_length": 466,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 107,
+          "state_constant_episode": false,
+          "static_frames": 128
+        },
+        {
+          "episode": 9,
+          "frames": 381,
+          "meta_length": 381,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 107,
+          "state_constant_episode": false,
+          "static_frames": 53
+        },
+        {
+          "episode": 10,
+          "frames": 379,
+          "meta_length": 379,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 104,
+          "state_constant_episode": false,
+          "static_frames": 69
+        },
+        {
+          "episode": 11,
+          "frames": 534,
+          "meta_length": 534,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 114,
+          "state_constant_episode": false,
+          "static_frames": 184
+        },
+        {
+          "episode": 12,
+          "frames": 458,
+          "meta_length": 458,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 106,
+          "state_constant_episode": false,
+          "static_frames": 110
+        },
+        {
+          "episode": 13,
+          "frames": 516,
+          "meta_length": 516,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 110,
+          "state_constant_episode": false,
+          "static_frames": 162
+        },
+        {
+          "episode": 14,
+          "frames": 478,
+          "meta_length": 478,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 102,
+          "state_constant_episode": false,
+          "static_frames": 163
+        },
+        {
+          "episode": 15,
+          "frames": 473,
+          "meta_length": 473,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 109,
+          "state_constant_episode": false,
+          "static_frames": 130
+        },
+        {
+          "episode": 16,
+          "frames": 503,
+          "meta_length": 503,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 110,
+          "state_constant_episode": false,
+          "static_frames": 152
+        },
+        {
+          "episode": 17,
+          "frames": 480,
+          "meta_length": 480,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 109,
+          "state_constant_episode": false,
+          "static_frames": 137
+        },
+        {
+          "episode": 18,
+          "frames": 520,
+          "meta_length": 520,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 113,
+          "state_constant_episode": false,
+          "static_frames": 163
+        }
+      ],
+      "so101_pick_place_fix": [
+        {
+          "episode": 0,
+          "frames": 460,
+          "meta_length": 460,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 10,
+          "state_constant_episode": false,
+          "static_frames": 448
+        },
+        {
+          "episode": 1,
+          "frames": 487,
+          "meta_length": 487,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 12,
+          "state_constant_episode": false,
+          "static_frames": 477
+        },
+        {
+          "episode": 2,
+          "frames": 487,
+          "meta_length": 487,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 11,
+          "state_constant_episode": false,
+          "static_frames": 478
+        },
+        {
+          "episode": 3,
+          "frames": 589,
+          "meta_length": 589,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 12,
+          "state_constant_episode": false,
+          "static_frames": 578
+        },
+        {
+          "episode": 4,
+          "frames": 452,
+          "meta_length": 452,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 11,
+          "state_constant_episode": false,
+          "static_frames": 442
+        },
+        {
+          "episode": 5,
+          "frames": 474,
+          "meta_length": 474,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 9,
+          "state_constant_episode": false,
+          "static_frames": 466
+        },
+        {
+          "episode": 6,
+          "frames": 479,
+          "meta_length": 479,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 10,
+          "state_constant_episode": false,
+          "static_frames": 470
+        },
+        {
+          "episode": 7,
+          "frames": 455,
+          "meta_length": 455,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 11,
+          "state_constant_episode": false,
+          "static_frames": 445
+        },
+        {
+          "episode": 8,
+          "frames": 466,
+          "meta_length": 466,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 10,
+          "state_constant_episode": false,
+          "static_frames": 457
+        },
+        {
+          "episode": 9,
+          "frames": 381,
+          "meta_length": 381,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 9,
+          "state_constant_episode": false,
+          "static_frames": 373
+        },
+        {
+          "episode": 10,
+          "frames": 379,
+          "meta_length": 379,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 10,
+          "state_constant_episode": false,
+          "static_frames": 366
+        },
+        {
+          "episode": 11,
+          "frames": 534,
+          "meta_length": 534,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 11,
+          "state_constant_episode": false,
+          "static_frames": 524
+        },
+        {
+          "episode": 12,
+          "frames": 458,
+          "meta_length": 458,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 10,
+          "state_constant_episode": false,
+          "static_frames": 449
+        },
+        {
+          "episode": 13,
+          "frames": 516,
+          "meta_length": 516,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 12,
+          "state_constant_episode": false,
+          "static_frames": 505
+        },
+        {
+          "episode": 14,
+          "frames": 478,
+          "meta_length": 478,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 9,
+          "state_constant_episode": false,
+          "static_frames": 470
+        },
+        {
+          "episode": 15,
+          "frames": 473,
+          "meta_length": 473,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 11,
+          "state_constant_episode": false,
+          "static_frames": 464
+        },
+        {
+          "episode": 16,
+          "frames": 503,
+          "meta_length": 503,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 12,
+          "state_constant_episode": false,
+          "static_frames": 492
+        },
+        {
+          "episode": 17,
+          "frames": 480,
+          "meta_length": 480,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 11,
+          "state_constant_episode": false,
+          "static_frames": 471
+        },
+        {
+          "episode": 18,
+          "frames": 520,
+          "meta_length": 520,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 11,
+          "state_constant_episode": false,
+          "static_frames": 510
+        }
+      ],
+      "so101_pick_pm": [
+        {
+          "episode": 0,
+          "frames": 357,
+          "meta_length": 357,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 168,
+          "state_constant_episode": false,
+          "static_frames": 69
+        },
+        {
+          "episode": 1,
+          "frames": 196,
+          "meta_length": 196,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 102,
+          "state_constant_episode": false,
+          "static_frames": 17
+        },
+        {
+          "episode": 2,
+          "frames": 316,
+          "meta_length": 316,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 165,
+          "state_constant_episode": false,
+          "static_frames": 38
+        },
+        {
+          "episode": 3,
+          "frames": 539,
+          "meta_length": 539,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 225,
+          "state_constant_episode": false,
+          "static_frames": 169
+        },
+        {
+          "episode": 4,
+          "frames": 348,
+          "meta_length": 348,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 161,
+          "state_constant_episode": false,
+          "static_frames": 81
+        },
+        {
+          "episode": 5,
+          "frames": 404,
+          "meta_length": 404,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 164,
+          "state_constant_episode": false,
+          "static_frames": 151
+        },
+        {
+          "episode": 6,
+          "frames": 401,
+          "meta_length": 401,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 165,
+          "state_constant_episode": false,
+          "static_frames": 138
+        },
+        {
+          "episode": 7,
+          "frames": 413,
+          "meta_length": 413,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 170,
+          "state_constant_episode": false,
+          "static_frames": 151
+        },
+        {
+          "episode": 8,
+          "frames": 382,
+          "meta_length": 382,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 159,
+          "state_constant_episode": false,
+          "static_frames": 121
+        },
+        {
+          "episode": 9,
+          "frames": 395,
+          "meta_length": 395,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 76,
+          "state_constant_episode": false,
+          "static_frames": 198
+        },
+        {
+          "episode": 10,
+          "frames": 460,
+          "meta_length": 460,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 76,
+          "state_constant_episode": false,
+          "static_frames": 266
+        },
+        {
+          "episode": 11,
+          "frames": 266,
+          "meta_length": 266,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 57,
+          "state_constant_episode": false,
+          "static_frames": 116
+        },
+        {
+          "episode": 12,
+          "frames": 203,
+          "meta_length": 203,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0149,
+              "frozen_frames": 3,
+              "runs": 1,
+              "longest_run_frames": 3,
+              "longest_run_t_s": [
+                5.8,
+                6.1
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0149,
+              "frozen_frames": 3,
+              "runs": 1,
+              "longest_run_frames": 3,
+              "longest_run_t_s": [
+                5.8,
+                6.1
+              ]
+            }
+          },
+          "state_unique_rows": 51,
+          "state_constant_episode": false,
+          "static_frames": 78
+        },
+        {
+          "episode": 13,
+          "frames": 210,
+          "meta_length": 210,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 47,
+          "state_constant_episode": false,
+          "static_frames": 66
+        },
+        {
+          "episode": 14,
+          "frames": 188,
+          "meta_length": 188,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 42,
+          "state_constant_episode": false,
+          "static_frames": 81
+        },
+        {
+          "episode": 15,
+          "frames": 237,
+          "meta_length": 237,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 50,
+          "state_constant_episode": false,
+          "static_frames": 92
+        },
+        {
+          "episode": 16,
+          "frames": 183,
+          "meta_length": 183,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 46,
+          "state_constant_episode": false,
+          "static_frames": 69
+        },
+        {
+          "episode": 17,
+          "frames": 206,
+          "meta_length": 206,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 42,
+          "state_constant_episode": false,
+          "static_frames": 90
+        },
+        {
+          "episode": 18,
+          "frames": 173,
+          "meta_length": 173,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 41,
+          "state_constant_episode": false,
+          "static_frames": 53
+        },
+        {
+          "episode": 19,
+          "frames": 281,
+          "meta_length": 281,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 59,
+          "state_constant_episode": false,
+          "static_frames": 127
+        },
+        {
+          "episode": 20,
+          "frames": 99,
+          "meta_length": 99,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 35,
+          "state_constant_episode": false,
+          "static_frames": 14
+        },
+        {
+          "episode": 21,
+          "frames": 104,
+          "meta_length": 104,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 34,
+          "state_constant_episode": false,
+          "static_frames": 37
+        },
+        {
+          "episode": 22,
+          "frames": 460,
+          "meta_length": 460,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 83,
+          "state_constant_episode": false,
+          "static_frames": 215
+        },
+        {
+          "episode": 23,
+          "frames": 423,
+          "meta_length": 423,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 85,
+          "state_constant_episode": false,
+          "static_frames": 181
+        },
+        {
+          "episode": 24,
+          "frames": 322,
+          "meta_length": 322,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0093,
+              "frozen_frames": 3,
+              "runs": 1,
+              "longest_run_frames": 3,
+              "longest_run_t_s": [
+                0.0,
+                0.3
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0093,
+              "frozen_frames": 3,
+              "runs": 1,
+              "longest_run_frames": 3,
+              "longest_run_t_s": [
+                0.0,
+                0.3
+              ]
+            }
+          },
+          "state_unique_rows": 75,
+          "state_constant_episode": false,
+          "static_frames": 120
+        },
+        {
+          "episode": 25,
+          "frames": 213,
+          "meta_length": 213,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 58,
+          "state_constant_episode": false,
+          "static_frames": 74
+        },
+        {
+          "episode": 26,
+          "frames": 408,
+          "meta_length": 408,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0074,
+              "frozen_frames": 3,
+              "runs": 1,
+              "longest_run_frames": 3,
+              "longest_run_t_s": [
+                0.0,
+                0.3
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0074,
+              "frozen_frames": 3,
+              "runs": 1,
+              "longest_run_frames": 3,
+              "longest_run_t_s": [
+                0.0,
+                0.3
+              ]
+            }
+          },
+          "state_unique_rows": 77,
+          "state_constant_episode": false,
+          "static_frames": 203
+        },
+        {
+          "episode": 27,
+          "frames": 394,
+          "meta_length": 394,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 77,
+          "state_constant_episode": false,
+          "static_frames": 162
+        },
+        {
+          "episode": 28,
+          "frames": 412,
+          "meta_length": 412,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 84,
+          "state_constant_episode": false,
+          "static_frames": 131
+        },
+        {
+          "episode": 29,
+          "frames": 420,
+          "meta_length": 420,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 81,
+          "state_constant_episode": false,
+          "static_frames": 176
+        }
+      ],
+      "so101_pick_pm_wrist": [
+        {
+          "episode": 0,
+          "frames": 357,
+          "meta_length": 357,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 168,
+          "state_constant_episode": false,
+          "static_frames": 69
+        },
+        {
+          "episode": 1,
+          "frames": 196,
+          "meta_length": 196,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 102,
+          "state_constant_episode": false,
+          "static_frames": 17
+        },
+        {
+          "episode": 2,
+          "frames": 316,
+          "meta_length": 316,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 165,
+          "state_constant_episode": false,
+          "static_frames": 38
+        },
+        {
+          "episode": 3,
+          "frames": 539,
+          "meta_length": 539,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 225,
+          "state_constant_episode": false,
+          "static_frames": 169
+        },
+        {
+          "episode": 4,
+          "frames": 348,
+          "meta_length": 348,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 161,
+          "state_constant_episode": false,
+          "static_frames": 81
+        },
+        {
+          "episode": 5,
+          "frames": 404,
+          "meta_length": 404,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 164,
+          "state_constant_episode": false,
+          "static_frames": 151
+        },
+        {
+          "episode": 6,
+          "frames": 401,
+          "meta_length": 401,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 165,
+          "state_constant_episode": false,
+          "static_frames": 138
+        },
+        {
+          "episode": 7,
+          "frames": 413,
+          "meta_length": 413,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 170,
+          "state_constant_episode": false,
+          "static_frames": 151
+        },
+        {
+          "episode": 8,
+          "frames": 382,
+          "meta_length": 382,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 159,
+          "state_constant_episode": false,
+          "static_frames": 121
+        },
+        {
+          "episode": 9,
+          "frames": 395,
+          "meta_length": 395,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 76,
+          "state_constant_episode": false,
+          "static_frames": 198
+        },
+        {
+          "episode": 10,
+          "frames": 460,
+          "meta_length": 460,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 76,
+          "state_constant_episode": false,
+          "static_frames": 266
+        },
+        {
+          "episode": 11,
+          "frames": 266,
+          "meta_length": 266,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 57,
+          "state_constant_episode": false,
+          "static_frames": 116
+        },
+        {
+          "episode": 12,
+          "frames": 203,
+          "meta_length": 203,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0149,
+              "frozen_frames": 3,
+              "runs": 1,
+              "longest_run_frames": 3,
+              "longest_run_t_s": [
+                5.8,
+                6.1
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0149,
+              "frozen_frames": 3,
+              "runs": 1,
+              "longest_run_frames": 3,
+              "longest_run_t_s": [
+                5.8,
+                6.1
+              ]
+            }
+          },
+          "state_unique_rows": 51,
+          "state_constant_episode": false,
+          "static_frames": 78
+        },
+        {
+          "episode": 13,
+          "frames": 210,
+          "meta_length": 210,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 47,
+          "state_constant_episode": false,
+          "static_frames": 66
+        },
+        {
+          "episode": 14,
+          "frames": 188,
+          "meta_length": 188,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 42,
+          "state_constant_episode": false,
+          "static_frames": 81
+        },
+        {
+          "episode": 15,
+          "frames": 237,
+          "meta_length": 237,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 50,
+          "state_constant_episode": false,
+          "static_frames": 92
+        },
+        {
+          "episode": 16,
+          "frames": 183,
+          "meta_length": 183,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 46,
+          "state_constant_episode": false,
+          "static_frames": 69
+        },
+        {
+          "episode": 17,
+          "frames": 206,
+          "meta_length": 206,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 42,
+          "state_constant_episode": false,
+          "static_frames": 90
+        },
+        {
+          "episode": 18,
+          "frames": 173,
+          "meta_length": 173,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 41,
+          "state_constant_episode": false,
+          "static_frames": 53
+        },
+        {
+          "episode": 19,
+          "frames": 281,
+          "meta_length": 281,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 59,
+          "state_constant_episode": false,
+          "static_frames": 127
+        },
+        {
+          "episode": 20,
+          "frames": 99,
+          "meta_length": 99,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 35,
+          "state_constant_episode": false,
+          "static_frames": 14
+        },
+        {
+          "episode": 21,
+          "frames": 104,
+          "meta_length": 104,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 34,
+          "state_constant_episode": false,
+          "static_frames": 37
+        }
+      ],
+      "so101_pick_v3": [
+        {
+          "episode": 0,
+          "frames": 465,
+          "meta_length": 465,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 85,
+          "state_constant_episode": false,
+          "static_frames": 232
+        },
+        {
+          "episode": 1,
+          "frames": 326,
+          "meta_length": 326,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 66,
+          "state_constant_episode": false,
+          "static_frames": 163
+        }
+      ],
+      "so101_pm_smoke": [
+        {
+          "episode": 0,
+          "frames": 31,
+          "meta_length": 31,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 1,
+          "state_constant_episode": true,
+          "static_frames": 31
+        }
+      ],
+      "so101_policy_rollout": [
+        {
+          "episode": 0,
+          "frames": 656,
+          "meta_length": 656,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 128,
+          "state_constant_episode": false,
+          "static_frames": 526
+        }
+      ],
+      "so101_teleop_bench": [
+        {
+          "episode": 0,
+          "frames": 248,
+          "meta_length": 248,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.6113,
+              "frozen_frames": 151,
+              "runs": 11,
+              "longest_run_frames": 26,
+              "longest_run_t_s": [
+                4.3,
+                6.9
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.6113,
+              "frozen_frames": 151,
+              "runs": 11,
+              "longest_run_frames": 26,
+              "longest_run_t_s": [
+                4.3,
+                6.9
+              ]
+            }
+          },
+          "state_unique_rows": 2,
+          "state_constant_episode": true,
+          "static_frames": 21
+        },
+        {
+          "episode": 1,
+          "frames": 259,
+          "meta_length": 259,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.6783,
+              "frozen_frames": 175,
+              "runs": 13,
+              "longest_run_frames": 29,
+              "longest_run_t_s": [
+                8.1,
+                11.0
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.6783,
+              "frozen_frames": 175,
+              "runs": 13,
+              "longest_run_frames": 29,
+              "longest_run_t_s": [
+                8.1,
+                11.0
+              ]
+            }
+          },
+          "state_unique_rows": 1,
+          "state_constant_episode": true,
+          "static_frames": 48
+        },
+        {
+          "episode": 2,
+          "frames": 250,
+          "meta_length": 250,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.3574,
+              "frozen_frames": 89,
+              "runs": 10,
+              "longest_run_frames": 30,
+              "longest_run_t_s": [
+                1.0,
+                4.0
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.3574,
+              "frozen_frames": 89,
+              "runs": 10,
+              "longest_run_frames": 30,
+              "longest_run_t_s": [
+                1.0,
+                4.0
+              ]
+            }
+          },
+          "state_unique_rows": 1,
+          "state_constant_episode": true,
+          "static_frames": 60
+        },
+        {
+          "episode": 3,
+          "frames": 252,
+          "meta_length": 252,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.2908,
+              "frozen_frames": 73,
+              "runs": 10,
+              "longest_run_frames": 26,
+              "longest_run_t_s": [
+                3.6,
+                6.2
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.2908,
+              "frozen_frames": 73,
+              "runs": 10,
+              "longest_run_frames": 26,
+              "longest_run_t_s": [
+                3.6,
+                6.2
+              ]
+            }
+          },
+          "state_unique_rows": 1,
+          "state_constant_episode": true,
+          "static_frames": 34
+        },
+        {
+          "episode": 4,
+          "frames": 708,
+          "meta_length": 708,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0778,
+              "frozen_frames": 55,
+              "runs": 3,
+              "longest_run_frames": 23,
+              "longest_run_t_s": [
+                5.4,
+                7.7
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0778,
+              "frozen_frames": 55,
+              "runs": 3,
+              "longest_run_frames": 23,
+              "longest_run_t_s": [
+                5.4,
+                7.7
+              ]
+            }
+          },
+          "state_unique_rows": 1,
+          "state_constant_episode": true,
+          "static_frames": 637
+        },
+        {
+          "episode": 5,
+          "frames": 672,
+          "meta_length": 672,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.1311,
+              "frozen_frames": 88,
+              "runs": 8,
+              "longest_run_frames": 33,
+              "longest_run_t_s": [
+                22.3,
+                25.6
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.1311,
+              "frozen_frames": 88,
+              "runs": 8,
+              "longest_run_frames": 33,
+              "longest_run_t_s": [
+                22.3,
+                25.6
+              ]
+            }
+          },
+          "state_unique_rows": 1,
+          "state_constant_episode": true,
+          "static_frames": 515
+        },
+        {
+          "episode": 6,
+          "frames": 87,
+          "meta_length": 87,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.4651,
+              "frozen_frames": 40,
+              "runs": 6,
+              "longest_run_frames": 14,
+              "longest_run_t_s": [
+                5.3,
+                6.7
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.4651,
+              "frozen_frames": 40,
+              "runs": 6,
+              "longest_run_frames": 14,
+              "longest_run_t_s": [
+                5.3,
+                6.7
+              ]
+            }
+          },
+          "state_unique_rows": 1,
+          "state_constant_episode": true,
+          "static_frames": 14
+        },
+        {
+          "episode": 7,
+          "frames": 130,
+          "meta_length": 130,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.6124,
+              "frozen_frames": 79,
+              "runs": 8,
+              "longest_run_frames": 30,
+              "longest_run_t_s": [
+                0.0,
+                3.0
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.6124,
+              "frozen_frames": 79,
+              "runs": 8,
+              "longest_run_frames": 30,
+              "longest_run_t_s": [
+                0.0,
+                3.0
+              ]
+            }
+          },
+          "state_unique_rows": 1,
+          "state_constant_episode": true,
+          "static_frames": 7
+        },
+        {
+          "episode": 8,
+          "frames": 110,
+          "meta_length": 110,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.633,
+              "frozen_frames": 69,
+              "runs": 7,
+              "longest_run_frames": 19,
+              "longest_run_t_s": [
+                0.0,
+                1.9
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.633,
+              "frozen_frames": 69,
+              "runs": 7,
+              "longest_run_frames": 19,
+              "longest_run_t_s": [
+                0.0,
+                1.9
+              ]
+            }
+          },
+          "state_unique_rows": 1,
+          "state_constant_episode": true,
+          "static_frames": 8
+        }
+      ],
+      "so101_teleop_v2": [
+        {
+          "episode": 0,
+          "frames": 265,
+          "meta_length": 265,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0947,
+              "frozen_frames": 25,
+              "runs": 4,
+              "longest_run_frames": 9,
+              "longest_run_t_s": [
+                4.6,
+                5.5
+              ]
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0947,
+              "frozen_frames": 25,
+              "runs": 4,
+              "longest_run_frames": 9,
+              "longest_run_t_s": [
+                4.6,
+                5.5
+              ]
+            }
+          },
+          "state_unique_rows": 168,
+          "state_constant_episode": false,
+          "static_frames": 26
+        },
+        {
+          "episode": 1,
+          "frames": 182,
+          "meta_length": 182,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 161,
+          "state_constant_episode": false,
+          "static_frames": 6
+        },
+        {
+          "episode": 2,
+          "frames": 162,
+          "meta_length": 162,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 155,
+          "state_constant_episode": false,
+          "static_frames": 0
+        },
+        {
+          "episode": 3,
+          "frames": 168,
+          "meta_length": 168,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 146,
+          "state_constant_episode": false,
+          "static_frames": 0
+        },
+        {
+          "episode": 4,
+          "frames": 132,
+          "meta_length": 132,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 118,
+          "state_constant_episode": false,
+          "static_frames": 0
+        },
+        {
+          "episode": 5,
+          "frames": 166,
+          "meta_length": 166,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 161,
+          "state_constant_episode": false,
+          "static_frames": 0
+        },
+        {
+          "episode": 6,
+          "frames": 171,
+          "meta_length": 171,
+          "freeze": {
+            "eps0.05_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            },
+            "eps0.1_delta0.5_k3": {
+              "ratio": 0.0,
+              "frozen_frames": 0,
+              "runs": 0,
+              "longest_run_frames": 0
+            }
+          },
+          "state_unique_rows": 147,
+          "state_constant_episode": false,
+          "static_frames": 10
+        }
+      ]
+    }
+  },
+  "replay_candidate": {
+    "dataset": "so101_teleop_v2",
+    "episode": 0,
+    "t_start_s": 4.6,
+    "t_end_s": 5.5,
+    "frames": 9,
+    "episode_freeze_ratio": 0.0947,
+    "cameras": [
+      "observation.images.wrist"
+    ],
+    "rule": "선택 기준 최장 연속 동결 구간이 가장 긴 에피소드. _fix·심링크 파생 데이터셋과 state가 에피소드 전체에서 상수인 에피소드(동결 시작 시각이 없음)는 제외"
+  },
+  "state_constant_episodes": {
+    "episodes": {
+      "so101_pm_smoke": [
+        0
+      ],
+      "so101_teleop_bench": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "note_ko": "observation.state가 에피소드 전체에서 1~2개 값뿐인 에피소드. 동결이 전 구간에 걸쳐 시작 시각이 없으므로 재생 후보와 교정 차 계산에서 뺀다. 이 에피소드의 동결 ratio는 action이 움직인 구간 비율과 같다"
+  },
+  "static_calibration": {
+    "definition": "state·action 모두 전 관절 프레임 간 |Δ| < 0.1°가 연속 5차분 이상인 프레임에서 관절별 평균 action − state(도). 데이터셋별 값은 so101.datasets.*.static_calibration",
+    "calibration_suspect_threshold_deg": 5.0,
+    "replay_candidate_dataset": {
+      "frames": 42,
+      "episodes_used": 3,
+      "mean_action_minus_state_deg": {
+        "shoulder_pan": 6.021,
+        "shoulder_lift": -0.569,
+        "elbow_flex": -0.418,
+        "wrist_flex": 0.959,
+        "wrist_roll": 1.268,
+        "gripper": 1.662
+      },
+      "std_deg": {
+        "shoulder_pan": 7.363,
+        "shoulder_lift": 1.029,
+        "elbow_flex": 0.626,
+        "wrist_flex": 1.322,
+        "wrist_roll": 3.117,
+        "gripper": 2.332
+      },
+      "calibration_suspect": [
+        "shoulder_pan"
+      ]
+    }
+  },
+  "video_viewpoint": {
+    "dataset": "so101_teleop_bench",
+    "episode": 0,
+    "frames": {
+      "depth": {
+        "video": "~/so101_datasets/so101_teleop_bench/videos/observation.images.depth/chunk-000/file-000.mp4",
+        "video_sha256": "ef5c11b515173e154013b8e68bed7ca0e12089524f102bfe350e3e53f846367b",
+        "t_s": 5.0,
+        "png": ".local/m0/so101_teleop_bench_ep0_depth.png"
+      },
+      "wrist": {
+        "video": "~/so101_datasets/so101_teleop_bench/videos/observation.images.wrist/chunk-000/file-000.mp4",
+        "video_sha256": "2d95a4d4536aedcb09a2c225ac6996e720d95b8e086d11d4b9f22f6e9376800d",
+        "t_s": 5.0,
+        "png": ".local/m0/so101_teleop_bench_ep0_wrist.png"
+      }
+    },
+    "judgement": {
+      "observation.images.depth": "third_person",
+      "observation.images.wrist": "wrist"
+    },
+    "note_ko": "depth 키 영상은 깊이 맵이 아니라 RGB 3인칭 고정 시점이다(팔 전체·책상·큐브가 보임). wrist 키는 손목 카메라 시점(그리퍼 앞 근거리). 판단은 PNG 육안 확인."
+  },
+  "bimanual": {
+    "repo": "~/bimanual-robot",
+    "head_commit": "8a09a02b818fb691613e9cc89d642ca29dda7f50",
+    "results": {
+      "roots": [
+        "~/bimanual-robot/logs",
+        "/data/$USER/robot-artifacts"
+      ],
+      "dedupe": "os.walk(followlinks=True) 후 realpath 기준 중복 제거",
+      "unique_result_json": 119,
+      "by_realpath_root": {
+        "robot-artifacts": 69,
+        "logs": 50
+      },
+      "pass_rule": "task_pass → rigid_proxy_lift_pass → completed 순으로 첫 키. 실패 문자열이 예외·Errno면 infra",
+      "families": {
+        "bottle_contact_20260921": {
+          "fail": 3,
+          "pass_key:task_pass": 5,
+          "pass": 2
+        },
+        "bottle_path_audit_20260921": {
+          "fail": 5,
+          "pass_key:task_pass": 12,
+          "pass": 7
+        },
+        "cup_contact_20260919": {
+          "fail": 3,
+          "pass_key:rigid_proxy_lift_pass": 13,
+          "pass": 10
+        },
+        "cup_place_20260919": {
+          "pass": 9,
+          "pass_key:task_pass": 10,
+          "fail": 1
+        },
+        "cup_recovery_20260919": {
+          "fail": 2,
+          "pass_key:rigid_proxy_lift_pass": 10,
+          "pass": 8
+        },
+        "pour_20260921": {
+          "fail": 13,
+          "pass_key:task_pass": 17,
+          "pass": 4
+        },
+        "restaurant": {
+          "not_a_run": 1
+        },
+        "restaurant:collision-probe": {
+          "fail": 2,
+          "pass_key:task_pass": 2
+        },
+        "restaurant:drive-smoke": {
+          "fail": 5,
+          "pass_key:task_pass": 6,
+          "infra": 1
+        },
+        "restaurant:pick-only": {
+          "pass": 1,
+          "pass_key:task_pass": 1
+        },
+        "restaurant:released-cup-probe": {
+          "fail": 10,
+          "pass_key:task_pass": 12,
+          "pass": 2
+        },
+        "restaurant:service": {
+          "fail": 1,
+          "pass_key:task_pass": 5,
+          "infra": 1,
+          "pass": 3
+        },
+        "restaurant:static-pose-probe": {
+          "fail": 2,
+          "pass_key:task_pass": 4,
+          "pass": 2
+        },
+        "restaurant:water-service": {
+          "pass": 7,
+          "pass_key:task_pass": 21,
+          "fail": 13,
+          "infra": 1
+        }
+      },
+      "cup_families": {
+        "cup_contact_20260919": {
+          "runs": 13,
+          "fields_present": {
+            "task_pass@None": 13,
+            "rigid_proxy_lift_pass@result": 13,
+            "real_finray_grasp_verified@result": 13,
+            "recovery_enabled@None": 13,
+            "hardware_accessed@result": 13
+          },
+          "real_finray_grasp_verified_true": 0,
+          "recovery_enabled_true": 0,
+          "hardware_accessed_true": 0,
+          "tool_sha256_match_head": {
+            "simulate_cup_contact.py:differs": 13,
+            "cup_contact_model.py:differs": 13
+          },
+          "observation_source": {
+            "None": 13
+          }
+        },
+        "cup_place_20260919": {
+          "runs": 10,
+          "fields_present": {
+            "task_pass@result": 10,
+            "rigid_proxy_lift_pass@result": 10,
+            "real_finray_grasp_verified@result": 10,
+            "recovery_enabled@result": 10,
+            "hardware_accessed@result": 10
+          },
+          "real_finray_grasp_verified_true": 0,
+          "recovery_enabled_true": 6,
+          "hardware_accessed_true": 0,
+          "tool_sha256_match_head": {
+            "simulate_cup_contact.py:differs": 10,
+            "cup_contact_model.py:differs": 10,
+            "cup_contact_recovery.py:same": 10,
+            "cup_contact_place.py:differs": 10
+          },
+          "observation_source": {
+            "simulator_ground_truth_not_rgb": 10
+          }
+        },
+        "cup_recovery_20260919": {
+          "runs": 10,
+          "fields_present": {
+            "task_pass@None": 10,
+            "rigid_proxy_lift_pass@result": 10,
+            "real_finray_grasp_verified@result": 10,
+            "recovery_enabled@result": 10,
+            "hardware_accessed@result": 10
+          },
+          "real_finray_grasp_verified_true": 0,
+          "recovery_enabled_true": 9,
+          "hardware_accessed_true": 0,
+          "tool_sha256_match_head": {
+            "simulate_cup_contact.py:differs": 10,
+            "cup_contact_model.py:differs": 10,
+            "cup_contact_recovery.py:same": 2,
+            "cup_contact_recovery.py:differs": 8
+          },
+          "observation_source": {
+            "simulator_ground_truth_not_rgb": 10
+          }
+        }
+      },
+      "cup_tools_head_sha256": {
+        "simulate_cup_contact.py": "85c90169cd2e6b10ea80e4dd80f370ddbecc822aebb19acf2d15b02b953525ec",
+        "cup_contact_model.py": "7e48eb14c0a294bd8c05329bcda785d5b5dc5741510240002ad2e3cc1c442b90",
+        "cup_contact_recovery.py": "798828a75de3a1a4e0292196026af41d68ce33808abb558c4e144bbf7f7c5206"
+      },
+      "tool_sha256_source": "각 실행 폴더 plan.json의 tool_sha256"
+    },
+    "urdf_left_arm": {
+      "file": "src/hold_flow_description/urdf/hold_flow.urdf",
+      "sha256": "9889eb1694f6f4ab93cb01982abf91d59ff4ec7ce5ef164106ff6893b71adf00",
+      "left_joints_all": [
+        "left_arm_backing_link_joint",
+        "left_cup_tcp_joint",
+        "left_elbow_flex",
+        "left_gripper",
+        "left_mount_joint",
+        "left_shoulder_lift",
+        "left_shoulder_pan",
+        "left_tool0_joint",
+        "left_wheel_joint",
+        "left_wrist_flex",
+        "left_wrist_roll"
+      ],
+      "lerobot_to_urdf": {
+        "shoulder_pan": {
+          "urdf": "left_shoulder_pan",
+          "type": "revolute",
+          "limit": {
+            "lower": -1.91986,
+            "upper": 1.91986,
+            "effort": 10.0,
+            "velocity": 10.0
+          }
+        },
+        "shoulder_lift": {
+          "urdf": "left_shoulder_lift",
+          "type": "revolute",
+          "limit": {
+            "lower": -1.74533,
+            "upper": 1.74533,
+            "effort": 10.0,
+            "velocity": 10.0
+          }
+        },
+        "elbow_flex": {
+          "urdf": "left_elbow_flex",
+          "type": "revolute",
+          "limit": {
+            "lower": -1.69,
+            "upper": 1.69,
+            "effort": 10.0,
+            "velocity": 10.0
+          }
+        },
+        "wrist_flex": {
+          "urdf": "left_wrist_flex",
+          "type": "revolute",
+          "limit": {
+            "lower": -1.65806,
+            "upper": 1.65806,
+            "effort": 10.0,
+            "velocity": 10.0
+          }
+        },
+        "wrist_roll": {
+          "urdf": "left_wrist_roll",
+          "type": "revolute",
+          "limit": {
+            "lower": -2.74385,
+            "upper": 2.84121,
+            "effort": 10.0,
+            "velocity": 10.0
+          }
+        },
+        "gripper": {
+          "urdf": "left_gripper",
+          "type": "revolute",
+          "limit": {
+            "lower": -0.174533,
+            "upper": 1.74533,
+            "effort": 10.0,
+            "velocity": 10.0
+          }
+        }
+      }
+    }
+  },
+  "mujoco_mirror": {
+    "root": "~/so101_tools/sim",
+    "load_mapping_reads": "~/so101_tools/mapping.json",
+    "files": {
+      "mapping": {
+        "path": "~/so101_tools/mapping.json",
+        "sha256": "fa5752225ade6646dc748ee2b8539ea04a08963faf0cd93613084c04d174d157"
+      },
+      "arm_lib": {
+        "path": "~/so101_tools/arm_lib.py",
+        "sha256": "38be368ac6fc78b314e37dd57f4a7ae9baae5d00a44df78000b87a5706a2a022"
+      },
+      "sim_frame": {
+        "path": "~/so101_tools/sim/sim_frame.json",
+        "sha256": "5123f993f95c5a416aa515a1e0346c83a7047634105cd7782ec75634d21df3ba"
+      },
+      "mjcf": {
+        "path": "~/so101_tools/sim/so101_new_calib.xml",
+        "sha256": "325630c618db3012e8383527b02f27c818e5fd196964c56322419e506baec8f7"
+      },
+      "sim_core": {
+        "path": "~/so101_tools/sim/sim_core.py",
+        "sha256": "34d34b573e511e1dea11d67f36ca7a65f68325eaf77153f26aeb40fd282ef1e4"
+      }
+    }
+  }
+}

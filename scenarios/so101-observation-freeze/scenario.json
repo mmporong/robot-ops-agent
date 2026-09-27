@@ -1,0 +1,117 @@
+{
+  "schema": "robot-ops-scenario/1",
+  "scenario_id": "so101-observation-freeze",
+  "title_ko": "텔레옵 기록 중 관측 상태 동결",
+  "origin": "real_recording",
+  "judgement_basis": "physical",
+  "assembly": "single_arm_so101",
+  "adapter": "bimanual",
+  "task": "lerobot_episode",
+  "replayable": {
+    "value": true,
+    "layer": "control_runtime",
+    "reason": "명령(action)과 관측(observation.state)이 함께 기록돼 있어 재생·추종 오차 계산이 가능하다. 원인 계층은 텔레옵 워커 폴링 굶주림(상태 갱신 정지)이고, 결과로 데이터셋이 오염됐다"
+  },
+  "sources": [
+    {
+      "path": "~/so101_datasets/so101_teleop_bench/data/chunk-000/file-000.parquet",
+      "sha256": "95e37651db9ff137ecdb7cad628958aeabd05123821c77761fbdede86f8f5dcd",
+      "role": "recording"
+    },
+    {
+      "path": "~/so101_datasets/so101_teleop_bench/videos/observation.images.depth/chunk-000/file-000.mp4",
+      "sha256": "ef5c11b515173e154013b8e68bed7ca0e12089524f102bfe350e3e53f846367b",
+      "role": "recording"
+    },
+    {
+      "path": "~/so101_datasets/so101_teleop_bench/videos/observation.images.wrist/chunk-000/file-000.mp4",
+      "sha256": "2d95a4d4536aedcb09a2c225ac6996e720d95b8e086d11d4b9f22f6e9376800d",
+      "role": "recording"
+    },
+    {
+      "path": "~/so101_datasets/so101_teleop_v2/data/chunk-000/file-000.parquet",
+      "sha256": "6b1fce2b4ce2766d6a33fc3a00fc47cf841ce599aea755e212f7bae88b839d4f",
+      "role": "recording"
+    },
+    {
+      "path": "~/so101_datasets/so101_teleop_v2/videos/observation.images.wrist/chunk-000/file-000.mp4",
+      "sha256": "458dd1148e9589c3b9b9f2357fb27ac4f2c8864389062acd8bb37d94cfcb24a8",
+      "role": "recording"
+    }
+  ],
+  "failure_record_id": null,
+  "incident": {
+    "t_start_s": 4.4,
+    "t_end_s": 6.9,
+    "code": "observation_freeze",
+    "detected_by": "divergence"
+  },
+  "conditions": {
+    "teleop_bench_ep0": {
+      "label_ko": "텔레옵 벤치 ep0 (관측이 거의 전 구간 고정(고유값 2개))",
+      "params": {
+        "source": "lerobot:~/so101_datasets/so101_teleop_bench",
+        "episode": 0,
+        "state_constant_episode": true,
+        "cameras": [
+          "third_person",
+          "wrist"
+        ],
+        "selection": "teleop_bench 9개 에피소드 중 명령(action) 5관절 경로 길이가 가장 긴 에피소드(1015°)"
+      },
+      "judgement_basis": "physical"
+    },
+    "teleop_v2_ep0": {
+      "label_ko": "텔레옵 v2 ep0 (추종하다가 동결 시작)",
+      "params": {
+        "source": "lerobot:~/so101_datasets/so101_teleop_v2",
+        "episode": 0,
+        "freeze_onset_s": [
+          4.7,
+          5.5
+        ],
+        "cameras": [
+          "wrist"
+        ],
+        "calibration_suspect": [
+          "shoulder_pan"
+        ]
+      },
+      "judgement_basis": "physical"
+    }
+  },
+  "grid": {
+    "spawn_x_offset_mm": [
+      0
+    ],
+    "spawn_y_offset_mm": [
+      0
+    ],
+    "repeat_points": 0,
+    "repeats": 0
+  },
+  "verifiers": [
+    "observation_freeze",
+    "joint_tracking",
+    "tcp_distance"
+  ],
+  "limits": {
+    "timeout_s": null
+  },
+  "status": "active",
+  "model_note": null,
+  "provenance": {
+    "created_at": "2026-09-27T14:40:00+09:00",
+    "tool_version": "robot-ops replay M2 (adapters/bimanual)",
+    "freeze_rule": {
+      "eps_deg": 0.1,
+      "delta_deg": 0.5,
+      "k": 3
+    },
+    "inventory": {
+      "path": "evaluations/replay/inventory.json",
+      "sha256": "86a439cf1e0f2b509a2c3beb4f42766fe1b23a27ce0bd2b1a8e12ca2b5cbd66f"
+    },
+    "incident_note_ko": "teleop_bench ep0의 최장 동결 구간(26프레임). 이 에피소드는 관측 상태가 거의 전 구간 고정(248프레임 중 고유값 2개)이라 동결 구간은 명령이 움직인 구간이다. 3인칭 실측 영상에서는 팔이 움직이므로 기록된 관측이 실제 자세를 반영하지 않았다"
+  }
+}

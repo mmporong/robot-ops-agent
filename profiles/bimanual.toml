@@ -1,0 +1,59 @@
+[project]
+id = "bimanual"
+title_ko = "양팔 로봇 프로젝트의 시뮬 실행 기록"
+source_repo = "~/bimanual-robot"
+pinned_commit = "8a09a02"        # 불일치 경고, dirty tree면 run 거부
+
+[adapter]
+entry = "adapters/bimanual/entry.py"
+protocol = "robot-ops-adapter/1"
+
+[interpreters]
+lerobot = "~/miniforge3/envs/lerobot/bin/python"      # numpy·pyarrow
+leisaac = "/data/$USER/conda-envs/leisaac/bin/python" # Isaac 5.1
+rlwalk  = "~/miniforge3/envs/rlwalk/bin/python"       # MuJoCo 미러
+
+[adapter.tasks.lerobot_episode]
+convert = "lerobot"               # parquet → trajectory(q_cmd, q_obs)
+run     = "rlwalk"                # MuJoCo 미러: TCP 계산 + 고스트 렌더
+
+[adapter.tasks.cup_contact]
+run   = "leisaac"
+judge = "core"                   # stdlib, 결과 파일만 읽음
+
+[adapter.tasks.drive_kinematic]
+run   = "lerobot"
+judge = "core"
+
+[adapter.allowlist]              # 어댑터가 실행·import할 수 있는 팀 파일 전부
+scripts = ["tools/simulate_cup_contact.py"]
+imports = ["tools/mobile_service_control.py"]
+
+[mirror]                         # 궤적 모델 = SO-101 MuJoCo 미러 (URDF 대비 RMS 0.00 mm)
+root = "~/so101_tools/sim"
+remove_task_objects = true       # 미러 장면의 작업 물체(piece='cube') 제거
+
+[limits]
+timeout_s = 180                  # Isaac 컵 1회 실측 24.7초(rc 0) → max(180, 24.7×2) = 180
+gpu_tasks = ["cup_contact"]      # run 뒤 nvidia-smi memory.used가 실행 전 +200 MiB 안으로 돌아와야 다음 셀 진행
+gpu_tolerance_mib = 200
+gpu_settle_s = 20
+memory_max = "20G"
+min_free_disk_gb = 5
+lock_file = "/tmp/robot-ops-isaac.lock"
+per_run_keep_mb = 5
+
+[artifacts]
+root = "/data/$USER/robot-ops/bimanual"
+report_dir = ".local/report"
+delete_patterns = ["scene.usda", "frames/*.png", "isaac/scene.usda", "isaac/frames/*.png"]  # cup_contact는 isaac/ 아래
+
+[replay]
+# 팔 선택(left)·관절 이름 매핑(URDF left_*)·단위(lerobot 도)는 adapters/bimanual/convert_lerobot.py가 정하고
+# trajectory/1 머리에 기록한다. 여기에는 코어가 읽는 값만 둔다.
+# 임계는 관절 추종 오차·명령↔관측 TCP 거리의 '초과 구간' 표기에만 쓴다. 관측 동결(freeze) 판정은
+# divergence의 별도 규칙(freeze_rule)이라 이 값에 영향받지 않는다.
+threshold = { joint_deg = 3.0, tcp_mm = 20.0 }
+
+[public]
+exclude_status = ["after_fix_regression"]       # report build 기본(공개) 빌드에서 시나리오 카드 전체 제외

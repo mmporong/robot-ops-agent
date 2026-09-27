@@ -1,0 +1,1237 @@
+{
+ "schema": "robot-ops-regress/1",
+ "regress_id": "fixture-regress",
+ "profile": "fake",
+ "scenario_id": "cup-a",
+ "task": "cup_contact",
+ "conditions": {
+  "A": {
+   "label_ko": "복구 끔",
+   "judgement_basis": "rigid_proxy_lift",
+   "cells": [
+    {
+     "x_mm": -5,
+     "y_mm": -5,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x-5_y-5"
+    },
+    {
+     "x_mm": -2.5,
+     "y_mm": -5,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x-2.5_y-5"
+    },
+    {
+     "x_mm": 0,
+     "y_mm": -5,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x0_y-5"
+    },
+    {
+     "x_mm": 2.5,
+     "y_mm": -5,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x2.5_y-5"
+    },
+    {
+     "x_mm": 5,
+     "y_mm": -5,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x5_y-5"
+    },
+    {
+     "x_mm": -5,
+     "y_mm": -2.5,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x-5_y-2.5"
+    },
+    {
+     "x_mm": -2.5,
+     "y_mm": -2.5,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x-2.5_y-2.5"
+    },
+    {
+     "x_mm": 0,
+     "y_mm": -2.5,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x0_y-2.5"
+    },
+    {
+     "x_mm": 2.5,
+     "y_mm": -2.5,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x2.5_y-2.5"
+    },
+    {
+     "x_mm": 5,
+     "y_mm": -2.5,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x5_y-2.5"
+    },
+    {
+     "x_mm": -5,
+     "y_mm": 0,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x-5_y0"
+    },
+    {
+     "x_mm": -2.5,
+     "y_mm": 0,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x-2.5_y0"
+    },
+    {
+     "x_mm": 0,
+     "y_mm": 0,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x0_y0"
+    },
+    {
+     "x_mm": 2.5,
+     "y_mm": 0,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x2.5_y0"
+    },
+    {
+     "x_mm": 5,
+     "y_mm": 0,
+     "status": "ok",
+     "verdict": "fail",
+     "failure_code": "premature_cup_contact",
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": false,
+       "value": 12.0,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x5_y0"
+    },
+    {
+     "x_mm": -5,
+     "y_mm": 2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x-5_y2.5"
+    },
+    {
+     "x_mm": -2.5,
+     "y_mm": 2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x-2.5_y2.5"
+    },
+    {
+     "x_mm": 0,
+     "y_mm": 2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x0_y2.5"
+    },
+    {
+     "x_mm": 2.5,
+     "y_mm": 2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x2.5_y2.5"
+    },
+    {
+     "x_mm": 5,
+     "y_mm": 2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x5_y2.5"
+    },
+    {
+     "x_mm": -5,
+     "y_mm": 5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x-5_y5"
+    },
+    {
+     "x_mm": -2.5,
+     "y_mm": 5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x-2.5_y5"
+    },
+    {
+     "x_mm": 0,
+     "y_mm": 5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x0_y5"
+    },
+    {
+     "x_mm": 2.5,
+     "y_mm": 5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x2.5_y5"
+    },
+    {
+     "x_mm": 5,
+     "y_mm": 5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_A_x5_y5"
+    }
+   ],
+   "pass": 14,
+   "valid": 25,
+   "total": 25,
+   "infra": 0,
+   "timeout": 0,
+   "invalid": false
+  },
+  "B": {
+   "label_ko": "복구 켬(정답 좌표 조건)",
+   "judgement_basis": "oracle_recovery_sim_coordinates",
+   "cells": [
+    {
+     "x_mm": -5,
+     "y_mm": -5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x-5_y-5"
+    },
+    {
+     "x_mm": -2.5,
+     "y_mm": -5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x-2.5_y-5"
+    },
+    {
+     "x_mm": 0,
+     "y_mm": -5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x0_y-5"
+    },
+    {
+     "x_mm": 2.5,
+     "y_mm": -5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x2.5_y-5"
+    },
+    {
+     "x_mm": 5,
+     "y_mm": -5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x5_y-5"
+    },
+    {
+     "x_mm": -5,
+     "y_mm": -2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x-5_y-2.5"
+    },
+    {
+     "x_mm": -2.5,
+     "y_mm": -2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x-2.5_y-2.5"
+    },
+    {
+     "x_mm": 0,
+     "y_mm": -2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x0_y-2.5"
+    },
+    {
+     "x_mm": 2.5,
+     "y_mm": -2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x2.5_y-2.5"
+    },
+    {
+     "x_mm": 5,
+     "y_mm": -2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x5_y-2.5"
+    },
+    {
+     "x_mm": -5,
+     "y_mm": 0,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x-5_y0"
+    },
+    {
+     "x_mm": -2.5,
+     "y_mm": 0,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x-2.5_y0"
+    },
+    {
+     "x_mm": 0,
+     "y_mm": 0,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x0_y0"
+    },
+    {
+     "x_mm": 2.5,
+     "y_mm": 0,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x2.5_y0"
+    },
+    {
+     "x_mm": 5,
+     "y_mm": 0,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x5_y0"
+    },
+    {
+     "x_mm": -5,
+     "y_mm": 2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x-5_y2.5"
+    },
+    {
+     "x_mm": -2.5,
+     "y_mm": 2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x-2.5_y2.5"
+    },
+    {
+     "x_mm": 0,
+     "y_mm": 2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x0_y2.5"
+    },
+    {
+     "x_mm": 2.5,
+     "y_mm": 2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x2.5_y2.5"
+    },
+    {
+     "x_mm": 5,
+     "y_mm": 2.5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x5_y2.5"
+    },
+    {
+     "x_mm": -5,
+     "y_mm": 5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x-5_y5"
+    },
+    {
+     "x_mm": -2.5,
+     "y_mm": 5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x-2.5_y5"
+    },
+    {
+     "x_mm": 0,
+     "y_mm": 5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x0_y5"
+    },
+    {
+     "x_mm": 2.5,
+     "y_mm": 5,
+     "status": "ok",
+     "verdict": "pass",
+     "failure_code": null,
+     "checks": [
+      {
+       "id": "proxy_lift_height",
+       "pass": true,
+       "value": 46.5,
+       "threshold": 40.0,
+       "unit": "mm"
+      },
+      {
+       "id": "cup_tilt_max",
+       "pass": true,
+       "value": 3.2,
+       "threshold": 15.0,
+       "unit": "deg"
+      }
+     ],
+     "run_id": "fixture-regress_B_x2.5_y5"
+    },
+    {
+     "x_mm": 5,
+     "y_mm": 5,
+     "status": "infra",
+     "verdict": null,
+     "failure_code": "infra_error",
+     "checks": [],
+     "run_id": "fixture-regress_B_x5_y5"
+    }
+   ],
+   "pass": 24,
+   "valid": 24,
+   "total": 25,
+   "infra": 1,
+   "timeout": 0,
+   "invalid": false
+  }
+ },
+ "determinism": {
+  "condition": "A",
+  "points": 5,
+  "repeats": 3,
+  "verdict_agreement": 1.0,
+  "max_metric_spread": {
+   "proxy_lift_height": 0.0
+  }
+ },
+ "provenance": {
+  "source_repo_commit": "8a09a02",
+  "pinned_commit": "8a09a02",
+  "adapter_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "tool_sha256": {},
+  "sim_version": "5.1.0.0"
+ },
+ "warnings": [],
+ "created_at": "2026-09-27T12:00:00+0900",
+ "note": "테스트 전용 가짜 격자 결과(실측 아님)"
+}
