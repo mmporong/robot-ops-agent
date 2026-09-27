@@ -94,7 +94,84 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("keyword", "vector", "hybrid"),
         default="keyword",
     )
+
+    replay_parser = subparsers.add_parser("replay", help="실행 기록 재생과 명령·관측 어긋남 계산")
+    replay_parser.add_argument("--profile", type=Path, required=True)
+    replay_parser.add_argument(
+        "--source", required=True, help="lerobot:<데이터셋 경로> (~, $USER만 확장)"
+    )
+    replay_parser.add_argument("--episode", type=int, required=True)
+    replay_parser.add_argument("--ghost", action="store_true", help="고스트 렌더 영상 생성")
+
+    regress_parser = subparsers.add_parser("regress", help="시나리오 격자 회귀 평가")
+    regress_parser.add_argument("--profile", type=Path, required=True)
+    regress_parser.add_argument("--scenario", required=True, help="scenarios/<id>/scenario.json의 id")
+    regress_parser.add_argument("--condition", choices=("A", "B", "both"), default="both")
+
+    report_parser = subparsers.add_parser("report", help="정적 리포트")
+    report_sub = report_parser.add_subparsers(dest="report_command", required=True)
+    report_build = report_sub.add_parser("build", help="리포트 데이터 굽기 (기본 = 공개 빌드)")
+    report_build.add_argument("--profile", type=Path, required=True)
+    report_build.add_argument(
+        "--private",
+        action="store_true",
+        help="after_fix_regression 시나리오까지 전체 포함(로컬 확인용, 배포 금지)",
+    )
     return parser
+
+
+def _replay_main(args: argparse.Namespace) -> int:
+    from .replay.adapter import AdapterError
+    from .replay.artifacts import DeletionRefused, InsufficientDisk
+    from .replay.profile import expand_path, load_profile
+    from .replay.regress import RegressRefused, run_regress, run_replay, strip_timestamps
+    from .replay.scenario_bank import load_scenario
+
+    try:
+        profile = load_profile(args.profile)
+        if args.command == "replay":
+            kind, sep, raw_path = args.source.partition(":")
+            if not sep or kind != "lerobot":
+                raise ValueError("--source는 lerobot:<경로> 형식이어야 합니다")
+            result = run_replay(
+                profile, expand_path(raw_path, Path.cwd()), args.episode, ghost=args.ghost
+            )
+            divergence = result["divergence"]
+            summary = {
+                "run_id": result["run_id"],
+                "incidents": divergence["incidents"],
+                "max_joint_err_deg": divergence["max_joint_err_deg"],
+                "tcp": divergence["tcp"],
+                "warnings": result["warnings"],
+            }
+            print(json.dumps(summary, ensure_ascii=False, indent=2))
+            return 0
+        if args.command == "regress":
+            scenario = load_scenario(
+                profile.base_dir / "scenarios" / args.scenario / "scenario.json"
+            )
+            conditions = ("A", "B") if args.condition == "both" else (args.condition,)
+            result = run_regress(profile, scenario, conditions=conditions)
+            view = strip_timestamps(result)
+            for cond in view["conditions"].values():
+                cond.pop("cells", None)
+            view["determinism"].pop("cells", None)
+            print(json.dumps(view, ensure_ascii=False, indent=2))
+            return 0
+        from .replay.report import build
+
+        print(json.dumps(build(profile, private=args.private), ensure_ascii=False, indent=2))
+        return 0
+    except (
+        AdapterError,
+        DeletionRefused,
+        InsufficientDisk,
+        RegressRefused,
+        OSError,
+        ValueError,
+    ) as error:
+        print(json.dumps({"error": str(error), "type": type(error).__name__}, ensure_ascii=False))
+        return 2
 
 
 def _settings_from_args(args: argparse.Namespace) -> IndexSettings:
@@ -136,6 +213,8 @@ def _embedder_from_args(args: argparse.Namespace) -> Embedder:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command in ("replay", "regress", "report"):
+        return _replay_main(args)
     settings = _settings_from_args(args)
 
     try:

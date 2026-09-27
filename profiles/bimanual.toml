@@ -1,0 +1,55 @@
+[project]
+id = "bimanual"
+title_ko = "양팔 로봇 프로젝트의 시뮬 실행 기록"
+source_repo = "~/bimanual-robot"
+pinned_commit = "8a09a02"        # 불일치 경고, dirty tree면 run 거부
+
+[adapter]
+entry = "adapters/bimanual/entry.py"
+protocol = "robot-ops-adapter/1"
+
+[interpreters]
+lerobot = "~/miniforge3/envs/lerobot/bin/python"      # numpy·pyarrow
+leisaac = "/data/$USER/conda-envs/leisaac/bin/python" # Isaac 5.1
+rlwalk  = "~/miniforge3/envs/rlwalk/bin/python"       # MuJoCo 미러
+
+[adapter.tasks.lerobot_episode]
+convert = "lerobot"               # parquet → trajectory(q_cmd, q_obs)
+run     = "rlwalk"                # MuJoCo 미러: TCP 계산 + 고스트 렌더
+
+[adapter.tasks.cup_contact]
+run   = "leisaac"
+judge = "core"                   # stdlib, 결과 파일만 읽음
+
+[adapter.tasks.drive_kinematic]
+run   = "lerobot"
+judge = "core"
+
+[adapter.allowlist]              # 어댑터가 실행·import할 수 있는 팀 파일 전부
+scripts = ["tools/simulate_cup_contact.py"]
+imports = ["tools/mobile_service_control.py"]
+
+[mirror]                         # 궤적 모델 = SO-101 MuJoCo 미러 (URDF 대비 RMS 0.00 mm)
+root = "~/so101_tools/sim"
+remove_task_objects = true       # 미러 장면의 작업 물체(piece='cube') 제거
+
+[limits]
+timeout_s = 600                  # 첫 Isaac 1회 실측 후 max(180, 실측×2)로 확정
+memory_max = "20G"
+min_free_disk_gb = 5
+lock_file = "/tmp/robot-ops-isaac.lock"
+per_run_keep_mb = 5
+
+[artifacts]
+root = "/data/$USER/robot-ops/bimanual"
+report_dir = ".local/report"
+delete_patterns = ["scene.usda", "frames/*.png"]
+
+[replay]
+arm = "left"
+joint_map = { shoulder_pan = "<M0에서 URDF 이름 확정>" }
+units_in = "lerobot_degrees"
+threshold = { joint_deg = 3.0, tcp_mm = 20.0 }   # M0 기준선 뒤 재보정
+
+[public]
+exclude_status = ["after_fix_regression"]       # report build 기본(공개) 빌드에서 시나리오 카드 전체 제외
