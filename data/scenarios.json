@@ -1,0 +1,113 @@
+[
+  {
+    "scenario_id": "bimanual-cup-premature-contact",
+    "title_ko": "컵 위치 오차에서 조기 접촉",
+    "origin": "sim_run",
+    "judgement_basis": "rigid_proxy_lift",
+    "assembly": "left_arm_proxy",
+    "task": "cup_contact",
+    "status": "active",
+    "status_ko": "활성",
+    "model_note": null,
+    "replayable": {
+      "value": true,
+      "layer": "ik_reachability",
+      "reason": "Isaac 5.1 simulate_cup_contact.py를 격자 오프셋으로 다시 실행해 시뮬 정답 좌표로 판정한다(왼팔 강체 패드 접촉 시뮬 기준)"
+    },
+    "incident": {
+      "t_start_s": 6.425,
+      "t_end_s": 6.425,
+      "code": "premature_cup_contact",
+      "detected_by": "verifier"
+    },
+    "failure_record_id": null,
+    "conditions": {
+      "A": {
+        "label_ko": "복구 끔",
+        "judgement_basis": "rigid_proxy_lift"
+      },
+      "B": {
+        "label_ko": "복구 켬(정답 좌표 조건)",
+        "judgement_basis": "oracle_recovery_sim_coordinates"
+      }
+    },
+    "sources": [
+      {
+        "path": "~/bimanual-robot/logs/cup_recovery_20260919/control_no_recovery/result.json",
+        "sha256": "e848bfa6e4c60ca6ea96a1e2b7861508b1a723af1bc6ae862392247c986a591f",
+        "role": "incident_run"
+      },
+      {
+        "path": "~/bimanual-robot/logs/cup_recovery_20260919/control_no_recovery/plan.json",
+        "sha256": "c71f39acd3075d52e3fc97745738e92e4305509dea876537b7220ba869707871",
+        "role": "incident_run"
+      }
+    ],
+    "poster": "media/bimanual-cup-premature-contact--A--x0--y-5.webp",
+    "view_count": 0,
+    "has_regress": true
+  },
+  {
+    "scenario_id": "so101-observation-freeze",
+    "title_ko": "텔레옵 기록 중 관측 상태 동결",
+    "origin": "real_recording",
+    "judgement_basis": "physical",
+    "assembly": "single_arm_so101",
+    "task": "lerobot_episode",
+    "status": "active",
+    "status_ko": "활성",
+    "model_note": null,
+    "replayable": {
+      "value": true,
+      "layer": "control_runtime",
+      "reason": "명령(action)과 관측(observation.state)이 함께 기록돼 있어 재생·추종 오차 계산이 가능하다. 원인 계층은 텔레옵 워커 폴링 굶주림(상태 갱신 정지)이고, 결과로 데이터셋이 오염됐다"
+    },
+    "incident": {
+      "t_start_s": 4.4,
+      "t_end_s": 6.9,
+      "code": "observation_freeze",
+      "detected_by": "divergence"
+    },
+    "failure_record_id": null,
+    "conditions": {
+      "teleop_bench_ep0": {
+        "label_ko": "텔레옵 벤치 ep0 (관측이 거의 전 구간 고정(고유값 2개))",
+        "judgement_basis": "physical"
+      },
+      "teleop_v2_ep0": {
+        "label_ko": "텔레옵 v2 ep0 (추종하다가 동결 시작)",
+        "judgement_basis": "physical"
+      }
+    },
+    "sources": [
+      {
+        "path": "~/so101_datasets/so101_teleop_bench/data/chunk-000/file-000.parquet",
+        "sha256": "95e37651db9ff137ecdb7cad628958aeabd05123821c77761fbdede86f8f5dcd",
+        "role": "recording"
+      },
+      {
+        "path": "~/so101_datasets/so101_teleop_bench/videos/observation.images.depth/chunk-000/file-000.mp4",
+        "sha256": "ef5c11b515173e154013b8e68bed7ca0e12089524f102bfe350e3e53f846367b",
+        "role": "recording"
+      },
+      {
+        "path": "~/so101_datasets/so101_teleop_bench/videos/observation.images.wrist/chunk-000/file-000.mp4",
+        "sha256": "2d95a4d4536aedcb09a2c225ac6996e720d95b8e086d11d4b9f22f6e9376800d",
+        "role": "recording"
+      },
+      {
+        "path": "~/so101_datasets/so101_teleop_v2/data/chunk-000/file-000.parquet",
+        "sha256": "6b1fce2b4ce2766d6a33fc3a00fc47cf841ce599aea755e212f7bae88b839d4f",
+        "role": "recording"
+      },
+      {
+        "path": "~/so101_datasets/so101_teleop_v2/videos/observation.images.wrist/chunk-000/file-000.mp4",
+        "sha256": "458dd1148e9589c3b9b9f2357fb27ac4f2c8864389062acd8bb37d94cfcb24a8",
+        "role": "recording"
+      }
+    ],
+    "poster": "media/so101-observation-freeze--teleop_bench_ep0--real.webp",
+    "view_count": 2,
+    "has_regress": false
+  }
+]

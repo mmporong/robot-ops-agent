@@ -1,0 +1,4420 @@
+{
+  "schema": "robot-ops-regress/1",
+  "regress_id": "regress-20260927T172623-01b57e",
+  "profile": "bimanual",
+  "scenario_id": "bimanual-cup-premature-contact",
+  "task": "cup_contact",
+  "mode": "grid",
+  "conditions": {
+    "A": {
+      "label_ko": "복구 끔",
+      "judgement_basis": "rigid_proxy_lift",
+      "cells": [
+        {
+          "x_mm": -5,
+          "y_mm": -5,
+          "status": "ok",
+          "verdict": "fail",
+          "failure_code": "premature_cup_contact",
+          "checks": [
+            {
+              "id": "failure_event",
+              "pass": false,
+              "value": "premature_cup_contact",
+              "threshold": null,
+              "unit": null,
+              "t_s": 6.425000000000109
+            },
+            {
+              "id": "stored_task_pass",
+              "pass": false,
+              "value": false,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": null,
+              "value": 0,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": null,
+              "value": false,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": null,
+              "value": null,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": null,
+              "value": null,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": null,
+              "value": null,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xm5_ym5",
+          "sim_time_s": 6.425000000000109,
+          "wall_s": 15.379,
+          "record_run_id": "record-20260927T175131-ff9902_A_xm5_ym5_rec",
+          "record_verdict": "fail",
+          "video": "media/bimanual-cup-premature-contact--A--x-5--y-5.mp4",
+          "poster": "media/bimanual-cup-premature-contact--A--x-5--y-5.webp",
+          "roi": [
+            516,
+            258,
+            450,
+            320
+          ]
+        },
+        {
+          "x_mm": -2.5,
+          "y_mm": -5,
+          "status": "ok",
+          "verdict": "fail",
+          "failure_code": "premature_cup_contact",
+          "checks": [
+            {
+              "id": "failure_event",
+              "pass": false,
+              "value": "premature_cup_contact",
+              "threshold": null,
+              "unit": null,
+              "t_s": 6.425000000000109
+            },
+            {
+              "id": "stored_task_pass",
+              "pass": false,
+              "value": false,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": null,
+              "value": 0,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": null,
+              "value": false,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": null,
+              "value": null,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": null,
+              "value": null,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": null,
+              "value": null,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xm2.5_ym5",
+          "sim_time_s": 6.425000000000109,
+          "wall_s": 15.474,
+          "record_run_id": "record-20260927T175131-ff9902_A_xm2.5_ym5_rec",
+          "record_verdict": "fail",
+          "video": "media/bimanual-cup-premature-contact--A--x-2p5--y-5.mp4",
+          "poster": "media/bimanual-cup-premature-contact--A--x-2p5--y-5.webp",
+          "roi": [
+            524,
+            262,
+            446,
+            318
+          ]
+        },
+        {
+          "x_mm": 0,
+          "y_mm": -5,
+          "status": "ok",
+          "verdict": "fail",
+          "failure_code": "premature_cup_contact",
+          "checks": [
+            {
+              "id": "failure_event",
+              "pass": false,
+              "value": "premature_cup_contact",
+              "threshold": null,
+              "unit": null,
+              "t_s": 6.425000000000109
+            },
+            {
+              "id": "stored_task_pass",
+              "pass": false,
+              "value": false,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": null,
+              "value": 0,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": null,
+              "value": false,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": null,
+              "value": null,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": null,
+              "value": null,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": null,
+              "value": null,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp0_ym5",
+          "sim_time_s": 6.425000000000109,
+          "wall_s": 15.073,
+          "record_run_id": "record-20260927T175131-ff9902_A_xp0_ym5_rec",
+          "record_verdict": "fail",
+          "video": "media/bimanual-cup-premature-contact--A--x0--y-5.mp4",
+          "poster": "media/bimanual-cup-premature-contact--A--x0--y-5.webp",
+          "roi": [
+            524,
+            262,
+            444,
+            318
+          ]
+        },
+        {
+          "x_mm": 2.5,
+          "y_mm": -5,
+          "status": "ok",
+          "verdict": "fail",
+          "failure_code": "premature_cup_contact",
+          "checks": [
+            {
+              "id": "failure_event",
+              "pass": false,
+              "value": "premature_cup_contact",
+              "threshold": null,
+              "unit": null,
+              "t_s": 6.425000000000109
+            },
+            {
+              "id": "stored_task_pass",
+              "pass": false,
+              "value": false,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": null,
+              "value": 0,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": null,
+              "value": false,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": null,
+              "value": null,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": null,
+              "value": null,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": null,
+              "value": null,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp2.5_ym5",
+          "sim_time_s": 6.425000000000109,
+          "wall_s": 15.128,
+          "record_run_id": "record-20260927T175131-ff9902_A_xp2.5_ym5_rec",
+          "record_verdict": "fail",
+          "video": "media/bimanual-cup-premature-contact--A--x2p5--y-5.mp4",
+          "poster": "media/bimanual-cup-premature-contact--A--x2p5--y-5.webp",
+          "roi": [
+            516,
+            258,
+            444,
+            322
+          ]
+        },
+        {
+          "x_mm": 5,
+          "y_mm": -5,
+          "status": "ok",
+          "verdict": "fail",
+          "failure_code": "premature_cup_contact",
+          "checks": [
+            {
+              "id": "failure_event",
+              "pass": false,
+              "value": "premature_cup_contact",
+              "threshold": null,
+              "unit": null,
+              "t_s": 6.425000000000109
+            },
+            {
+              "id": "stored_task_pass",
+              "pass": false,
+              "value": false,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": null,
+              "value": 0,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": null,
+              "value": false,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": null,
+              "value": null,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": null,
+              "value": null,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": null,
+              "value": null,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": null,
+              "value": null,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp5_ym5",
+          "sim_time_s": 6.425000000000109,
+          "wall_s": 14.22,
+          "record_run_id": "record-20260927T175131-ff9902_A_xp5_ym5_rec",
+          "record_verdict": "fail",
+          "video": "media/bimanual-cup-premature-contact--A--x5--y-5.mp4",
+          "poster": "media/bimanual-cup-premature-contact--A--x5--y-5.webp",
+          "roi": [
+            524,
+            262,
+            440,
+            320
+          ]
+        },
+        {
+          "x_mm": -5,
+          "y_mm": -2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09402990341184,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 4.270021915435791,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.00282210111618042,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0569236663006132,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 5.640542208482989,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 5.786330761943971,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.15399707212988262,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xm5_ym2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 20.343
+        },
+        {
+          "x_mm": -2.5,
+          "y_mm": -2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.12144804000852,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 4.043191909790039,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002834796905517578,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0731092582796364,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.843351822425728,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.7143395850012357,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.20651936369420182,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xm2.5_ym2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.296
+        },
+        {
+          "x_mm": 0,
+          "y_mm": -2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09504318237302,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.8309924602508545,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028391480445861816,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0424686862712251,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.1913697904676943,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.589893441357998,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.12249764786121702,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp0_ym2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.8
+        },
+        {
+          "x_mm": 2.5,
+          "y_mm": -2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09039402008054,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.6222002506256104,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028516650199890137,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0408002653554682,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 4.222251182884702,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.435336143435997,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.09592802987268191,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp2.5_ym2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 25.421
+        },
+        {
+          "x_mm": 5,
+          "y_mm": -2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09009599685666,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.4545035362243652,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002861708402633667,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0400006533343165,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 6.158054206871287,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 5.4165359716439045,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.06922464485023948,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp5_ym2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.841
+        },
+        {
+          "x_mm": -5,
+          "y_mm": 0,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.10934829711911,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 4.220304012298584,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028269588947296143,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0556837229611649,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 5.116645343396497,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 5.210703634684516,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.10822707959104258,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xm5_yp0",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.24
+        },
+        {
+          "x_mm": -2.5,
+          "y_mm": 0,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.10714292526242,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.9851901531219482,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002839326858520508,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0548614546337376,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.5286895796486384,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.29788949930724,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.047239020344334894,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xm2.5_yp0",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.3
+        },
+        {
+          "x_mm": 0,
+          "y_mm": 0,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.10821580886838,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.7656359672546387,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028500258922576904,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0564710676302935,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.3200540107474548,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.6106444715235995,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.06230202006639763,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp0_yp0",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.344,
+          "record_run_id": "record-20260927T175131-ff9902_A_xp0_yp0_rec",
+          "record_verdict": "pass",
+          "video": "media/bimanual-cup-premature-contact--A--x0--y0.mp4",
+          "poster": "media/bimanual-cup-premature-contact--A--x0--y0.webp",
+          "roi": [
+            516,
+            258,
+            450,
+            322
+          ]
+        },
+        {
+          "x_mm": 2.5,
+          "y_mm": 0,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.098202228546114,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.5783586502075195,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028591156005859375,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0478485786199476,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 4.636282125105972,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.848533844850326,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.07168327484688204,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp2.5_yp0",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.244
+        },
+        {
+          "x_mm": 5,
+          "y_mm": 0,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.096652507781954,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.3989322185516357,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028739869594573975,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0631877365374631,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 6.661439398419608,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 5.930632357423196,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.14811882704160012,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp5_yp0",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.242
+        },
+        {
+          "x_mm": -5,
+          "y_mm": 2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.107500553131075,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 4.126232147216797,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028376877307891846,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.085465910624861,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 4.532695016025182,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 4.543896530424359,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.21257619863445354,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xm5_yp2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.305
+        },
+        {
+          "x_mm": -2.5,
+          "y_mm": 2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.11465311050412,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.908766031265259,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002842426300048828,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0622660377900273,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.2702506678730336,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.8700773065782315,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.0751542652023663,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xm2.5_yp2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 21.497
+        },
+        {
+          "x_mm": 0,
+          "y_mm": 2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.10553359985349,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.701737880706787,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002856135368347168,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0757539305996655,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.600251286779692,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.8299265741098987,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.15460932174367553,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp0_yp2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.198
+        },
+        {
+          "x_mm": 2.5,
+          "y_mm": 2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09385108947751,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.5195674896240234,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028667151927948,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0604824457370876,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 5.205703884995443,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 4.435102378112149,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.12266653318764381,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp2.5_yp2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.239
+        },
+        {
+          "x_mm": 5,
+          "y_mm": 2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.097546577453585,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.361346483230591,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.00287705659866333,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0630482981632827,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 7.222817186226774,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 6.505970022155894,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.16413916357745262,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp5_yp2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.34
+        },
+        {
+          "x_mm": -5,
+          "y_mm": 5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.11650085449216,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 4.034616947174072,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002841740846633911,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0848440636029855,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.9224137103100083,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.811375690694909,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.22200166063263668,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xm5_yp5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.401
+        },
+        {
+          "x_mm": -2.5,
+          "y_mm": 5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.11286497116086,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.8367464542388916,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028471946716308594,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0608524479776005,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.1838013948797803,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.607510224283101,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.055214672427855126,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xm2.5_yp5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.285
+        },
+        {
+          "x_mm": 0,
+          "y_mm": 5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09861946105954,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.645117998123169,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028570592403411865,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0477092813845346,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 4.038967172171533,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.2460203460719366,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.06073705654657834,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp0_yp5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.344
+        },
+        {
+          "x_mm": 2.5,
+          "y_mm": 5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.092897415161104,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.466165542602539,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028703808784484863,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.058606846623844,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 5.795335636507552,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 5.041053967065148,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.14183402787015703,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp2.5_yp5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.243
+        },
+        {
+          "x_mm": 5,
+          "y_mm": 5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.0965332984924,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.307410478591919,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002879917621612549,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0617964659124235,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 7.958493296695731,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 7.2577313651125674,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.1297857201643477,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_A_xp5_yp5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 24.368
+        }
+      ],
+      "pass": 20,
+      "valid": 25,
+      "total": 25,
+      "infra": 0,
+      "timeout": 0,
+      "invalid": false,
+      "pattern_ko": [
+        "y −5 mm 행 5점 전부 조기 접촉"
+      ],
+      "failed_rows_mm": [
+        -5.0
+      ],
+      "failed_cols_mm": []
+    },
+    "B": {
+      "label_ko": "복구 켬(정답 좌표 조건)",
+      "judgement_basis": "oracle_recovery_sim_coordinates",
+      "cells": [
+        {
+          "x_mm": -5,
+          "y_mm": -5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.13214588165283,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.7627875804901123,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028252899646759033,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0056932847229971,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.3057670212187693,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.6050330053200113,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.13021405834433797,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xm5_ym5",
+          "sim_time_s": 22.616666666666024,
+          "wall_s": 27.717
+        },
+        {
+          "x_mm": -2.5,
+          "y_mm": -5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.11807918548584,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.7609646320343018,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028381645679473877,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0316765807866224,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.3178747735690695,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.610743730994192,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.11164209227784294,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xm2.5_ym5",
+          "sim_time_s": 22.616666666666024,
+          "wall_s": 27.537
+        },
+        {
+          "x_mm": 0,
+          "y_mm": -5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.106098651885986,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.754504442214966,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028553903102874756,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0789083538015332,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.324216259753299,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.6139630180629427,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.18840889031232735,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp0_ym5",
+          "sim_time_s": 22.616666666666024,
+          "wall_s": 28.056,
+          "record_run_id": "record-20260927T175131-ff9902_B_xp0_ym5_rec",
+          "record_verdict": "pass",
+          "video": "media/bimanual-cup-premature-contact--B--x0--y-5.mp4",
+          "poster": "media/bimanual-cup-premature-contact--B--x0--y-5.webp",
+          "roi": [
+            524,
+            262,
+            444,
+            318
+          ]
+        },
+        {
+          "x_mm": 2.5,
+          "y_mm": -5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.07903814315796,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.7636289596557617,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002860933542251587,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0634114240725134,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.3215184672134344,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.6131097339932854,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.09505412665610354,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp2.5_ym5",
+          "sim_time_s": 22.616666666666024,
+          "wall_s": 27.521
+        },
+        {
+          "x_mm": 5,
+          "y_mm": -5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.07683277130127,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.7612526416778564,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028786063194274902,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.1091740107814774,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.3235822912091217,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.6074629337636326,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.12370196314921618,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp5_ym5",
+          "sim_time_s": 22.616666666666024,
+          "wall_s": 26.856
+        },
+        {
+          "x_mm": -5,
+          "y_mm": -2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09402990341184,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 4.270021915435791,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.00282210111618042,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0569236663006132,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 5.640542208482989,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 5.786330761943971,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.15399707212988262,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xm5_ym2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.404
+        },
+        {
+          "x_mm": -2.5,
+          "y_mm": -2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.12144804000852,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 4.043191909790039,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002834796905517578,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0731092582796364,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.843351822425728,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.7143395850012357,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.20651936369420182,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xm2.5_ym2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.347
+        },
+        {
+          "x_mm": 0,
+          "y_mm": -2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09504318237302,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.8309924602508545,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028391480445861816,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0424686862712251,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.1913697904676943,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.589893441357998,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.12249764786121702,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp0_ym2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.395
+        },
+        {
+          "x_mm": 2.5,
+          "y_mm": -2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09039402008054,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.6222002506256104,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028516650199890137,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0408002653554682,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 4.222251182884702,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.435336143435997,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.09592802987268191,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp2.5_ym2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.291
+        },
+        {
+          "x_mm": 5,
+          "y_mm": -2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09009599685666,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.4545035362243652,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002861708402633667,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0400006533343165,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 6.158054206871287,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 5.4165359716439045,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.06922464485023948,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp5_ym2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.241
+        },
+        {
+          "x_mm": -5,
+          "y_mm": 0,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.10934829711911,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 4.220304012298584,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028269588947296143,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0556837229611649,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 5.116645343396497,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 5.210703634684516,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.10822707959104258,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xm5_yp0",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.313
+        },
+        {
+          "x_mm": -2.5,
+          "y_mm": 0,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.10714292526242,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.9851901531219482,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002839326858520508,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0548614546337376,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.5286895796486384,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.29788949930724,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.047239020344334894,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xm2.5_yp0",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.347
+        },
+        {
+          "x_mm": 0,
+          "y_mm": 0,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.10821580886838,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.7656359672546387,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028500258922576904,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0564710676302935,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.3200540107474548,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.6106444715235995,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.06230202006639763,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp0_yp0",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.247
+        },
+        {
+          "x_mm": 2.5,
+          "y_mm": 0,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.098202228546114,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.5783586502075195,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028591156005859375,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0478485786199476,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 4.636282125105972,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.848533844850326,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.07168327484688204,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp2.5_yp0",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.289
+        },
+        {
+          "x_mm": 5,
+          "y_mm": 0,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.096652507781954,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.3989322185516357,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028739869594573975,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0631877365374631,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 6.661439398419608,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 5.930632357423196,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.14811882704160012,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp5_yp0",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.252
+        },
+        {
+          "x_mm": -5,
+          "y_mm": 2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.107500553131075,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 4.126232147216797,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028376877307891846,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.085465910624861,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 4.532695016025182,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 4.543896530424359,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.21257619863445354,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xm5_yp2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.15
+        },
+        {
+          "x_mm": -2.5,
+          "y_mm": 2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.11465311050412,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.908766031265259,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002842426300048828,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0622660377900273,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.2702506678730336,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.8700773065782315,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.0751542652023663,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xm2.5_yp2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.242
+        },
+        {
+          "x_mm": 0,
+          "y_mm": 2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.10553359985349,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.701737880706787,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002856135368347168,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0757539305996655,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.600251286779692,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.8299265741098987,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.15460932174367553,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp0_yp2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.299
+        },
+        {
+          "x_mm": 2.5,
+          "y_mm": 2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09385108947751,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.5195674896240234,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028667151927948,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0604824457370876,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 5.205703884995443,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 4.435102378112149,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.12266653318764381,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp2.5_yp2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.285
+        },
+        {
+          "x_mm": 5,
+          "y_mm": 2.5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.097546577453585,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.361346483230591,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.00287705659866333,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0630482981632827,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 7.222817186226774,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 6.505970022155894,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.16413916357745262,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp5_yp2.5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.289
+        },
+        {
+          "x_mm": -5,
+          "y_mm": 5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.11650085449216,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 4.034616947174072,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002841740846633911,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0848440636029855,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.9224137103100083,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.811375690694909,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.22200166063263668,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xm5_yp5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.341
+        },
+        {
+          "x_mm": -2.5,
+          "y_mm": 5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.11286497116086,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.8367464542388916,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028471946716308594,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0608524479776005,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 3.1838013948797803,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 2.607510224283101,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.055214672427855126,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xm2.5_yp5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.281
+        },
+        {
+          "x_mm": 0,
+          "y_mm": 5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.09861946105954,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.645117998123169,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028570592403411865,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0477092813845346,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 4.038967172171533,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 3.2460203460719366,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.06073705654657834,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp0_yp5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.492
+        },
+        {
+          "x_mm": 2.5,
+          "y_mm": 5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.092897415161104,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.466165542602539,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.0028703808784484863,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.058606846623844,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 5.795335636507552,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 5.041053967065148,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.14183402787015703,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp2.5_yp5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 23.244
+        },
+        {
+          "x_mm": 5,
+          "y_mm": 5,
+          "status": "ok",
+          "verdict": "pass",
+          "failure_code": null,
+          "checks": [
+            {
+              "id": "stored_task_pass",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "hold_window_samples",
+              "pass": true,
+              "value": 120,
+              "threshold": 120,
+              "unit": "samples"
+            },
+            {
+              "id": "samples_finite",
+              "pass": true,
+              "value": true,
+              "threshold": true,
+              "unit": "bool"
+            },
+            {
+              "id": "proxy_lift_height",
+              "pass": true,
+              "value": 60.0965332984924,
+              "threshold": 40.0,
+              "unit": "mm"
+            },
+            {
+              "id": "finger_contact_force_min",
+              "pass": true,
+              "value": 3.307410478591919,
+              "threshold": 0.02,
+              "unit": "N"
+            },
+            {
+              "id": "arm_tracking_error_max",
+              "pass": true,
+              "value": 0.002879917621612549,
+              "threshold": 0.12,
+              "unit": "rad"
+            },
+            {
+              "id": "midbody_height_error_max",
+              "pass": true,
+              "value": 1.0617964659124235,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "contact_center_error_max",
+              "pass": true,
+              "value": 7.958493296695731,
+              "threshold": 15.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_lateral_drift_max",
+              "pass": true,
+              "value": 7.2577313651125674,
+              "threshold": 20.0,
+              "unit": "mm"
+            },
+            {
+              "id": "cup_tilt_max",
+              "pass": true,
+              "value": 0.1297857201643477,
+              "threshold": 15.0,
+              "unit": "deg"
+            }
+          ],
+          "run_id": "regress-20260927T172623-01b57e_B_xp5_yp5",
+          "sim_time_s": 18.008333333332953,
+          "wall_s": 21.242
+        }
+      ],
+      "pass": 25,
+      "valid": 25,
+      "total": 25,
+      "infra": 0,
+      "timeout": 0,
+      "invalid": false,
+      "pattern_ko": [
+        "실패 없음"
+      ],
+      "failed_rows_mm": [],
+      "failed_cols_mm": []
+    }
+  },
+  "determinism": {
+    "condition": "A",
+    "points": 5,
+    "repeats": 3,
+    "verdict_agreement": 1.0,
+    "unanimous_points": 5,
+    "measured_points": 5,
+    "max_metric_spread": {
+      "arm_tracking_error_max": 0.0,
+      "contact_center_error_max": 0.0,
+      "cup_lateral_drift_max": 0.0,
+      "cup_tilt_max": 0.0,
+      "finger_contact_force_min": 0.0,
+      "hold_window_samples": 0.0,
+      "midbody_height_error_max": 0.0,
+      "proxy_lift_height": 0.0
+    },
+    "cells": [
+      {
+        "x_mm": -5,
+        "y_mm": -5,
+        "verdicts": [
+          "fail",
+          "fail",
+          "fail"
+        ],
+        "statuses": [
+          "ok",
+          "ok",
+          "ok"
+        ]
+      },
+      {
+        "x_mm": -2.5,
+        "y_mm": -2.5,
+        "verdicts": [
+          "pass",
+          "pass",
+          "pass"
+        ],
+        "statuses": [
+          "ok",
+          "ok",
+          "ok"
+        ]
+      },
+      {
+        "x_mm": 0,
+        "y_mm": 0,
+        "verdicts": [
+          "pass",
+          "pass",
+          "pass"
+        ],
+        "statuses": [
+          "ok",
+          "ok",
+          "ok"
+        ]
+      },
+      {
+        "x_mm": 2.5,
+        "y_mm": 2.5,
+        "verdicts": [
+          "pass",
+          "pass",
+          "pass"
+        ],
+        "statuses": [
+          "ok",
+          "ok",
+          "ok"
+        ]
+      },
+      {
+        "x_mm": 5,
+        "y_mm": 5,
+        "verdicts": [
+          "pass",
+          "pass",
+          "pass"
+        ],
+        "statuses": [
+          "ok",
+          "ok",
+          "ok"
+        ]
+      }
+    ]
+  },
+  "provenance": {
+    "source_repo_commit": "8a09a02b818fb691613e9cc89d642ca29dda7f50",
+    "pinned_commit": "8a09a02",
+    "adapter_sha256": "7cca67e974c14d05c2c243903f4efef310100ac985807c9ddf7b82656a6992ab",
+    "tool_sha256": {
+      "cup_contact_model.py": "7e48eb14c0a294bd8c05329bcda785d5b5dc5741510240002ad2e3cc1c442b90",
+      "cup_contact_place.py": "5b504cd101b50beab0a2e3630df2f4a9875a185a4a6bca8f86d435f38ec50bb6",
+      "cup_contact_recovery.py": "798828a75de3a1a4e0292196026af41d68ce33808abb558c4e144bbf7f7c5206",
+      "plan_body_side_grasp.py": "bfa0acdd44c9c6da931744b5b973a08528a1e42541332b72e2610c81b408c472",
+      "simulate_cup_contact.py": "85c90169cd2e6b10ea80e4dd80f370ddbecc822aebb19acf2d15b02b953525ec",
+      "workcell_preview_inputs.py": "b9e1eda52e970632410e7e4a1ea7b11979d709390d51430c9f4406ba1038d7de",
+      "workcell_preview_motion.py": "f3fe37faf76696ab04e2e328a367033eee5a07c8e19f484c33ac6e01643bd144"
+    },
+    "sim_version": "5.1.0.0"
+  },
+  "warnings": [],
+  "created_at": "2026-09-27T17:51:11+0900",
+  "wall_s": 1488.218,
+  "gpu_check": {
+    "tolerance_mib": 200.0,
+    "settle_s": 20.0,
+    "runs": 65,
+    "all_released": true,
+    "max_excess_mib": 0,
+    "max_waited_s": 0.0,
+    "baseline_range_mib": [
+      17,
+      17
+    ]
+  },
+  "scenario_status": {
+    "status": "active",
+    "model_note": null
+  },
+  "rejudged_at": "2026-09-27T18:11:16+0900",
+  "grid": {
+    "x_mm": [
+      -5.0,
+      -2.5,
+      0.0,
+      2.5,
+      5.0
+    ],
+    "y_mm": [
+      -5.0,
+      -2.5,
+      0.0,
+      2.5,
+      5.0
+    ]
+  },
+  "verifiers": [
+    "proxy_lift_height",
+    "finger_contact_force_min",
+    "arm_tracking_error_max",
+    "midbody_height_error_max",
+    "contact_center_error_max",
+    "cup_lateral_drift_max",
+    "cup_tilt_max"
+  ],
+  "scenario_conditions": {
+    "A": {
+      "label_ko": "복구 끔",
+      "judgement_basis": "rigid_proxy_lift"
+    },
+    "B": {
+      "label_ko": "복구 켬(정답 좌표 조건)",
+      "judgement_basis": "oracle_recovery_sim_coordinates"
+    }
+  },
+  "runs_root": "/data/$USER/robot-ops/bimanual/runs",
+  "complete": true,
+  "pass_map_png": "media/bimanual-cup-premature-contact--passmap.png",
+  "pass_map_webp": "media/bimanual-cup-premature-contact--passmap.webp"
+}

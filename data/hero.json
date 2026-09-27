@@ -1,0 +1,69 @@
+{
+  "source": "cup_grid",
+  "scenario_id": "bimanual-cup-premature-contact",
+  "video": "media/hero.mp4",
+  "poster": "media/hero.webp",
+  "fallback_min_margin": false,
+  "point": {
+    "x_mm": 0.0,
+    "y_mm": -5.0
+  },
+  "grid": {
+    "points": 25,
+    "range_mm": 5.0
+  },
+  "conditions": {
+    "A": {
+      "label_ko": "복구 끔",
+      "judgement_basis": "rigid_proxy_lift",
+      "pass": 20,
+      "valid": 25,
+      "invalid": false
+    },
+    "B": {
+      "label_ko": "복구 켬(정답 좌표 조건)",
+      "judgement_basis": "oracle_recovery_sim_coordinates",
+      "pass": 25,
+      "valid": 25,
+      "invalid": false
+    }
+  },
+  "assembly": "left_arm_proxy",
+  "width": 1200,
+  "height": 600,
+  "pattern_ko": {
+    "A": [
+      "y −5 mm 행 5점 전부 조기 접촉"
+    ],
+    "B": [
+      "실패 없음"
+    ]
+  },
+  "length_s": 17.07,
+  "cup_grid": {
+    "scenario_id": "bimanual-cup-premature-contact",
+    "measured": true,
+    "grid": {
+      "points": 25,
+      "range_mm": 5.0
+    },
+    "conditions": {
+      "A": {
+        "label_ko": "복구 끔",
+        "judgement_basis": "rigid_proxy_lift",
+        "pass": 20,
+        "valid": 25,
+        "invalid": false
+      },
+      "B": {
+        "label_ko": "복구 켬(정답 좌표 조건)",
+        "judgement_basis": "oracle_recovery_sim_coordinates",
+        "pass": 25,
+        "valid": 25,
+        "invalid": false
+      }
+    },
+    "assembly": "left_arm_proxy",
+    "origin": "sim_run"
+  }
+}

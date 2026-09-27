@@ -1,0 +1,34 @@
+[
+  {
+    "title_ko": "서보 발연",
+    "reason_ko": "전기·펌웨어"
+  },
+  {
+    "title_ko": "서보 온도 레지스터 래치",
+    "reason_ko": "전기·펌웨어"
+  },
+  {
+    "title_ko": "과부하 오발·버스 급사",
+    "reason_ko": "전기·펌웨어"
+  },
+  {
+    "title_ko": "Astra 카메라 USB 교착",
+    "reason_ko": "전기·펌웨어"
+  },
+  {
+    "title_ko": "OLED 불량으로 I2C 버스 사망",
+    "reason_ko": "전기·펌웨어"
+  },
+  {
+    "title_ko": "그리퍼 죠 바닥 충돌",
+    "reason_ko": "궤적 기록 없음"
+  },
+  {
+    "title_ko": "토크 해제 뒤 팔 추락",
+    "reason_ko": "궤적 기록 없음"
+  },
+  {
+    "title_ko": "wrist_flex 간헐 무응답",
+    "reason_ko": "궤적 기록 없음"
+  }
+]

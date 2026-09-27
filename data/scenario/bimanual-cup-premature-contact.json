@@ -1,0 +1,69 @@
+{
+  "scenario_id": "bimanual-cup-premature-contact",
+  "title_ko": "컵 위치 오차에서 조기 접촉",
+  "origin": "sim_run",
+  "judgement_basis": "rigid_proxy_lift",
+  "assembly": "left_arm_proxy",
+  "task": "cup_contact",
+  "status": "active",
+  "status_ko": "활성",
+  "model_note": null,
+  "replayable": {
+    "value": true,
+    "layer": "ik_reachability",
+    "reason": "Isaac 5.1 simulate_cup_contact.py를 격자 오프셋으로 다시 실행해 시뮬 정답 좌표로 판정한다(왼팔 강체 패드 접촉 시뮬 기준)"
+  },
+  "incident": {
+    "t_start_s": 6.425,
+    "t_end_s": 6.425,
+    "code": "premature_cup_contact",
+    "detected_by": "verifier"
+  },
+  "failure_record_id": null,
+  "conditions": {
+    "A": {
+      "label_ko": "복구 끔",
+      "judgement_basis": "rigid_proxy_lift"
+    },
+    "B": {
+      "label_ko": "복구 켬(정답 좌표 조건)",
+      "judgement_basis": "oracle_recovery_sim_coordinates"
+    }
+  },
+  "sources": [
+    {
+      "path": "~/bimanual-robot/logs/cup_recovery_20260919/control_no_recovery/result.json",
+      "sha256": "e848bfa6e4c60ca6ea96a1e2b7861508b1a723af1bc6ae862392247c986a591f",
+      "role": "incident_run"
+    },
+    {
+      "path": "~/bimanual-robot/logs/cup_recovery_20260919/control_no_recovery/plan.json",
+      "sha256": "c71f39acd3075d52e3fc97745738e92e4305509dea876537b7220ba869707871",
+      "role": "incident_run"
+    }
+  ],
+  "views": [],
+  "provenance": {
+    "created_at": "2026-09-27T14:40:00+09:00",
+    "tool_version": "robot-ops regress M2 scenario (M3에서 실행)",
+    "incident_note_ko": "기록 사고: control_no_recovery(cup_spawn_offset_m=[0, -0.005, 0], recovery_enabled=false)에서 6.425초 preclose_failure=premature_cup_contact. 과거 결과는 tool_sha256이 HEAD와 달라 재사용하지 않고 M3에서 새로 실행한다",
+    "source_repo_pinned_commit": "8a09a02",
+    "timeout_note": "M3 첫 실행 실측 24.7초(rc 0) → max(180, 24.7×2) = 180초로 확정"
+  },
+  "regress": {
+    "A": {
+      "label_ko": "복구 끔",
+      "judgement_basis": "rigid_proxy_lift",
+      "pass": 20,
+      "valid": 25,
+      "invalid": false
+    },
+    "B": {
+      "label_ko": "복구 켬(정답 좌표 조건)",
+      "judgement_basis": "oracle_recovery_sim_coordinates",
+      "pass": 25,
+      "valid": 25,
+      "invalid": false
+    }
+  }
+}
