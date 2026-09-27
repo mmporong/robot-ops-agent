@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; media-src 'self'; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="color-scheme" content="light">
+<title>사고 재생 리포트</title>
+<meta name="description" content="로봇 실행 기록의 명령과 관측이 어긋난 시점을 영상과 수치로 다시 보고, 재현한 사고를 격자 조건으로 다시 평가한 결과">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">본문으로 건너뛰기</a>
+<header class="masthead">
+  <div class="wrap masthead-row">
+    <a class="wordmark" href="#/">robot-ops <span>사고 재생 리포트</span></a>
+    <nav aria-label="주 메뉴">
+      <a href="#/" data-nav="home">사고 목록</a>
+      <a href="#/eval" data-nav="eval">격자 평가</a>
+    </nav>
+  </div>
+</header>
+<main id="main" class="wrap" tabindex="-1">
+  <p class="loading" id="boot">리포트 데이터를 불러오는 중입니다.</p>
+  <noscript><p class="loading">이 리포트는 JavaScript로 데이터 파일을 읽어 화면을 그립니다.</p></noscript>
+</main>
+<footer class="colophon wrap" id="colophon"></footer>
+</body>
+</html>

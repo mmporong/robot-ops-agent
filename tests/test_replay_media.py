@@ -73,6 +73,66 @@ class MediaCommandTest(unittest.TestCase):
 
         self.assertIsNone(media.find_cjk_font(fallback))
 
+    def test_trimmed_side_by_side_shifts_incident_and_progress(self) -> None:
+        argv = media.side_by_side_command(
+            Path("a.mp4"), Path("b.mp4"), Path("o.mp4"), fps=10,
+            labels=("실측 3인칭 카메라", "명령(반투명)·관측"), font_path="/f.ttc",
+            incident=(3.4, 5.9), incident_label="관측 동결 구간", start_s=1.0, length_s=18.0,
+        )
+        self.assertEqual(argv[argv.index("-ss") + 1], "1")
+        self.assertEqual(argv.count("-ss"), 2)
+        self.assertEqual(argv.count("-t"), 2)
+        graph = argv[argv.index("-filter_complex") + 1]
+        self.assertIn("w='iw*t/18'", graph)
+        self.assertIn("text='관측 동결 구간'", graph)
+        self.assertIn("drawbox=x=0:y=0:w=iw:h=40", graph)
+
+    def test_clip_command(self) -> None:
+        argv = media.clip_command(Path("s.mp4"), Path("o.mp4"), fps=10, start_s=2.0, length_s=5.0, crf=26)
+        self.assertEqual(argv[argv.index("-crf") + 1], "26")
+        self.assertIn("scale=-2:480:flags=lanczos", argv[argv.index("-vf") + 1])
+        with self.assertRaises(ValueError):
+            media.clip_command(Path("s"), Path("o"), fps=10, label="x")
+
+    def test_hero_sequence_command(self) -> None:
+        argv = media.hero_sequence_command(
+            [
+                {"path": "a.mp4", "start_s": 1.5, "length_s": 5, "label": "조건 A", "highlight": (4.6, 5.0),
+                 "highlight_label": "조기 접촉 판정"},
+                {"path": "b.mp4", "start_s": 1.5, "length_s": 5, "label": "조건 B"},
+                {"path": "map.png", "image": True, "length_s": 5.5, "fade_in": True},
+            ],
+            Path("hero.mp4"), fps=10, font_path="/f.ttc",
+        )
+        graph = argv[argv.index("-filter_complex") + 1]
+        self.assertIn("concat=n=3:v=1:a=0", graph)
+        self.assertIn("pad=1200:600", graph)
+        self.assertIn("enable='between(t,4.6,5)'", graph)
+        self.assertIn("fade=t=in", graph)
+        self.assertIn("w='iw*t/15.5'", graph)
+        self.assertIn("-loop", argv)
+        with self.assertRaises(ValueError):
+            media.hero_sequence_command([], Path("o"), fps=10, font_path="/f")
+
+    def test_pass_map_command_labels_every_cell(self) -> None:
+        grid = [-5, -2.5, 0, 2.5, 5]
+        cells = {(float(x), float(y)): "pass" for x in grid for y in grid}
+        cells[(0.0, -5.0)] = "fail"
+        cells[(5.0, 5.0)] = "infra"
+        argv = media.pass_map_command(
+            [{"title": "조건 A", "subtitle": "통과 23/24", "x_mm": grid, "y_mm": grid, "cells": cells},
+             {"title": "조건 B", "subtitle": "", "x_mm": grid, "y_mm": grid, "cells": {}}],
+            Path("m.png"), font_path="/f.ttc",
+        )
+        chain = argv[argv.index("-vf") + 1]
+        self.assertIn("color=c=0xF7F8F6:s=1200x600", " ".join(argv))
+        self.assertEqual(chain.count("text='통과'"), 23)
+        self.assertEqual(chain.count("text='실패'"), 1)
+        self.assertEqual(chain.count("text='infra'"), 1)
+        self.assertEqual(chain.count("text='측정 전'"), 25)
+        with self.assertRaises(ValueError):
+            media.pass_map_command([], Path("m.png"), font_path="/f")
+
     @unittest.skipUnless(shutil.which("ffmpeg") and shutil.which("ffprobe"), "ffmpeg 없음")
     def test_real_encode_smoke(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
