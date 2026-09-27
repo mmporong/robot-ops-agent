@@ -101,14 +101,14 @@ class ReportBuildTest(unittest.TestCase):
         save_scenario(
             self.root,
             make_scenario(
-                scenario_id="drive-f1004",
+                scenario_id="drive-sample",
                 task="drive_kinematic",
                 status="after_fix_regression",
                 model_note="not_reproducible_in_model",
                 sources=[{"path": str(Path.home() / "bimanual-robot/logs/x.json"), "sha256": "0" * 64, "role": "incident_run"}],
             ),
         )
-        for sid in ("cup-a", "drive-f1004"):
+        for sid in ("cup-a", "drive-sample"):
             out = self.root / "artifacts" / "runs" / f"rg-{sid}"
             out.mkdir(parents=True)
             (out / "regress_result.json").write_text(
@@ -143,43 +143,43 @@ class ReportBuildTest(unittest.TestCase):
         cards, blob = self._data()
         self.assertEqual([c["scenario_id"] for c in cards], ["cup-a"])
         self.assertEqual(summary["build"], "public")
-        self.assertNotIn("drive-f1004", blob)
+        self.assertNotIn("drive-sample", blob)
         self.assertNotIn("after_fix_regression", blob)
-        self.assertFalse((self.out / "data" / "regress" / "drive-f1004.json").exists())
-        self.assertFalse((self.out / "data" / "scenario" / "drive-f1004.json").exists())
+        self.assertFalse((self.out / "data" / "regress" / "drive-sample.json").exists())
+        self.assertFalse((self.out / "data" / "scenario" / "drive-sample.json").exists())
         for path in self.out.rglob("*"):
             if path.is_file():
                 text = path.read_bytes()
-                self.assertNotIn(b"drive-f1004", text, path)
+                self.assertNotIn(b"drive-sample", text, path)
                 self.assertNotIn(b"after_fix_regression", text, path)
 
     def test_private_includes_all_and_preserves_model_note(self) -> None:
         build(self.profile, private=True, media=False)
         cards, _ = self._data()
         by_id = {c["scenario_id"]: c for c in cards}
-        self.assertEqual(set(by_id), {"cup-a", "drive-f1004"})
-        self.assertEqual(by_id["drive-f1004"]["status"], "after_fix_regression")
-        self.assertEqual(by_id["drive-f1004"]["model_note"], "not_reproducible_in_model")
-        self.assertTrue(by_id["drive-f1004"]["sources"][0]["path"].startswith("~/"))
-        self.assertTrue((self.out / "data" / "scenario" / "drive-f1004.json").exists())
+        self.assertEqual(set(by_id), {"cup-a", "drive-sample"})
+        self.assertEqual(by_id["drive-sample"]["status"], "after_fix_regression")
+        self.assertEqual(by_id["drive-sample"]["model_note"], "not_reproducible_in_model")
+        self.assertTrue(by_id["drive-sample"]["sources"][0]["path"].startswith("~/"))
+        self.assertTrue((self.out / "data" / "scenario" / "drive-sample.json").exists())
         self.assertEqual(self._json("data/build.json")["build"], "private")
 
     def test_public_rebuild_removes_private_leftovers(self) -> None:
         build(self.profile, private=True, media=False)
         build(self.profile, media=False)
         _, blob = self._data()
-        self.assertNotIn("drive-f1004", blob)
+        self.assertNotIn("drive-sample", blob)
 
     def test_regress_derived_status_excludes_drive_scenario(self) -> None:
-        save_scenario(self.root, make_scenario(scenario_id="drive-f1004", task="drive_kinematic", status="active"))
-        out = self.root / "artifacts" / "runs" / "rg-drive-f1004" / "regress_result.json"
+        save_scenario(self.root, make_scenario(scenario_id="drive-sample", task="drive_kinematic", status="active"))
+        out = self.root / "artifacts" / "runs" / "rg-drive-sample" / "regress_result.json"
         out.write_text(json.dumps({
-            "scenario_id": "drive-f1004", "created_at": "2026-09-27T01:00:00", "conditions": {},
+            "scenario_id": "drive-sample", "created_at": "2026-09-27T01:00:00", "conditions": {},
             "scenario_status": {"status": "after_fix_regression", "model_note": None},
         }))
         build(self.profile, media=False)
         _, blob = self._data()
-        self.assertNotIn("drive-f1004", blob)
+        self.assertNotIn("drive-sample", blob)
 
     # --- 경로 정규화 -----------------------------------------------------------------
 

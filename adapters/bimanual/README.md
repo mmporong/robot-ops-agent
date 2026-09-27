@@ -17,7 +17,7 @@
 |---|---|---|---|---|
 | convert | lerobot_episode | lerobot | `convert_lerobot.py` | LeRobot v3 parquet 에피소드 → `trajectory.jsonl`(q_cmd=action, q_obs=state, 5관절 rad, 그리퍼 별도) + 카메라 구간 H.264 MP4(`media/camera_third_person.mp4` "실측 3인칭 카메라", `media/camera_wrist.mp4` "실측 손목 카메라") |
 | run | lerobot_episode | rlwalk | `run_mujoco_episode.py` | SO-101 MuJoCo 미러 FK로 `tcp_cmd_m`·`tcp_obs_m`을 채운 `trajectory_mujoco.jsonl`, `--ghost`면 고스트 MP4(`ghost.mp4`)와 합성 PNG(`ghost_composite.png`) |
-| run | drive_kinematic | lerobot | `run_drive_kinematic.py` | FAIL-20260921-1004 운동학 격자 셀 1개 → `result.json` + `trajectory.jsonl` |
+| run | drive_kinematic | lerobot | `run_drive_kinematic.py` | 차동 구동 운동학 격자 셀 1개 → `result.json` + `trajectory.jsonl` |
 | judge | cup_contact | core | `judge.py` | 저장된 `task_pass`/`rigid_proxy_lift_pass`로 판정, samples 재계산 항목을 checks에 첨부 |
 | judge | drive_kinematic | core | `judge.py` | `final_alignment_bounded`(임계 `evaluations/replay/f1004_thresholds.json`) |
 | run | cup_contact | leisaac | `run_cup_contact.py` | allowlist `tools/simulate_cup_contact.py`를 `--headless --output-dir <workdir>/isaac --spawn-x/y-offset-mm`(+ 조건 B `--recover`, 녹화 요청 시 `--record`)로 실행 → `isaac/result.json`, 녹화 시 10 fps H.264 `cup_contact.mp4` |
