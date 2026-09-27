@@ -11,3 +11,6 @@ dist/
 *.db-wal
 evaluations/results/*.json
 !evaluations/results/.gitkeep
+
+# 팀 확인 전 공개 금지 시나리오(after_fix_regression)
+scenarios/FAIL-20260921-1004/
