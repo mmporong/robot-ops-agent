@@ -39,6 +39,27 @@
       "실패 없음"
     ]
   },
+  "readings": {
+    "A": [
+      "y −5 mm 행만 실패 → 로봇 오른쪽(−y) 방향 여유는 2.5 mm 이상 5 mm 미만(격자 간격 2.5 mm로 본 추정)"
+    ],
+    "B": []
+  },
+  "segments": [
+    {
+      "label": "조건 A 복구 끔 · x 0 mm, y −5 mm · 조기 접촉",
+      "highlight_label": "조기 접촉 판정 6.425 s",
+      "highlight_detail": "고정 죠 패드 0.90 N 접촉 · 컵 수평 이동 0.02 mm",
+      "length_s": 5.575
+    },
+    {
+      "label": "조건 B 복구 켬 · 같은 격자점 · 접촉 판정 뒤 후퇴·재계획 → 들어 올림 통과",
+      "length_s": 6.0
+    },
+    {
+      "length_s": 5.5
+    }
+  ],
   "length_s": 17.07,
   "cup_grid": {
     "scenario_id": "bimanual-cup-premature-contact",
@@ -64,6 +85,92 @@
       }
     },
     "assembly": "left_arm_proxy",
-    "origin": "sim_run"
-  }
+    "origin": "sim_run",
+    "readings": {
+      "A": [
+        "y −5 mm 행만 실패 → 로봇 오른쪽(−y) 방향 여유는 2.5 mm 이상 5 mm 미만(격자 간격 2.5 mm로 본 추정)"
+      ],
+      "B": []
+    },
+    "pattern_ko": {
+      "A": [
+        "y −5 mm 행 5점 전부 조기 접촉"
+      ],
+      "B": [
+        "실패 없음"
+      ]
+    },
+    "geometry_check": {
+      "condition": "A",
+      "agree": 25,
+      "total": 25
+    },
+    "story": {
+      "point": {
+        "x_mm": 0.0,
+        "y_mm": -5.0
+      },
+      "recorded_run": "control_no_recovery",
+      "recorded_t_s": 6.425,
+      "recorded_force_n": 0.877,
+      "replay_t_s": 6.425,
+      "replay_force_n": 0.899,
+      "replay_pad": "fixed",
+      "replay_cup_disp_mm": 0.023,
+      "same_time": true
+    }
+  },
+  "cases": [
+    {
+      "kind": "replay",
+      "scenario_id": "so101-observation-freeze",
+      "title_ko": "텔레옵 기록 중 관측 상태 동결",
+      "origin": "real_recording",
+      "judgement_basis": "physical",
+      "assembly": "single_arm_so101",
+      "condition": "teleop_bench_ep0",
+      "incident": {
+        "t_start_s": 4.4,
+        "t_end_s": 6.9,
+        "kind": "freeze",
+        "n_frames": 26
+      },
+      "metrics": {
+        "max_tcp_mm": 170.4594651551785,
+        "tcp_calibration_suspect": false,
+        "incident_joint_err_deg": 86.1500015258789,
+        "incident_t_s": 4.4
+      },
+      "poster": "media/so101-observation-freeze--teleop_bench_ep0--real.webp"
+    },
+    {
+      "kind": "grid",
+      "scenario_id": "bimanual-cup-premature-contact",
+      "title_ko": "컵 위치 오차에서 조기 접촉",
+      "origin": "sim_run",
+      "judgement_basis": "rigid_proxy_lift",
+      "assembly": "left_arm_proxy",
+      "measured": true,
+      "grid": {
+        "points": 25,
+        "range_mm": 5.0
+      },
+      "conditions": {
+        "A": {
+          "label_ko": "복구 끔",
+          "pass": 20,
+          "valid": 25
+        },
+        "B": {
+          "label_ko": "복구 켬(정답 좌표 조건)",
+          "pass": 25,
+          "valid": 25
+        }
+      },
+      "readings": [
+        "y −5 mm 행만 실패 → 로봇 오른쪽(−y) 방향 여유는 2.5 mm 이상 5 mm 미만(격자 간격 2.5 mm로 본 추정)"
+      ],
+      "poster": "media/bimanual-cup-premature-contact--passmap.webp"
+    }
+  ]
 }

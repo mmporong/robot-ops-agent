@@ -219,6 +219,8 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
 
 .sources { margin-top: 32px; border-top: 1px solid var(--rule); }
 .sources summary { cursor: pointer; font-weight: 700; min-height: 48px; display: flex; align-items: center; }
+.sources summary::before { content: "▸"; margin-right: 8px; color: var(--ink-3); }
+.sources[open] summary::before { content: "▾"; }
 .prov { padding-bottom: 12px; font-size: 14px; }
 .prov p { margin: 10px 0 4px; }
 .table-wrap { overflow-x: auto; max-width: 100%; }
@@ -326,3 +328,161 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
 .row-unmeasured code { color: var(--ink-3); }
 .row-cause td { font-weight: 700; }
 .unmeasured-note { margin: 4px 0 8px; font-size: 14px; color: var(--ink-2); }
+
+/* ---------------------------------------------------------------- 사례 두 가지(홈) */
+:root { --pad-fixed: #7a45c9; --pad-moving: #2a78d6; --cup: #f2cf3d; --cup-edge: #a88400; --pre-wash: rgba(42, 120, 214, 0.07); }
+.hero-kicker { margin: 0; font-size: 14px; font-weight: 700; color: var(--ink-2); letter-spacing: 0.01em; }
+.hero-reading { margin: 4px 0 0; font-size: 17px; font-weight: 700; max-width: 72ch; }
+.hero-steps { margin: 6px 0 0; padding-left: 22px; color: var(--ink-2); font-size: 15px; display: grid; gap: 2px; }
+.cases { margin-top: 56px; }
+.cases-note { margin: 12px 0 0; max-width: 80ch; }
+.case-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 18px; }
+.case { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 18px 20px 14px; display: flex; flex-direction: column; }
+.case-kicker { margin: 0 0 4px; font-size: 13px; font-weight: 800; color: var(--ink-3); letter-spacing: 0.02em; }
+.case h3 { font-size: 20px; }
+.case h3 a { color: var(--ink); text-decoration: none; }
+.case h3 a:hover { text-decoration: underline; }
+.case-rows { margin: 14px 0 0; display: grid; gap: 10px; font-size: 15px; }
+.case-rows div { display: grid; grid-template-columns: 4.2em minmax(0, 1fr); gap: 10px; }
+.case-rows dt { color: var(--ink-3); font-weight: 700; }
+.case-rows dd { margin: 0; }
+.case-links { margin: auto 0 0; padding-top: 14px; display: flex; gap: 18px; flex-wrap: wrap; }
+
+/* ---------------------------------------------------------------- 사례 ② 흐름 */
+.flow-block { margin: 4px 0 28px; }
+.flow-kicker { margin: 0 0 8px; font-size: 13px; font-weight: 800; color: var(--ink-3); }
+.flow ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; counter-reset: none; }
+.flow-step { position: relative; }
+.flow-step + .flow-step::before {
+  content: ""; position: absolute; left: -10px; top: 50%; width: 10px; height: 2px; background: var(--ink-3);
+}
+.flow-step a {
+  display: grid; gap: 4px; height: 100%; padding: 12px 14px; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel);
+  color: var(--ink); text-decoration: none; font-size: 14px; line-height: 1.45;
+}
+.flow-step a:hover { border-color: var(--ink-3); }
+.flow-step.on a { border: 2px solid var(--ink); padding: 11px 13px; }
+.flow-no { display: inline-flex; width: 24px; height: 24px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 13px; font-weight: 800; align-items: center; justify-content: center; }
+.flow-step:not(.on) .flow-no { background: var(--ink-3); }
+.flow-title { font-weight: 800; font-size: 15px; }
+.flow-body { display: grid; gap: 1px; color: var(--ink-2); }
+.flow-line strong { color: var(--ink); }
+.flow .flow-line code { font-size: 12px; }
+
+.case-step { margin-top: 36px; }
+.case-step h2 { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.step-no { font-size: 14px; font-weight: 800; color: #fff; background: var(--ink); border-radius: 4px; padding: 1px 8px; }
+.step-sub { margin-top: 28px; font-size: 17px; }
+.compare-table { margin-top: 12px; }
+.compare-table th[scope="row"] { font-weight: 700; white-space: nowrap; }
+.compare-table td { white-space: nowrap; }
+.passmap-fig { margin: 16px 0 0; }
+.passmap-fig img { width: 100%; max-width: 960px; height: auto; border: 1px solid var(--rule); border-radius: 6px; }
+.passmap-fig figcaption { font-size: 14px; color: var(--ink-2); margin-top: 8px; }
+.reading-line { margin: 12px 0 0; font-weight: 800; font-size: 17px; display: grid; gap: 4px; max-width: 80ch; }
+
+/* ---------------------------------------------------------------- 접촉 증거 */
+.evidence { margin-top: 16px; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 16px 20px 14px; }
+.cell-panel .evidence { border: 0; padding: 0; margin-top: 8px; }
+.evidence-headline { margin: 0; font-size: 16px; font-weight: 700; max-width: 90ch; }
+.evidence-plot { margin: 10px 0 0; }
+.evidence-geom { margin: 10px 0 0; font-size: 15px; max-width: 90ch; }
+.contact-graph { margin-top: 2px; }
+.contact-svg .phase-cell { fill: var(--rule-soft); stroke: var(--panel); stroke-width: 1; }
+.contact-svg .phase-cell.pre { fill: #dbe7f6; }
+.contact-svg .preclose { fill: var(--pre-wash); }
+.contact-svg .phase-label { fill: var(--ink-2); font-size: 11px; font-weight: 700; font-family: var(--sans); }
+.contact-svg .line.pad-fixed { stroke: var(--pad-fixed); stroke-width: 2.2; }
+.contact-svg .line.pad-moving { stroke: var(--pad-moving); stroke-width: 1.8; }
+.contact-svg .line.cup-disp { stroke: var(--ink); stroke-width: 1.8; }
+.contact-svg .verdict-line { stroke: var(--incident); stroke-width: 2; }
+.contact-svg .event-line { stroke: var(--ink-2); stroke-width: 1.4; stroke-dasharray: 4 3; }
+.contact-svg .verdict-label { fill: var(--incident); font-size: 12px; font-weight: 800; font-family: var(--sans); }
+.contact-svg .event-label { fill: var(--ink-2); font-size: 12px; font-weight: 700; font-family: var(--sans); }
+.contact-svg .verdict-dot { fill: var(--incident); stroke: #fff; stroke-width: 1.5; }
+.contact-svg .verdict-value { fill: var(--ink); font-size: 12px; font-weight: 800; font-family: var(--sans); paint-order: stroke; stroke: var(--panel); stroke-width: 3px; }
+.sw-fixed { background: var(--pad-fixed); height: 3px; }
+.sw-moving { background: var(--pad-moving); }
+.sw-disp { background: var(--ink); }
+.sw-pre { height: 12px; background: #dbe7f6; box-shadow: inset 0 0 0 1px rgba(42, 120, 214, 0.35); }
+.sw-verdict { width: 3px !important; height: 14px; background: var(--incident); }
+.phase-details { margin-top: 4px; font-size: 13px; color: var(--ink-2); }
+.phase-details summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; }
+.phase-list { margin: 4px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 18px; }
+.phase-list li { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
+.phase-list li.pre .phase-no { background: #dbe7f6; }
+.phase-no { display: inline-block; min-width: 20px; text-align: center; background: var(--rule-soft); border-radius: 3px; font-weight: 700; font-size: 12px; }
+
+.schematics { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 18px; margin-top: 14px; align-items: start; }
+.sch-fig { margin: 0; min-width: 0; }
+.sch-title { font-size: 13px; font-weight: 700; color: var(--ink-2); margin-bottom: 6px; }
+.schematic { width: 100%; height: auto; background: #fbfbfa; border: 1px solid var(--rule-soft); border-radius: 6px; }
+.schematic .cup-planned { fill: none; stroke: var(--ink-3); stroke-width: 1.6; stroke-dasharray: 6 5; }
+.schematic .cup-actual { fill: var(--cup); fill-opacity: 0.55; stroke: var(--cup-edge); stroke-width: 1.6; }
+.schematic .pad { stroke-width: 1.6; stroke-linejoin: round; }
+.schematic .pad-fixed { fill: var(--pad-fixed); fill-opacity: 0.45; stroke: var(--pad-fixed); }
+.schematic .pad-moving { fill: var(--pad-moving); fill-opacity: 0.35; stroke: var(--pad-moving); }
+.schematic .pad.faint { fill: none; stroke-dasharray: 4 3; stroke-opacity: 0.7; }
+.schematic .target-mark { fill: var(--panel); stroke: var(--ink); stroke-width: 1.4; }
+.schematic .tcp-mark { stroke: var(--ink); stroke-width: 1.6; fill: none; }
+.schematic .contact-ring { fill: none; stroke: var(--incident); stroke-width: 2.6; }
+.schematic .offset-arrow { stroke: var(--ink); stroke-width: 1.6; }
+.schematic .center-dot { fill: var(--ink); }
+.schematic .center-dot.planned { fill: var(--ink-3); }
+.schematic .axis-arrow { stroke: var(--ink-2); stroke-width: 1.4; fill: none; }
+.schematic .scale-bar { stroke: var(--ink); stroke-width: 3; }
+.schematic .sch-label { fill: var(--ink); font-size: 15px; font-weight: 700; font-family: var(--sans); paint-order: stroke; stroke: #fbfbfa; stroke-width: 4px; }
+.schematic .sch-small { fill: var(--ink-2); font-size: 13px; font-family: var(--sans); paint-order: stroke; stroke: #fbfbfa; stroke-width: 3px; }
+.schematic .muted-label { fill: var(--ink-3); font-weight: 600; }
+.schematic .pad-label-fixed { fill: var(--pad-fixed); }
+.schematic .pad-label-moving { fill: var(--pad-moving); }
+.schematic .contact-label { fill: var(--incident); }
+.schematic .grid-dot.dot-pass { fill: var(--pass); }
+.schematic .grid-dot.dot-fail { fill: var(--fail); }
+
+/* ---------------------------------------------------------------- 격자 읽는 법 */
+.reading { margin: 0 0 28px; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 18px 20px; }
+.reading-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: 22px; margin-top: 12px; align-items: start; }
+.reading-figure { min-width: 0; }
+.reading-list { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 15px; }
+.gap-table-wrap { margin-top: 12px; }
+.gap-table { max-width: 420px; }
+.gap-table td, .gap-table th { padding: 5px 12px 5px 0; }
+.cell-sub { font-size: 15px; margin: 18px 0 6px; }
+
+@media (max-width: 900px) {
+  .case-grid { grid-template-columns: minmax(0, 1fr); }
+  .flow ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .flow-step + .flow-step::before { display: none; }
+  .reading-grid { grid-template-columns: minmax(0, 1fr); }
+  .schematics { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 600px) {
+  .flow ol { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .evidence { padding: 12px 12px 10px; margin-left: calc(-1 * var(--gutter) + 8px); margin-right: calc(-1 * var(--gutter) + 8px); }
+  .cell-panel .evidence { margin-left: 0; margin-right: 0; }
+  .reading { padding: 14px 14px; }
+  .case { padding: 14px 14px 12px; }
+  .case-rows div { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .compare-table td, .compare-table th[scope="row"] { white-space: normal; }
+  .reading-line, .hero-reading { font-size: 16px; }
+}
+.schematic .strip-rule { stroke: var(--rule-soft); stroke-width: 1; }
+.sch-note { margin: 6px 0 0; font-size: 13px; color: var(--ink-2); }
+.sch-legend { margin: 8px 0 0; gap: 2px 14px; }
+.sw-planned { width: 14px; height: 0; border-top: 2px dashed var(--ink-3); background: none; }
+.sw-cup { width: 12px !important; height: 12px; border-radius: 50%; background: var(--cup); box-shadow: inset 0 0 0 1px var(--cup-edge); }
+.sw-pad-fixed { width: 14px; height: 8px; background: rgba(122, 69, 201, 0.5); box-shadow: inset 0 0 0 1px var(--pad-fixed); }
+.sw-pad-moving { width: 14px; height: 8px; background: rgba(42, 120, 214, 0.4); box-shadow: inset 0 0 0 1px var(--pad-moving); }
+.sw-contact { width: 12px !important; height: 12px; border-radius: 50%; background: none; box-shadow: inset 0 0 0 2px var(--incident); }
+.detail-head + .flow, main > .flow { margin-bottom: 28px; }
+.incidents-min { margin-top: 20px; }
+@media (max-width: 600px) {
+  .schematic .sch-label { font-size: 21px; stroke-width: 5px; }
+  .schematic .sch-small { font-size: 18px; stroke-width: 4px; }
+  .compare-table thead { display: none; }
+  .compare-table tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 2px 12px; padding: 10px 0; border-bottom: 1px solid var(--rule-soft); }
+  .compare-table th[scope="row"], .compare-table td { border: 0; padding: 0; }
+  .compare-table th[scope="row"] { grid-column: 1 / -1; }
+  .compare-table td::before { content: attr(data-label) " "; color: var(--ink-3); font-weight: 400; }
+}

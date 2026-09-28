@@ -60,7 +60,7 @@
     "replayable": {
       "value": true,
       "layer": "control_runtime",
-      "reason": "명령(action)과 관측(observation.state)이 함께 기록돼 있어 재생·추종 오차 계산이 가능하다. 원인 계층은 텔레옵 워커 폴링 굶주림(상태 갱신 정지)이고, 결과로 데이터셋이 오염됐다"
+      "reason": "명령(action)과 관측(observation.state)이 함께 기록돼 있어 재생과 추종 오차 계산이 가능합니다. 원인 계층은 텔레옵 워커 폴링 굶주림(상태 갱신 정지)이며, 이 기간의 관측 기록은 실제 자세를 반영하지 않습니다."
     },
     "incident": {
       "t_start_s": 4.4,

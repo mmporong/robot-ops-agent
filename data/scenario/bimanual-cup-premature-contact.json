@@ -45,10 +45,10 @@
   "views": [],
   "provenance": {
     "created_at": "2026-09-27T14:40:00+09:00",
-    "tool_version": "robot-ops regress M2 scenario (M3에서 실행)",
-    "incident_note_ko": "기록 사고: control_no_recovery(cup_spawn_offset_m=[0, -0.005, 0], recovery_enabled=false)에서 6.425초 preclose_failure=premature_cup_contact. 과거 결과는 tool_sha256이 HEAD와 달라 재사용하지 않고 M3에서 새로 실행한다",
+    "tool_version": "robot-ops regress",
+    "incident_note_ko": "기록 사고 control_no_recovery(컵 오프셋 [0, −5] mm, 복구 끔)는 6.425초에 닫기 전 조기 접촉(premature_cup_contact)으로 판정됐습니다. 과거 결과는 도구 해시가 현재 코드와 달라 재사용하지 않고 새로 실행했습니다.",
     "source_repo_pinned_commit": "8a09a02",
-    "timeout_note": "M3 첫 실행 실측 24.7초(rc 0) → max(180, 24.7×2) = 180초로 확정"
+    "timeout_note": "첫 실행 실측 24.7초 → max(180, 24.7×2) = 180초로 확정했습니다."
   },
   "regress": {
     "A": {

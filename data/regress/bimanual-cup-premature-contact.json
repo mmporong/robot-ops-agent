@@ -99,6 +99,8 @@
           "run_id": "regress-20260927T172623-01b57e_A_xm5_ym5",
           "sim_time_s": 6.425000000000109,
           "wall_s": 15.379,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x-5_y-5.json",
+          "min_gap_mm": -2.27,
           "record_run_id": "record-20260927T175131-ff9902_A_xm5_ym5_rec",
           "record_verdict": "fail",
           "video": "media/bimanual-cup-premature-contact--A--x-5--y-5.mp4",
@@ -199,6 +201,8 @@
           "run_id": "regress-20260927T172623-01b57e_A_xm2.5_ym5",
           "sim_time_s": 6.425000000000109,
           "wall_s": 15.474,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x-2p5_y-5.json",
+          "min_gap_mm": -2.29,
           "record_run_id": "record-20260927T175131-ff9902_A_xm2.5_ym5_rec",
           "record_verdict": "fail",
           "video": "media/bimanual-cup-premature-contact--A--x-2p5--y-5.mp4",
@@ -299,6 +303,8 @@
           "run_id": "regress-20260927T172623-01b57e_A_xp0_ym5",
           "sim_time_s": 6.425000000000109,
           "wall_s": 15.073,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x0_y-5.json",
+          "min_gap_mm": -2.17,
           "record_run_id": "record-20260927T175131-ff9902_A_xp0_ym5_rec",
           "record_verdict": "fail",
           "video": "media/bimanual-cup-premature-contact--A--x0--y-5.mp4",
@@ -399,6 +405,8 @@
           "run_id": "regress-20260927T172623-01b57e_A_xp2.5_ym5",
           "sim_time_s": 6.425000000000109,
           "wall_s": 15.128,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x2p5_y-5.json",
+          "min_gap_mm": -1.87,
           "record_run_id": "record-20260927T175131-ff9902_A_xp2.5_ym5_rec",
           "record_verdict": "fail",
           "video": "media/bimanual-cup-premature-contact--A--x2p5--y-5.mp4",
@@ -499,6 +507,8 @@
           "run_id": "regress-20260927T172623-01b57e_A_xp5_ym5",
           "sim_time_s": 6.425000000000109,
           "wall_s": 14.22,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x5_y-5.json",
+          "min_gap_mm": -1.38,
           "record_run_id": "record-20260927T175131-ff9902_A_xp5_ym5_rec",
           "record_verdict": "fail",
           "video": "media/bimanual-cup-premature-contact--A--x5--y-5.mp4",
@@ -590,7 +600,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xm5_ym2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 20.343
+          "wall_s": 20.343,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x-5_y-2p5.json",
+          "min_gap_mm": 0.23
         },
         {
           "x_mm": -2.5,
@@ -672,7 +684,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xm2.5_ym2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.296
+          "wall_s": 23.296,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x-2p5_y-2p5.json",
+          "min_gap_mm": 0.2
         },
         {
           "x_mm": 0,
@@ -754,7 +768,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp0_ym2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.8
+          "wall_s": 23.8,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x0_y-2p5.json",
+          "min_gap_mm": 0.17
         },
         {
           "x_mm": 2.5,
@@ -836,7 +852,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp2.5_ym2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 25.421
+          "wall_s": 25.421,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x2p5_y-2p5.json",
+          "min_gap_mm": 0.19
         },
         {
           "x_mm": 5,
@@ -918,7 +936,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp5_ym2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.841
+          "wall_s": 23.841,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x5_y-2p5.json",
+          "min_gap_mm": 0.23
         },
         {
           "x_mm": -5,
@@ -1000,7 +1020,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xm5_yp0",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.24
+          "wall_s": 23.24,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x-5_y0.json",
+          "min_gap_mm": 2.73
         },
         {
           "x_mm": -2.5,
@@ -1082,7 +1104,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xm2.5_yp0",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.3
+          "wall_s": 23.3,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x-2p5_y0.json",
+          "min_gap_mm": 2.7
         },
         {
           "x_mm": 0,
@@ -1165,6 +1189,8 @@
           "run_id": "regress-20260927T172623-01b57e_A_xp0_yp0",
           "sim_time_s": 18.008333333332953,
           "wall_s": 23.344,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x0_y0.json",
+          "min_gap_mm": 2.67,
           "record_run_id": "record-20260927T175131-ff9902_A_xp0_yp0_rec",
           "record_verdict": "pass",
           "video": "media/bimanual-cup-premature-contact--A--x0--y0.mp4",
@@ -1256,7 +1282,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp2.5_yp0",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.244
+          "wall_s": 23.244,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x2p5_y0.json",
+          "min_gap_mm": 2.69
         },
         {
           "x_mm": 5,
@@ -1338,7 +1366,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp5_yp0",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.242
+          "wall_s": 23.242,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x5_y0.json",
+          "min_gap_mm": 2.73
         },
         {
           "x_mm": -5,
@@ -1420,7 +1450,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xm5_yp2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.305
+          "wall_s": 23.305,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x-5_y2p5.json",
+          "min_gap_mm": 5.23
         },
         {
           "x_mm": -2.5,
@@ -1502,7 +1534,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xm2.5_yp2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 21.497
+          "wall_s": 21.497,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x-2p5_y2p5.json",
+          "min_gap_mm": 5.2
         },
         {
           "x_mm": 0,
@@ -1584,7 +1618,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp0_yp2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.198
+          "wall_s": 23.198,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x0_y2p5.json",
+          "min_gap_mm": 5.17
         },
         {
           "x_mm": 2.5,
@@ -1666,7 +1702,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp2.5_yp2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.239
+          "wall_s": 23.239,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x2p5_y2p5.json",
+          "min_gap_mm": 5.19
         },
         {
           "x_mm": 5,
@@ -1748,7 +1786,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp5_yp2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.34
+          "wall_s": 23.34,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x5_y2p5.json",
+          "min_gap_mm": 5.23
         },
         {
           "x_mm": -5,
@@ -1830,7 +1870,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xm5_yp5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.401
+          "wall_s": 23.401,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x-5_y5.json",
+          "min_gap_mm": 7.73
         },
         {
           "x_mm": -2.5,
@@ -1912,7 +1954,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xm2.5_yp5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.285
+          "wall_s": 23.285,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x-2p5_y5.json",
+          "min_gap_mm": 7.7
         },
         {
           "x_mm": 0,
@@ -1994,7 +2038,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp0_yp5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.344
+          "wall_s": 23.344,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x0_y5.json",
+          "min_gap_mm": 7.67
         },
         {
           "x_mm": 2.5,
@@ -2076,7 +2122,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp2.5_yp5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.243
+          "wall_s": 23.243,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x2p5_y5.json",
+          "min_gap_mm": 7.69
         },
         {
           "x_mm": 5,
@@ -2158,7 +2206,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_A_xp5_yp5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 24.368
+          "wall_s": 24.368,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x5_y5.json",
+          "min_gap_mm": 7.73
         }
       ],
       "pass": 20,
@@ -2173,7 +2223,24 @@
       "failed_rows_mm": [
         -5.0
       ],
-      "failed_cols_mm": []
+      "failed_cols_mm": [],
+      "readings": [
+        {
+          "axis": "y",
+          "fail_lines_mm": [
+            -5.0
+          ],
+          "pass_line_mm": -2.5,
+          "sign": -1,
+          "side_ko": "오른쪽",
+          "bounds_mm": [
+            2.5,
+            5.0
+          ],
+          "step_mm": 2.5,
+          "text_ko": "y −5 mm 행만 실패 → 로봇 오른쪽(−y) 방향 여유는 2.5 mm 이상 5 mm 미만(격자 간격 2.5 mm로 본 추정)"
+        }
+      ]
     },
     "B": {
       "label_ko": "복구 켬(정답 좌표 조건)",
@@ -2259,7 +2326,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xm5_ym5",
           "sim_time_s": 22.616666666666024,
-          "wall_s": 27.717
+          "wall_s": 27.717,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x-5_y-5.json",
+          "min_gap_mm": -2.27
         },
         {
           "x_mm": -2.5,
@@ -2341,7 +2410,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xm2.5_ym5",
           "sim_time_s": 22.616666666666024,
-          "wall_s": 27.537
+          "wall_s": 27.537,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x-2p5_y-5.json",
+          "min_gap_mm": -2.29
         },
         {
           "x_mm": 0,
@@ -2424,6 +2495,8 @@
           "run_id": "regress-20260927T172623-01b57e_B_xp0_ym5",
           "sim_time_s": 22.616666666666024,
           "wall_s": 28.056,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x0_y-5.json",
+          "min_gap_mm": -2.17,
           "record_run_id": "record-20260927T175131-ff9902_B_xp0_ym5_rec",
           "record_verdict": "pass",
           "video": "media/bimanual-cup-premature-contact--B--x0--y-5.mp4",
@@ -2515,7 +2588,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp2.5_ym5",
           "sim_time_s": 22.616666666666024,
-          "wall_s": 27.521
+          "wall_s": 27.521,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x2p5_y-5.json",
+          "min_gap_mm": -1.87
         },
         {
           "x_mm": 5,
@@ -2597,7 +2672,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp5_ym5",
           "sim_time_s": 22.616666666666024,
-          "wall_s": 26.856
+          "wall_s": 26.856,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x5_y-5.json",
+          "min_gap_mm": -1.38
         },
         {
           "x_mm": -5,
@@ -2679,7 +2756,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xm5_ym2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.404
+          "wall_s": 23.404,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x-5_y-2p5.json",
+          "min_gap_mm": 0.23
         },
         {
           "x_mm": -2.5,
@@ -2761,7 +2840,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xm2.5_ym2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.347
+          "wall_s": 23.347,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x-2p5_y-2p5.json",
+          "min_gap_mm": 0.2
         },
         {
           "x_mm": 0,
@@ -2843,7 +2924,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp0_ym2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.395
+          "wall_s": 23.395,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x0_y-2p5.json",
+          "min_gap_mm": 0.17
         },
         {
           "x_mm": 2.5,
@@ -2925,7 +3008,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp2.5_ym2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.291
+          "wall_s": 23.291,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x2p5_y-2p5.json",
+          "min_gap_mm": 0.19
         },
         {
           "x_mm": 5,
@@ -3007,7 +3092,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp5_ym2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.241
+          "wall_s": 23.241,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x5_y-2p5.json",
+          "min_gap_mm": 0.23
         },
         {
           "x_mm": -5,
@@ -3089,7 +3176,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xm5_yp0",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.313
+          "wall_s": 23.313,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x-5_y0.json",
+          "min_gap_mm": 2.73
         },
         {
           "x_mm": -2.5,
@@ -3171,7 +3260,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xm2.5_yp0",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.347
+          "wall_s": 23.347,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x-2p5_y0.json",
+          "min_gap_mm": 2.7
         },
         {
           "x_mm": 0,
@@ -3253,7 +3344,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp0_yp0",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.247
+          "wall_s": 23.247,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x0_y0.json",
+          "min_gap_mm": 2.67
         },
         {
           "x_mm": 2.5,
@@ -3335,7 +3428,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp2.5_yp0",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.289
+          "wall_s": 23.289,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x2p5_y0.json",
+          "min_gap_mm": 2.69
         },
         {
           "x_mm": 5,
@@ -3417,7 +3512,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp5_yp0",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.252
+          "wall_s": 23.252,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x5_y0.json",
+          "min_gap_mm": 2.73
         },
         {
           "x_mm": -5,
@@ -3499,7 +3596,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xm5_yp2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.15
+          "wall_s": 23.15,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x-5_y2p5.json",
+          "min_gap_mm": 5.23
         },
         {
           "x_mm": -2.5,
@@ -3581,7 +3680,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xm2.5_yp2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.242
+          "wall_s": 23.242,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x-2p5_y2p5.json",
+          "min_gap_mm": 5.2
         },
         {
           "x_mm": 0,
@@ -3663,7 +3764,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp0_yp2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.299
+          "wall_s": 23.299,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x0_y2p5.json",
+          "min_gap_mm": 5.17
         },
         {
           "x_mm": 2.5,
@@ -3745,7 +3848,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp2.5_yp2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.285
+          "wall_s": 23.285,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x2p5_y2p5.json",
+          "min_gap_mm": 5.19
         },
         {
           "x_mm": 5,
@@ -3827,7 +3932,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp5_yp2.5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.289
+          "wall_s": 23.289,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x5_y2p5.json",
+          "min_gap_mm": 5.23
         },
         {
           "x_mm": -5,
@@ -3909,7 +4016,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xm5_yp5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.341
+          "wall_s": 23.341,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x-5_y5.json",
+          "min_gap_mm": 7.73
         },
         {
           "x_mm": -2.5,
@@ -3991,7 +4100,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xm2.5_yp5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.281
+          "wall_s": 23.281,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x-2p5_y5.json",
+          "min_gap_mm": 7.7
         },
         {
           "x_mm": 0,
@@ -4073,7 +4184,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp0_yp5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.492
+          "wall_s": 23.492,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x0_y5.json",
+          "min_gap_mm": 7.67
         },
         {
           "x_mm": 2.5,
@@ -4155,7 +4268,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp2.5_yp5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 23.244
+          "wall_s": 23.244,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x2p5_y5.json",
+          "min_gap_mm": 7.69
         },
         {
           "x_mm": 5,
@@ -4237,7 +4352,9 @@
           ],
           "run_id": "regress-20260927T172623-01b57e_B_xp5_yp5",
           "sim_time_s": 18.008333333332953,
-          "wall_s": 21.242
+          "wall_s": 21.242,
+          "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x5_y5.json",
+          "min_gap_mm": 7.73
         }
       ],
       "pass": 25,
@@ -4250,7 +4367,8 @@
         "실패 없음"
       ],
       "failed_rows_mm": [],
-      "failed_cols_mm": []
+      "failed_cols_mm": [],
+      "readings": []
     }
   },
   "determinism": {
@@ -4415,6 +4533,227 @@
   },
   "runs_root": "/data/$USER/robot-ops/bimanual/runs",
   "complete": true,
+  "axes": {
+    "x_plus_ko": "앞",
+    "x_minus_ko": "뒤",
+    "y_plus_ko": "왼쪽",
+    "y_minus_ko": "오른쪽"
+  },
+  "geometry_check": {
+    "condition": "A",
+    "agree": 25,
+    "total": 25
+  },
+  "line_gaps": {
+    "y": [
+      {
+        "x_mm": 0.0,
+        "y_mm": -5.0,
+        "gap_mm": -2.17,
+        "pad": "fixed",
+        "state": "fail"
+      },
+      {
+        "x_mm": 0.0,
+        "y_mm": -2.5,
+        "gap_mm": 0.17,
+        "pad": "fixed",
+        "state": "pass"
+      },
+      {
+        "x_mm": 0.0,
+        "y_mm": 0.0,
+        "gap_mm": 2.67,
+        "pad": "fixed",
+        "state": "pass"
+      },
+      {
+        "x_mm": 0.0,
+        "y_mm": 2.5,
+        "gap_mm": 5.17,
+        "pad": "fixed",
+        "state": "pass"
+      },
+      {
+        "x_mm": 0.0,
+        "y_mm": 5.0,
+        "gap_mm": 7.67,
+        "pad": "fixed",
+        "state": "pass"
+      }
+    ],
+    "x": [
+      {
+        "x_mm": -5.0,
+        "y_mm": 0.0,
+        "gap_mm": 2.73,
+        "pad": "fixed",
+        "state": "pass"
+      },
+      {
+        "x_mm": -2.5,
+        "y_mm": 0.0,
+        "gap_mm": 2.7,
+        "pad": "fixed",
+        "state": "pass"
+      },
+      {
+        "x_mm": 0.0,
+        "y_mm": 0.0,
+        "gap_mm": 2.67,
+        "pad": "fixed",
+        "state": "pass"
+      },
+      {
+        "x_mm": 2.5,
+        "y_mm": 0.0,
+        "gap_mm": 2.69,
+        "pad": "fixed",
+        "state": "pass"
+      },
+      {
+        "x_mm": 5.0,
+        "y_mm": 0.0,
+        "gap_mm": 2.73,
+        "pad": "fixed",
+        "state": "pass"
+      }
+    ]
+  },
+  "story": {
+    "recorded": {
+      "run_name": "control_no_recovery",
+      "path": "~/bimanual-robot/logs/cup_recovery_20260919/control_no_recovery/result.json",
+      "offset_mm": [
+        0.0,
+        -5.0,
+        0.0
+      ],
+      "recovery_enabled": false,
+      "t_s": 6.425,
+      "failure_code": "premature_cup_contact",
+      "phase": "ALIGN_MIDDLE",
+      "force_n": [
+        0.877,
+        0.0
+      ],
+      "pad": "fixed",
+      "cup_disp_mm": 0.026
+    },
+    "incident": {
+      "t_start_s": 6.425,
+      "t_end_s": 6.425,
+      "code": "premature_cup_contact",
+      "detected_by": "verifier"
+    },
+    "point": {
+      "x_mm": 0.0,
+      "y_mm": -5.0
+    },
+    "cells": {
+      "A": {
+        "state": "fail",
+        "failure_code": "premature_cup_contact",
+        "run_id": "regress-20260927T172623-01b57e_A_xp0_ym5",
+        "evidence": "data/regress-cell/bimanual-cup-premature-contact/A_x0_y-5.json",
+        "video": "media/bimanual-cup-premature-contact--A--x0--y-5.mp4",
+        "poster": "media/bimanual-cup-premature-contact--A--x0--y-5.webp",
+        "verdict": {
+          "t_s": 6.425,
+          "failure_code": "premature_cup_contact",
+          "phase": "ALIGN_MIDDLE",
+          "attempt": 0,
+          "force_n": [
+            0.899,
+            0.0
+          ],
+          "pad": "fixed",
+          "cup_disp_mm": 0.023
+        },
+        "outcome": {
+          "task_pass": false,
+          "stop_reason": "premature_cup_contact",
+          "retry_count": 0,
+          "recovery_enabled": false
+        },
+        "events": [
+          {
+            "type": "preclose_failure",
+            "t_s": 6.425,
+            "attempt": 0,
+            "failure_code": "premature_cup_contact"
+          }
+        ],
+        "min_gap": [
+          {
+            "attempt": 0,
+            "gap_mm": -2.17,
+            "pad": "fixed",
+            "t_s": 6.417
+          }
+        ]
+      },
+      "B": {
+        "state": "pass",
+        "failure_code": null,
+        "run_id": "regress-20260927T172623-01b57e_B_xp0_ym5",
+        "evidence": "data/regress-cell/bimanual-cup-premature-contact/B_x0_y-5.json",
+        "video": "media/bimanual-cup-premature-contact--B--x0--y-5.mp4",
+        "poster": "media/bimanual-cup-premature-contact--B--x0--y-5.webp",
+        "verdict": {
+          "t_s": 6.425,
+          "failure_code": "premature_cup_contact",
+          "phase": "ALIGN_MIDDLE",
+          "attempt": 0,
+          "force_n": [
+            0.899,
+            0.0
+          ],
+          "pad": "fixed",
+          "cup_disp_mm": 0.023
+        },
+        "outcome": {
+          "task_pass": true,
+          "stop_reason": "sequence_finished",
+          "retry_count": 1,
+          "recovery_enabled": true
+        },
+        "events": [
+          {
+            "type": "preclose_failure",
+            "t_s": 6.425,
+            "attempt": 0,
+            "failure_code": "premature_cup_contact"
+          },
+          {
+            "type": "retreat_started",
+            "t_s": 6.425,
+            "attempt": 0
+          },
+          {
+            "type": "replanned",
+            "t_s": 7.6,
+            "attempt": 1
+          }
+        ],
+        "min_gap": [
+          {
+            "attempt": 0,
+            "gap_mm": -2.17,
+            "pad": "fixed",
+            "t_s": 6.417
+          },
+          {
+            "attempt": 1,
+            "gap_mm": 3.0,
+            "pad": "fixed",
+            "t_s": 14.592
+          }
+        ]
+      }
+    },
+    "same_time": true
+  },
   "pass_map_png": "media/bimanual-cup-premature-contact--passmap.png",
   "pass_map_webp": "media/bimanual-cup-premature-contact--passmap.webp"
 }
