@@ -2,6 +2,9 @@
 
 - q_cmd = action, q_obs = observation.state (팔 5관절, 도 → rad). 그리퍼는 따로 둔다
   (`gripper_cmd`·`gripper_obs`, LeRobot 원값 그대로 — 단위는 헤더 `gripper_units`).
+- 관절 도는 LeRobot DEGREES 정규화(캘리브 범위 중점 = 0°)이고 so101_new_calib URDF 영점도 범위
+  중점이라, 녹화 당시 팔로워 캘리브(2026-08-19 저장본)에서는 rad 변환값이 곧 URDF q다(오프셋 없음).
+  이 등식은 그 캘리브로 녹화한 데이터(2026-08-19 ~ 2026-09-09)에만 성립한다.
 - 헤더 `source`에 에피소드가 든 data parquet의 SHA-256을 적는다(계획 §3.5).
 - 영상: 에피소드 구간을 AV1(libdav1d)로 디코딩해 H.264(`libx264 -preset slow -crf 23
   -pix_fmt yuv420p -g <fps> -movflags +faststart`, 짝수 크기)로 다시 인코딩한다.
@@ -135,7 +138,8 @@ def convert(source: dict, workdir: Path) -> dict:
             "sha256": source_sha,
         },
         "origin": "real_recording",
-        "note_ko": "q_cmd=action(리더 명령), q_obs=observation.state(팔로워 관측). 도→rad 변환만 했고 교정 차는 빼지 않았다",
+        "note_ko": "q_cmd=action(리더 명령), q_obs=observation.state(팔로워 관측). 도→rad 변환만 했다 — "
+                   "LeRobot DEGREES(범위 중점 0°)가 녹화 당시 캘리브에서 URDF q와 같아 교정 차를 빼지 않는다",
     }
     workdir.mkdir(parents=True, exist_ok=True)
     traj_path = workdir / "trajectory.jsonl"

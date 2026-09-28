@@ -38,14 +38,33 @@
 ## 고스트 렌더 (run, lerobot_episode)
 
 - 미러 = `~/so101_tools/sim` `SimMirror.set_pose_deg(deg, attach=False)`. 생성자가 부르는
-  `arm_lib.load_mapping`(파일이 없으면 기본값을 씀)을 같은 파일을 읽기만 하는 함수로 바꿔 끼운다.
-- 작업 물체(`piece`, `piece_cyl`, `dropbox`)는 장면 밖으로 치운다. 책상·차량 상판은 남긴다.
+  `arm_lib.load_mapping`을 녹화 당시 매핑(`recording_mapping`: 부호 +1, 오프셋 0)으로 바꿔 끼운다.
+  현재 차량 팔의 `mapping.json`은 읽지도 쓰지도 않는다.
+- 관절 변환 근거(`joint_conversion`, 결과 JSON과 `trajectory_mujoco.jsonl` 머리에 기록):
+  - 기록 경로: `teleop_record.py`가 리더 도(팔로워 캘리브 경계로 클램프)를 패널 `pose`로 보내고, 패널은
+    LeRobot `DEGREES` 정규화(`(raw - (min+max)/2) * 360/4095`)로 팔로워에 쓴다. action·state 모두 이 도다.
+  - 당시 팔로워 캘리브는 `so_follower/follower.json` 2026-08-19 14:34 저장본(2026-09-09 백업
+    `.bak-20260909-170917`)이다. so101_new_calib URDF 영점도 관절 범위 중점이라 q[rad] = radians(도)이고,
+    당시 `mapping.json`(so101_tools `8113095`)도 부호 +1·오프셋 0이다.
+  - `wrist_roll`은 미러 표시 규약 -90°, 그리퍼는 0~100 값을 관절 도로 1:1 쓴다. 두 규약은 t=18 s 실측 프레임의
+    턱 방향(고정 턱 왼쪽·구동 턱 오른쪽)과 벌림 폭에 맞는다(0°·+90° 대안은 턱 방향이 어긋난다).
+  - 이 등식은 그 캘리브로 녹화한 데이터(2026-08-19 ~ 2026-09-09)에만 성립한다.
+- 장면: 녹화는 책상 클램프 배치다. 작업 물체(`piece`, `piece_cyl`, `dropbox`)와 차량 받침대
+  (`mobile_platform`)를 장면 밖으로 치우고, 책상 상판을 팔 장착면 = 팬 축 아래 78 mm(`DESK_TOP_PANEL_M`)에
+  둔다. 이 높이는 당시 `servo_gain.json` `floor_z_m`(-0.078, `8113095`) 실측값이고, 지금 미러의 차량
+  상판(floor -0.238 + 받침대 0.160)과 같은 면이다. 원본 MJCF·미러 파일은 고치지 않고 런타임 mocap만 옮긴다.
+  URDF 베이스 메시 바닥은 팬 축 아래 65 mm라 13 mm 차이가 남는다(차량 상판 위에서도 같다).
 - 같은 `MjvCamera`로 명령 자세와 관측 자세를 따로 렌더하고, 명령 렌더의 팔 픽셀(세그멘테이션)만
   채도 높은 파랑(가중 0.75)으로 물들여 alpha 0.55로 관측 렌더 위에 합성하고, 명령 팔 윤곽 2 px를 진한 파랑으로 칠한다. 10 fps(궤적 fps), 640×480.
 - 두 렌더의 카메라 외부·내부 파라미터를 프레임마다 비교해 `camera_matrices_equal`로 남기고,
   `mj_step` 호출 횟수(`physics_steps`)가 0이 아니면 실패한다.
-- 카메라(방위 150°, 고도 -35°, 거리 0.75 m)는 teleop_bench 3인칭 영상과 육안 대조로 골랐다. 실측 장면과
-  정확히 맞춘 캘리브레이션 카메라가 아니다.
+- 카메라(lookat 패널 (0.127, -0.045, 0.059) m, 거리 0.5 m, 방위 35.1°, 고도 -46.4°, 모델 기본 fovy 45°)는
+  실측 3인칭 카메라(팔 뒤·오른쪽 위) 시점이다. teleop_bench ep0에서 관측 상태가 실물과 같은 두 프레임
+  (t=0 접힘, t=18 s 파지 직전)의 관절 혼·손가락 끝 8점을 영상에서 찍어 최소제곱 적합했다(재투영 RMS 9.3 px).
+  정밀 캘리브레이션 카메라는 아니다.
+- 실측 대조(`.local/fidelity/teleop_bench_ep0/grid.png`): t=0·18·22 s는 명령 윤곽이 실물과 겹치고, 빠르게
+  뻗는 구간(t≈3~12 s)은 실물이 명령보다 늦다(t=3 s 약 1 s, t=9 s 약 1.5~2 s, 어깨 들기가 특히 늦음).
+  관측 state가 동결돼 있어 이 지연은 영상으로만 보인다.
 - 캡션: "궤적 모델 = SO-101 MuJoCo 미러(양팔 로봇 왼팔과 같은 SO-101 기구)".
 
 ## Isaac 컵 격자 (run, cup_contact)
@@ -63,7 +82,9 @@
 cd ~/robot-ops-agent
 uv run robot-ops replay --profile profiles/bimanual.toml \
     --source lerobot:~/so101_datasets/so101_teleop_bench --episode 0 --ghost
-uv run python -m unittest tests.test_bimanual_judge_cpu -v
+uv run robot-ops replay --profile profiles/bimanual.toml \
+    --source lerobot:~/so101_datasets/so101_teleop_v2 --episode 0 --ghost
+uv run python -m unittest tests.test_bimanual_judge_cpu tests.test_bimanual_mujoco_fidelity -v
 ```
 
 산출물은 `/data/$USER/robot-ops/bimanual/runs/<run_id>/`에 남는다(`frames/*.png`는 manifest 기록 후 삭제).

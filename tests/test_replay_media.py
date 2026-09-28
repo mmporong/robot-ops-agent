@@ -122,6 +122,30 @@ class MediaCommandTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             media.hero_sequence_command([], Path("o"), fps=10, font_path="/f")
 
+    def test_hero_sequence_detail_line_during_highlight(self) -> None:
+        argv = media.hero_sequence_command(
+            [{"path": "a.mp4", "start_s": 1.5, "length_s": 5, "label": "조건 A", "highlight": (4.6, 5.0),
+              "highlight_label": "조기 접촉 판정 6.425 s",
+              "highlight_detail": "고정 죠 패드 0.90 N 접촉 · 컵 수평 이동 0.02 mm"}],
+            Path("hero.mp4"), fps=10, font_path="/f.ttc",
+        )
+        graph = argv[argv.index("-filter_complex") + 1]
+        self.assertIn("text='고정 죠 패드 0.90 N 접촉 · 컵 수평 이동 0.02 mm'", graph)
+        self.assertEqual(graph.count("enable='between(t,4.6,5)'"), 3)  # 테두리·판정 라벨·수치 줄
+
+    def test_pass_map_footer_and_axis_titles(self) -> None:
+        grid = [-5, -2.5, 0, 2.5, 5]
+        argv = media.pass_map_command(
+            [{"title": "A", "subtitle": "", "x_mm": grid, "y_mm": grid, "cells": {},
+              "x_title": "x 오프셋 (mm, + = 로봇 앞)", "y_title": "y (mm, + = 로봇 왼쪽)"}],
+            Path("m.png"), font_path="/f.ttc", footer="y −5 mm 행만 실패",
+        )
+        chain = argv[argv.index("-vf") + 1]
+        self.assertIn("text='x 오프셋 (mm, + = 로봇 앞)'", chain)
+        self.assertIn("text='y (mm, + = 로봇 왼쪽)'", chain)
+        self.assertIn("text='y −5 mm 행만 실패'", chain)
+        self.assertIn("drawbox=x=0:y=548:w=1200:h=52:color=0x161B22:t=fill", chain)
+
     def test_color_bbox_and_roi(self) -> None:
         w, h = 200, 100
         buf = bytearray(b"\xc8" * (w * h * 3))  # 회색 배경

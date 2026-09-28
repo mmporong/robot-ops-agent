@@ -10,7 +10,7 @@
   "replayable": {
     "value": true,
     "layer": "control_runtime",
-    "reason": "명령(action)과 관측(observation.state)이 함께 기록돼 있어 재생·추종 오차 계산이 가능하다. 원인 계층은 텔레옵 워커 폴링 굶주림(상태 갱신 정지)이고, 결과로 데이터셋이 오염됐다"
+    "reason": "명령(action)과 관측(observation.state)이 함께 기록돼 있어 재생과 추종 오차 계산이 가능합니다. 원인 계층은 텔레옵 워커 폴링 굶주림(상태 갱신 정지)이며, 이 기간의 관측 기록은 실제 자세를 반영하지 않습니다."
   },
   "sources": [
     {
@@ -112,6 +112,6 @@
       "path": "evaluations/replay/inventory.json",
       "sha256": "86a439cf1e0f2b509a2c3beb4f42766fe1b23a27ce0bd2b1a8e12ca2b5cbd66f"
     },
-    "incident_note_ko": "teleop_bench ep0의 최장 동결 구간(26프레임). 이 에피소드는 관측 상태가 거의 전 구간 고정(248프레임 중 고유값 2개)이라 동결 구간은 명령이 움직인 구간이다. 3인칭 실측 영상에서는 팔이 움직이므로 기록된 관측이 실제 자세를 반영하지 않았다"
+    "incident_note_ko": "teleop_bench ep0에서 명령이 움직이는 동안 관측이 멈춘 구간 가운데 가장 긴 구간(26프레임)입니다. 이 에피소드의 관측 상태는 248프레임 중 고유값이 2개뿐이라 거의 전 구간 고정돼 있고, 3인칭 실측 영상에서는 팔이 움직이므로 기록된 관측이 실제 자세를 반영하지 않습니다."
   }
 }

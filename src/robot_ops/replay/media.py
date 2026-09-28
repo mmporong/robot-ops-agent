@@ -356,7 +356,8 @@ def hero_sequence_command(
     """히어로 MP4: 구간 영상·정지 이미지를 같은 캔버스로 맞춰 이어 붙인다.
 
     segment = {"path", "start_s"?, "length_s", "label"?, "image"?: bool, "crop"?: (w, h, x, y),
-               "highlight"?: (a, b) 구간 기준 시각, "highlight_label"?, "fade_in"?: bool}
+               "highlight"?: (a, b) 구간 기준 시각, "highlight_label"?, "highlight_detail"?, "fade_in"?: bool}
+    `highlight_detail`은 강조 구간 동안 화면 아래쪽에 한 줄로 얹는다(예: 접촉력·컵 이동량).
     """
     if not segments:
         raise ValueError("히어로 구간이 비었습니다")
@@ -396,6 +397,11 @@ def hero_sequence_command(
                 chain += "," + incident_label_filter(
                     seg["highlight_label"], font_path, a, b, x="w-tw-24", y="68", size=26
                 )
+            if seg.get("highlight_detail"):
+                chain += "," + drawtext_filter(
+                    seg["highlight_detail"], font_path, x="(w-tw)/2", y="h-th-42", size=28, color="white",
+                    box=True, box_color="0x161b22@0.82",
+                ) + f":enable='between(t,{a:g},{b:g})'"
         graph.append(f"{chain}[v{i}]")
     joined = "".join(f"[v{i}]" for i in range(len(segments)))
     graph.append(f"{joined}concat=n={len(segments)}:v=1:a=0[c]")
@@ -430,25 +436,31 @@ def pass_map_command(
     font_path: str,
     bold_font_path: str | None = None,
     size: tuple[int, int] = PASS_MAP_SIZE,
+    footer: str | None = None,
 ) -> list[str]:
     """5×5 통과 지도 PNG(조건 A | 조건 B)를 ffmpeg drawbox·drawtext만으로 그린다(추가 의존성 없음).
 
     panel = {"title", "subtitle", "x_mm": [...], "y_mm": [...], "cells": {(x, y): "pass"|"fail"|"infra"|None},
-             "outline_rows"?: [y...], "outline_cols"?: [x...]}
+             "outline_rows"?: [y...], "outline_cols"?: [x...], "x_title"?, "y_title"?}
     y는 위가 +가 되도록 그린다. 칸마다 색과 글자를 함께 쓴다(색만으로 구분하지 않음).
+    `footer`는 지도 아래 전폭 한 줄(격자 읽는 법 요약)이다.
     """
     if not 1 <= len(panels) <= 2:
         raise ValueError("지도는 1~2장이어야 합니다")
     width, height = size
     bold = bold_font_path or font_path
     panel_w = width // len(panels)
+    footer_h = 52 if footer else 0
     filters: list[str] = []
     for index, panel in enumerate(panels):
         xs = [float(v) for v in panel["x_mm"]]
         ys = sorted((float(v) for v in panel["y_mm"]), reverse=True)
         n_x, n_y = len(xs), len(ys)
         gap = 4
-        cell = min((panel_w - 150 - gap * (n_x - 1)) // max(n_x, 1), (height - 210 - gap * (n_y - 1)) // max(n_y, 1))
+        cell = min(
+            (panel_w - 150 - gap * (n_x - 1)) // max(n_x, 1),
+            (height - 210 - footer_h - gap * (n_y - 1)) // max(n_y, 1),
+        )
         grid_w = cell * n_x + gap * (n_x - 1)
         grid_h = cell * n_y + gap * (n_y - 1)
         left = index * panel_w + (panel_w - grid_w) // 2 + 24
@@ -492,14 +504,21 @@ def pass_map_command(
                                 color="0x4A5260", box=False)
             )
         filters.append(
-            drawtext_filter("x 오프셋 (mm)", font_path, x=f"{left}+({grid_w}-tw)/2", y=str(top + grid_h + 42),
-                            size=18, color="0x4A5260", box=False)
+            drawtext_filter(panel.get("x_title") or "x 오프셋 (mm)", font_path, x=f"{left}+({grid_w}-tw)/2",
+                            y=str(top + grid_h + 42), size=18, color="0x4A5260", box=False)
         )
         filters.append(
-            drawtext_filter("y (mm)", font_path, x=f"{left - 14}-tw", y=str(top - 28), size=18, color="0x4A5260", box=False)
+            drawtext_filter(panel.get("y_title") or "y (mm)", font_path, x=str(max(8, left - 50)),
+                            y=str(top - 28), size=18, color="0x4A5260", box=False)
         )
     if len(panels) == 2:
-        filters.append(f"drawbox=x={panel_w - 1}:y=40:w=2:h={height - 80}:color=0xD5D9DE:t=fill")
+        filters.append(f"drawbox=x={panel_w - 1}:y=40:w=2:h={height - 80 - footer_h}:color=0xD5D9DE:t=fill")
+    if footer:
+        filters.append(f"drawbox=x=0:y={height - footer_h}:w={width}:h={footer_h}:color=0x161B22:t=fill")
+        filters.append(
+            drawtext_filter(footer, bold, x="(w-tw)/2", y=str(height - footer_h + (footer_h - 24) // 2 - 2), size=23,
+                            color="white", box=False)
+        )
     return [
         *FFMPEG,
         "-f", "lavfi", "-i", f"color=c=0xF7F8F6:s={width}x{height}:d=1",

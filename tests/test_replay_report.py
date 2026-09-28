@@ -16,11 +16,15 @@ from robot_ops.replay import media as mediacmd  # noqa: E402
 from robot_ops.replay.profile import current_user  # noqa: E402
 from robot_ops.replay.report import (  # noqa: E402
     OUT_OF_SCOPE,
+    _series_buckets,
     build,
     check_no_private_paths,
+    cup_evidence,
     failed_lines,
     grid_patterns,
+    grid_readings,
     latest_regress_results,
+    robot_axes,
 )
 from robot_ops.replay.schema import validate_regress_result  # noqa: E402
 
@@ -90,6 +94,154 @@ def _write_replay_run(runs: Path, *, real: Path | None = None, ghost: Path | Non
         encoding="utf-8",
     )
     return run
+
+
+# ---------------------------------------------------------------- 합성 컵 접촉 실행
+# 패드 기하를 손으로 검산할 수 있는 최소 URDF.
+#
+# 도구 = 그리퍼 링크 = 접촉 중심(원점·회전 없음). 계획 축: 접근 = 월드 +x(tool z), 닫힘 = 월드 −y(tool x)
+# → tool y = 월드 −z. 고정 패드 중심 tool x +44 mm → 월드 y −44 mm, 크기 12(y)×24(z)×80(x) mm.
+# TCP (365, 170, 852) mm에서 패드 y 범위 [120, 132] mm, 아래면 z 840 mm. 컵 중심 (390, 165), 반지름 35 →
+# 컵 최소 y 130 mm이므로 위에서 보면 2.0 mm 겹치고, 패드 아래면이 컵 윗면(840 mm)과 같은 높이다.
+SYNTH_URDF = """<?xml version="1.0"?>
+<robot name="synth">
+  <link name="base_link"/>
+  <link name="left_base_link"/>
+  <link name="right_base_link"/>
+  <joint name="left_mount_joint" type="fixed"><parent link="base_link"/><child link="left_base_link"/>
+    <origin xyz="0.02 0.17 0.69" rpy="0 0 0"/></joint>
+  <joint name="right_mount_joint" type="fixed"><parent link="base_link"/><child link="right_base_link"/>
+    <origin xyz="0.02 -0.17 0.69" rpy="0 0 0"/></joint>
+  <link name="left_gripper_link">
+    <collision name="assumed_fixed_pad"><origin xyz="0.044 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.012 0.024 0.08"/></geometry></collision>
+  </link>
+  <link name="left_moving_jaw_link">
+    <collision name="assumed_moving_pad"><origin xyz="-0.05 0 0" rpy="0 0 0"/>
+      <geometry><box size="0.012 0.024 0.08"/></geometry></collision>
+  </link>
+  <joint name="left_gripper" type="revolute"><parent link="left_gripper_link"/><child link="left_moving_jaw_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/><axis xyz="0 0 1"/></joint>
+  <link name="left_tool0"/>
+  <joint name="left_tool0_joint" type="fixed"><parent link="left_gripper_link"/><child link="left_tool0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/></joint>
+  <link name="left_contact_center"/>
+  <joint name="left_contact_center_joint" type="fixed"><parent link="left_tool0"/><child link="left_contact_center"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/></joint>
+</robot>
+"""
+AXES = {"approach_axis": [1.0, 0.0, 0.0], "closing_axis": [0.0, -1.0, 0.0]}
+
+
+def _write_cup_run(isaac: Path, *, offset_y_m: float = -0.0025, t_contact: float = 0.2, force: float = 0.5) -> Path:
+    isaac.mkdir(parents=True, exist_ok=True)
+    (isaac / "contact_proxy.urdf").write_text(SYNTH_URDF, encoding="utf-8")
+    plan = {
+        "active_side": "left",
+        "config": {
+            "cup_center_m": [0.39, 0.17, 0.78], "cup_radius_m": 0.035, "cup_height_m": 0.12,
+            "cup_spawn_offset_m": [0.0, offset_y_m, 0.0], "minimum_contact_force_n": 0.02,
+            "maximum_preclose_displacement_m": 0.003,
+        },
+        "plan": {"tcp_frame": "left_contact_center", "poses": [
+            {"name": "RESET", "joint_deg": [0] * 5},
+            {"name": "ALIGN_MIDDLE", "target_m": [0.365, 0.17, 0.78], "measurement": AXES},
+            {"name": "APPROACH", "target_m": [0.39, 0.17, 0.78], "measurement": AXES},
+        ]},
+    }
+    cup = [0.39, 0.165, 0.78]
+
+    def sample(t, phase, z, f):
+        return {"time_s": t, "phase": phase, "attempt": 0, "cup_position_m": cup, "contact_force_n": f,
+                "contact_center_m": [0.365, 0.17, z], "gripper_actual_rad": 0.0,
+                "cup_displacement_from_start_m": 2e-5 if f[0] else 0.0}
+
+    result = {
+        "task_pass": False, "stop_reason": "premature_cup_contact", "retry_count": 0, "recovery_enabled": False,
+        "events": [{"type": "preclose_failure", "time_s": t_contact, "attempt": 0,
+                    "failure_code": "premature_cup_contact", "sample_index": 3}],
+        "samples": [
+            sample(0.0, "RESET", 0.95, [0.0, 0.0]),
+            sample(0.01, "RESET", 0.95, [0.3, 0.0]),  # 같은 0.05 s 칸 안의 봉우리는 최대값으로 남아야 한다
+            sample(0.1, "ALIGN_MIDDLE", 0.90, [0.0, 0.0]),
+            sample(t_contact, "ALIGN_MIDDLE", 0.852, [force, 0.0]),
+        ],
+    }
+    (isaac / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
+    (isaac / "result.json").write_text(json.dumps(result), encoding="utf-8")
+    return isaac / "result.json"
+
+
+class CupEvidenceTest(unittest.TestCase):
+    def test_evidence_series_verdict_and_pad_geometry(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            ev = cup_evidence(_write_cup_run(Path(tmp) / "isaac"))
+        self.assertEqual(ev["threshold_n"], 0.02)
+        self.assertEqual(ev["preclose_disp_mm"], 3.0)
+        self.assertEqual(ev["force_n"][0][0], 0.3)
+        self.assertEqual(ev["verdict"]["pad"], "fixed")
+        self.assertEqual(ev["verdict"]["force_n"], [0.5, 0.0])
+        self.assertEqual(ev["verdict"]["t_s"], 0.2)
+        self.assertAlmostEqual(ev["verdict"]["cup_disp_mm"], 0.02, places=3)
+        self.assertEqual([p["name"] for p in ev["phases"]], ["RESET", "ALIGN_MIDDLE"])
+        self.assertTrue(all(p["preclose"] for p in ev["phases"]))
+        geom = ev["geometry"]
+        self.assertEqual(geom["axes"]["y_plus_ko"], "왼쪽")
+        self.assertEqual(geom["offset_mm"][:2], [0.0, -2.5])
+        snap = geom["snapshots"][0]
+        self.assertEqual(snap["kind"], "verdict")
+        fixed = next(p for p in snap["pads"] if p["key"] == "fixed")
+        self.assertAlmostEqual(fixed["gap_mm"], -2.0, places=1)
+        self.assertAlmostEqual(fixed["bottom_above_rim_mm"], 0.0, places=1)
+        self.assertGreater(next(p for p in snap["pads"] if p["key"] == "moving")["gap_mm"], 0)
+        self.assertEqual(snap["contact_pad"], "fixed")
+        self.assertAlmostEqual(snap["contact_mm"][1], 131.0, delta=1.0)
+        # 위에서 겹쳐 보여도 패드가 컵 윗면보다 위에 있던 샘플(z 0.90)은 최소 여유 계산에서 빠진다
+        self.assertEqual(geom["min_gap"], [{"attempt": 0, "gap_mm": fixed["gap_mm"], "pad": "fixed", "t_s": 0.2}])
+
+    def test_evidence_without_urdf_has_no_geometry(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = _write_cup_run(Path(tmp) / "isaac")
+            (path.parent / "contact_proxy.urdf").unlink()
+            ev = cup_evidence(path)
+        self.assertIsNone(ev["geometry"])
+        self.assertEqual(ev["verdict"]["pad"], "fixed")
+
+    def test_series_buckets_keep_peaks(self) -> None:
+        series = _series_buckets([
+            {"time_s": 0.0, "contact_force_n": [0.0, 0.1], "cup_displacement_from_start_m": 0.0},
+            {"time_s": 0.02, "contact_force_n": [0.9, 0.0], "cup_displacement_from_start_m": 0.001},
+            {"time_s": 0.06, "contact_force_n": [0.0, 0.0], "cup_displacement_from_start_m": 0.0},
+        ])
+        self.assertEqual(series["t"], [0.02, 0.06])
+        self.assertEqual(series["force_n"], [[0.9, 0.0], [0.1, 0.0]])
+        self.assertEqual(series["cup_disp_mm"], [1.0, 0.0])
+
+    def test_robot_axes_need_consistent_mount_sides(self) -> None:
+        joints = {
+            "l": {"parent": "base_link", "child": "left_base_link", "xyz": [0.0, 0.17, 0.0], "type": "fixed"},
+            "r": {"parent": "base_link", "child": "right_base_link", "xyz": [0.0, -0.17, 0.0], "type": "fixed"},
+        }
+        self.assertEqual(robot_axes(joints)["x_plus_ko"], "앞")
+        joints["r"]["xyz"] = [0.0, 0.1, 0.0]
+        self.assertIsNone(robot_axes(joints))
+
+    def test_grid_readings_bound_clearance_by_grid_step(self) -> None:
+        g = [-5.0, -2.5, 0.0, 2.5, 5.0]
+        cells = [{"x_mm": x, "y_mm": y, "status": "ok", "verdict": "fail" if y == -5 else "pass"} for x in g for y in g]
+        axes = {"x_plus_ko": "앞", "x_minus_ko": "뒤", "y_plus_ko": "왼쪽", "y_minus_ko": "오른쪽"}
+        readings = grid_readings({"cells": cells}, g, g, axes)
+        self.assertEqual(len(readings), 1)
+        first = readings[0]
+        self.assertEqual((first["axis"], first["bounds_mm"], first["step_mm"]), ("y", [2.5, 5.0], 2.5))
+        self.assertEqual(readings[0]["side_ko"], "오른쪽")
+        # 실패가 행 단위가 아니거나(고립점 포함) 원래 위치에서도 실패하면 범위를 말하지 않는다
+        fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))["conditions"]["A"]
+        self.assertEqual(grid_readings(fixture, g, g, axes), [])
+        through_zero = [dict(c, verdict="fail" if c["y_mm"] <= 0 else "pass") for c in cells]
+        self.assertEqual(grid_readings({"cells": through_zero}, g, g, axes), [])
+        all_pass = [dict(c, verdict="pass") for c in cells]
+        self.assertEqual(grid_readings({"cells": all_pass}, g, g, axes), [])
 
 
 class ReportBuildTest(unittest.TestCase):
@@ -250,6 +402,24 @@ class ReportBuildTest(unittest.TestCase):
         self.assertEqual(len(oos), len(OUT_OF_SCOPE))
         self.assertTrue(all({"title_ko", "reason_ko"} <= set(o) for o in oos))
 
+    def test_replay_view_reads_fidelity_notes(self) -> None:
+        save_scenario(self.root, _lerobot_scenario())
+        run = _write_replay_run(self.root / "artifacts" / "runs")
+        mujoco = json.loads((run / "mujoco_result.json").read_text())
+        mujoco["scene"] = {"layout": "desk_clamp", "removed_bodies": ["mobile_platform"]}
+        (run / "mujoco_result.json").write_text(json.dumps(mujoco), encoding="utf-8")
+        fid = self.root / "fidelity" / "ep0"  # report_dir(= root/report) 옆 fidelity/<조건>/
+        fid.mkdir(parents=True)
+        (fid / "camera_fit.json").write_text(json.dumps({"keypoints": [{}] * 8, "result": {"rms_px": 9.3}}))
+        (fid / "tracking_lag.json").write_text(json.dumps({"lag_s_by_t": {"0": 0, "3": 1.0, "9": 1.5, "18": 0}}))
+        build(self.profile, media=False)
+        view = self._json("data/scenario/freeze-a.json")["views"][0]
+        self.assertEqual(view["fidelity"]["scene_layout"], "desk_clamp")
+        self.assertEqual(view["fidelity"]["camera_fit"], {"keypoints": 8, "rms_px": 9.3, "fit_condition": "ep0"})
+        self.assertEqual(view["fidelity"]["lag"]["lag_range_s"], [1.0, 1.5])
+        self.assertEqual(view["fidelity"]["lag"]["aligned_t_s"], [0.0, 18.0])
+        self.assertEqual(view["fidelity"]["lag"]["lagged_t_s"], [3.0, 9.0])
+
     def test_unmeasured_cup_grid_shows_no_numbers(self) -> None:
         # setUp의 cup-a 결과는 칸이 없는 부분 결과다 → 측정 전
         build(self.profile, media=False)
@@ -292,6 +462,36 @@ class ReportBuildTest(unittest.TestCase):
         reg = self._json("data/regress/cup-a.json")
         self.assertEqual(reg["conditions"]["A"]["failed_rows_mm"], [-5.0, -2.5])
         self.assertEqual(self._json("data/hero.json")["cup_grid"]["measured"], True)
+
+    def test_cup_cell_evidence_and_story_in_build(self) -> None:
+        self._use_fixture()
+        runs = self.root / "artifacts" / "runs"
+        _write_cup_run(runs / "fixture-regress_A_x0_y-2.5" / "isaac")
+        incident = _write_cup_run(self.root / "incident" / "control_no_recovery")
+        save_scenario(self.root, make_scenario(
+            scenario_id="cup-a",
+            sources=[{"path": str(incident), "sha256": "0" * 64, "role": "incident_run"}],
+        ))
+        build(self.profile, media=False)
+        reg = self._json("data/regress/cup-a.json")
+        cell = next(c for c in reg["conditions"]["A"]["cells"] if (c["x_mm"], c["y_mm"]) == (0, -2.5))
+        self.assertEqual(cell["evidence"], "data/regress-cell/cup-a/A_x0_y-2p5.json")
+        self.assertAlmostEqual(cell["min_gap_mm"], -2.0, places=1)
+        ev = self._json(cell["evidence"])
+        self.assertEqual(ev["verdict"]["pad"], "fixed")
+        self.assertNotIn("\n  ", (self.out / cell["evidence"]).read_text(encoding="utf-8"))  # 들여쓰기 없이 기록
+        story = reg["story"]
+        self.assertEqual(story["recorded"]["run_name"], "control_no_recovery")
+        self.assertEqual(story["recorded"]["offset_mm"][:2], [0.0, -2.5])
+        self.assertEqual(story["point"], {"x_mm": 0.0, "y_mm": -2.5})
+        self.assertTrue(story["same_time"])
+        self.assertEqual(story["cells"]["A"]["evidence"], cell["evidence"])
+        self.assertEqual(reg["geometry_check"], {"condition": "A", "agree": 1, "total": 1})
+        self.assertEqual(reg["axes"]["y_plus_ko"], "왼쪽")
+        hero = self._json("data/hero.json")
+        self.assertEqual(hero["cup_grid"]["story"]["replay_t_s"], 0.2)
+        self.assertEqual([c["kind"] for c in hero["cases"]], ["grid"])
+        self.assertEqual(check_no_private_paths(self.out), [])
 
     def test_partial_and_record_results_do_not_replace_complete_grid(self) -> None:
         self._use_fixture()

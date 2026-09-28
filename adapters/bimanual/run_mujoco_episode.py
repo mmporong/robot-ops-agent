@@ -1,9 +1,12 @@
 """lerobot_episode `run` (rlwalk python): SO-101 MuJoCo 미러로 TCP 계산 + 고스트 렌더.
 
 - 궤적 모델 = SO-101 MuJoCo 미러(`~/so101_tools/sim`, URDF 대비 RMS 0.00 mm).
-  관절 → qpos 변환은 미러의 `SimMirror.set_pose_deg(deg, attach=False)`를 그대로 쓴다.
-  미러 생성자가 부르는 `arm_lib.load_mapping`은 파일이 없으면 기본값을 **쓰므로**,
-  같은 파일을 읽기만 하는 함수로 바꿔 끼운다(없으면 실패).
+  관절 → qpos 변환은 미러의 `SimMirror.set_pose_deg(deg, attach=False)`를 그대로 쓰되,
+  서보 각 → URDF q 매핑은 현재 차량 팔의 `mapping.json`이 아니라 녹화 당시 값
+  (`recording_mapping`, 부호 +1·오프셋 0)을 쓴다. 미러 생성자가 부르는 `arm_lib.load_mapping`을
+  이 함수로 바꿔 끼우므로 `mapping.json`은 읽지도 쓰지도 않는다.
+- 장면: 녹화는 책상 클램프 배치라 차량 받침대(`mobile_platform`)를 치우고 책상 상판을 팔 장착면
+  (팬 축 아래 78 mm, `DESK_TOP_PANEL_M`)에 둔다. 원본 MJCF·미러 파일은 고치지 않는다(런타임 mocap 이동).
 - TCP = `graspframe` site를 미러의 `sim_to_panel`로 팔 기준(팬 축 원점) 좌표로 옮긴 값(m).
 - 고스트: 작업 물체(piece·piece_cyl·dropbox)를 장면 밖으로 치우고, 같은 카메라로
   명령 자세와 관측 자세를 각각 오프스크린 렌더한다. 명령 렌더의 팔 픽셀(세그멘테이션)만
@@ -37,9 +40,32 @@ GHOST_OUTLINE = np.array([10.0, 60.0, 210.0])  # 명령 팔 윤곽
 OUTLINE_PX = 2
 OUTLINE_ALPHA = 0.9
 WIDTH, HEIGHT = 640, 480
-# 실측 3인칭 카메라(teleop_bench depth 키)와 비슷한 시점. 팔 기준(패널) 좌표로 lookat을 준다.
-# 후보 격자(방위 120~320°, 고도 -20~-50°)를 렌더해 `.local/m0/so101_teleop_bench_ep0_depth.png`와 육안 대조로 골랐다.
-CAMERA = {"lookat_panel_m": [0.15, 0.0, -0.05], "distance": 0.75, "azimuth": 150.0, "elevation": -35.0}
+# 실측 3인칭 카메라(teleop_bench depth 키, 640×480) 시점. 팔 기준(패널) 좌표로 lookat을 준다.
+# teleop_bench ep0에서 관측 상태가 실물과 같은 두 프레임(t=0 접힘, t=18 s 파지 직전)의 관절 혼·
+# 손가락 끝 8점을 영상에서 찍어 자유 카메라(모델 기본 fovy 45°)로 최소제곱 적합했다(재투영 RMS 9.3 px,
+# 카메라 위치 ≈ 팔 뒤·오른쪽 위 (-0.16, -0.24, 0.42) m). 정밀 캘리브레이션 카메라는 아니다.
+CAMERA = {"lookat_panel_m": [0.127, -0.045, 0.059], "distance": 0.5, "azimuth": 35.1, "elevation": -46.4}
+# 녹화(2026-08-24, 책상 클램프) 배치. 책상 상판 = 팔 장착면 = 팬 축 아래 78 mm.
+# 당시 servo_gain.json `floor_z_m`(so101_tools 8113095) 실측값이고, 지금 미러의 차량 상판
+# (floor -0.238 + 받침대 0.160)과 같은 면이다. 책상 중심은 미러 기본 배치(패널 (0.15, 0))를 따른다.
+DESK_TOP_PANEL_M = -0.078
+DESK_CENTER_PANEL_XY = (0.15, 0.0)
+STAND_BODY = "mobile_platform"
+# 녹화 당시 관절 변환의 근거. 패널 서보 각 = LeRobot DEGREES 정규화(캘리브 범위 중점 = 0°, 360/4095)이고
+# so101_new_calib URDF 영점도 관절 범위 중점이라 q = 도 그대로다(부호 +1, 오프셋 0).
+JOINT_CONVERSION = {
+    "q_urdf_deg": "lerobot_degrees (signs +1, offsets 0)",
+    "follower_calibration": "~/.cache/huggingface/lerobot/calibration/robots/so_follower/follower.json "
+                            "(2026-08-19 14:34 저장, 2026-09-09 백업본 .bak-20260909-170917)",
+    "mapping_source": "~/so101_tools/mapping.json @ 8113095 (2026-08-25, 부호 +1·오프셋 0) — 현재 파일은 읽지 않음",
+    "wrist_roll_display_offset_deg": -90.0,
+    "gripper": "LeRobot RANGE_0_100 값 → 미러 gripper 관절 도(1:1, -10~100 클램프)",
+}
+
+
+def recording_mapping() -> dict:
+    """녹화 당시 서보 각 → URDF q 매핑(`arm_lib.servo_to_rad` 형식)."""
+    return {"signs": {j: 1 for j in ARM_JOINTS}, "offsets": {j: 0.0 for j in ARM_JOINTS}}
 
 
 def _sha256(path: Path) -> str:
@@ -63,20 +89,13 @@ def read_trajectory(path: Path) -> tuple[dict, list[dict]]:
 
 
 def load_mirror(mirror_root: Path):
-    """미러 모듈을 불러오되 mapping.json은 읽기만 한다."""
+    """미러 모듈을 불러오되 매핑은 녹화 당시 값으로 바꿔 끼운다(mapping.json을 읽지도 쓰지도 않음)."""
     for p in (str(mirror_root), str(mirror_root.parent)):
         if p not in sys.path:
             sys.path.insert(0, p)
     import arm_lib  # noqa: PLC0415 - 미러 경로를 넣은 뒤에만 import 가능
 
-    mapping_path = Path(arm_lib.MAPPING)
-    if not mapping_path.is_file():
-        raise FileNotFoundError(f"미러 mapping 파일이 없습니다(기본값을 쓰지 않음): {mapping_path}")
-
-    def read_only_mapping():
-        return json.loads(mapping_path.read_text(encoding="utf-8"))
-
-    arm_lib.load_mapping = read_only_mapping
+    arm_lib.load_mapping = recording_mapping
     import mujoco  # noqa: PLC0415
     import sim_core  # noqa: PLC0415
 
@@ -86,7 +105,6 @@ def load_mirror(mirror_root: Path):
         "so101_new_calib.xml": mirror_root / "so101_new_calib.xml",
         "sim_frame.json": mirror_root / "sim_frame.json",
         "arm_lib.py": Path(arm_lib.__file__),
-        "mapping.json": mapping_path,
     }
     tool_sha = {name: _sha256(path) for name, path in files.items() if path.is_file()}
     return mujoco, sim_core, tool_sha
@@ -231,7 +249,13 @@ def run(request: dict, workdir: Path) -> dict:
             mid = mirror.mocap_id[name]
             data.mocap_pos[mid] = (0.0, 0.0, -50.0)
             removed.append(name)
+        data.mocap_pos[mirror.mocap_id[STAND_BODY]] = (0.0, 0.0, -50.0)
+        desk_half_m = float(model.geom("desk_top").size[2])
+        data.mocap_pos[mirror.mocap_id["desk"]] = (
+            mirror.panel_to_sim((*DESK_CENTER_PANEL_XY, DESK_TOP_PANEL_M)) - np.array([0.0, 0.0, desk_half_m])
+        )
         mujoco.mj_forward(model, data)
+        desk_top_m = float(mirror.sim_to_panel(data.geom("desk_top").xpos)[2]) + desk_half_m
         site = model.site("graspframe").id
 
         def tcp(deg: dict) -> list[float]:
@@ -248,6 +272,7 @@ def run(request: dict, workdir: Path) -> dict:
             **header,
             "tcp_frame": "so101_mirror_panel (팬 축 원점, 팔 기준 모델 좌표, m)",
             "trajectory_model": "SO-101 MuJoCo 미러(양팔 로봇 왼팔과 같은 SO-101 기구)",
+            "joint_conversion": JOINT_CONVERSION,
             "mirror_tool_sha256": tool_sha,
         }
         traj_out = workdir / "trajectory_mujoco.jsonl"
@@ -333,6 +358,13 @@ def run(request: dict, workdir: Path) -> dict:
         "physics_steps": physics_steps,
         "sim_time_s": sim_time,
         "removed_task_objects": removed,
+        "scene": {
+            "layout": "desk_clamp",
+            "removed_bodies": [STAND_BODY],
+            "desk_top_panel_m": round(desk_top_m, 6),
+            "note_ko": "녹화 배치(책상 클램프): 차량 받침대를 치우고 책상 상판을 팔 장착면(팬 축 아래 78 mm)에 둠",
+        },
+        "joint_conversion": JOINT_CONVERSION,
         "mirror_root": display_path(mirror_root),
         "tool_sha256": tool_sha,
         "ghost": ghost_info,

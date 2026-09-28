@@ -22,9 +22,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 import shutil
 import time
+import xml.etree.ElementTree as ET
 from collections.abc import Callable
 from pathlib import Path
 from typing import Any
@@ -432,15 +434,63 @@ def _replay_view(
             "physics_steps": mujoco.get("physics_steps"),
         }
     )
+    view["fidelity"] = _fidelity(profile, cond_name, mujoco)
     view["_real_path"] = real_src
     view["_ghost_path"] = ghost_src
     return view
 
 
+def _fidelity(profile: Profile, cond_name: str, mujoco: dict[str, Any]) -> dict[str, Any]:
+    """고스트 렌더의 장면·카메라 설정과, 있으면 실측 대조 기록(`<report_dir 옆>/fidelity/<조건>/`).
+
+    - camera_fit.json: 실측 3인칭 영상의 손으로 고른 점에 맞춘 카메라(점 수·RMS). 이 조건 폴더에 없으면
+      고스트 카메라 설정과 같은 값을 가진 다른 조건의 적합 결과를 쓴다.
+    - tracking_lag.json: 명령을 시간 이동해 실측 영상에 겹쳐 본 시각별 지연(s).
+    """
+    ghost = mujoco.get("ghost") or {}
+    scene = mujoco.get("scene") or {}
+    out: dict[str, Any] = {
+        "scene_layout": scene.get("layout"),
+        "removed_bodies": scene.get("removed_bodies") or [],
+        "camera_fit": None,
+        "lag": None,
+    }
+    root = profile.report_dir.parent / "fidelity"
+    setup = ghost.get("camera_setup_panel") or {}
+    fits = [root / cond_name / "camera_fit.json"] + sorted(root.glob("*/camera_fit.json"))
+    for path in fits:
+        doc = _load_json(path) if path.exists() else None
+        result = (doc or {}).get("result") or {}
+        same = path.parent.name == cond_name or (
+            setup and all(
+                isinstance(result.get(k), (int, float)) and abs(float(result[k]) - float(setup.get(k, 1e9))) < 0.2
+                for k in ("distance", "azimuth", "elevation")
+            )
+        )
+        if doc and same and isinstance(doc.get("keypoints"), list):
+            out["camera_fit"] = {"keypoints": len(doc["keypoints"]), "rms_px": result.get("rms_px"),
+                                 "fit_condition": path.parent.name}
+            break
+    lag = _load_json(root / cond_name / "tracking_lag.json") if (root / cond_name / "tracking_lag.json").exists() else None
+    by_t = (lag or {}).get("lag_s_by_t") or {}
+    if by_t:
+        items = sorted((float(t), float(v)) for t, v in by_t.items())
+        lagged = [(t, v) for t, v in items if v > 0]
+        out["lag"] = {
+            "aligned_t_s": [t for t, v in items if v == 0],
+            "lagged_t_s": [t for t, _ in lagged],
+            "lag_range_s": [min(v for _, v in lagged), max(v for _, v in lagged)] if lagged else None,
+            "method_ko": lag.get("method_ko"),
+        }
+    return out
+
+
 # ---------------------------------------------------------------- 격자(regress) 데이터·통과 지도
 
+PAD_KO = {"fixed": "고정 죠 패드", "moving": "이동 죠 패드"}
 FAILURE_KO = {
     "premature_cup_contact": "조기 접촉",
+    "cup_displaced_before_close": "닫기 전 컵 이동",
     "not_arrived_within_horizon": "시간 내 미도착",
     "reversal_rate_exceeded": "반전율 초과",
 }
@@ -547,6 +597,567 @@ def _grid_summary(scenario: dict[str, Any]) -> dict[str, Any]:
     return {"points": len(xs) * len(ys), "range_mm": max([abs(v) for v in xs + ys] or [0])}
 
 
+# ---------------------------------------------------------------- 컵 접촉 증거(샘플 시계열·접촉 기하)
+#
+# 팀 규칙(bimanual-robot tools/cup_contact_model.py `preclose_failure`, 고정 커밋 8a09a02): 아래 단계(닫기 전)에서
+# 패드 접촉력 최대값이 설정 `minimum_contact_force_n` 이상이면 premature_cup_contact, 컵 수평 이동이
+# `maximum_preclose_displacement_m`를 넘으면 cup_displaced_before_close. 임계값은 결과 폴더의 plan.json에서 읽는다.
+PRECLOSE_PHASES = frozenset({"RESET", "REORIENT_ABOVE", "PREGRASP_ABOVE", "ALIGN_MIDDLE", "APPROACH"})
+# 샘플 `contact_force_n`의 순서 = cup_contact_model.FINGER_LINKS(고정 죠 링크, 이동 죠 링크).
+PAD_KEYS = ("fixed", "moving")
+URDF_PAD_NAMES = {"fixed": "assumed_fixed_pad", "moving": "assumed_moving_pad"}
+EVIDENCE_BUCKET_S = 0.05
+# 패드 아래면이 컵 윗면보다 이만큼 위까지는 '같은 높이'로 본다(시뮬 contact offset 1 mm 안쪽).
+RIM_TOLERANCE_M = 0.0005
+
+
+def _mat(r: list[list[float]], t: list[float]) -> list[list[float]]:
+    return [[*r[0], t[0]], [*r[1], t[1]], [*r[2], t[2]], [0.0, 0.0, 0.0, 1.0]]
+
+
+def _mul(a: list[list[float]], b: list[list[float]]) -> list[list[float]]:
+    return [[sum(a[i][k] * b[k][j] for k in range(4)) for j in range(4)] for i in range(4)]
+
+
+def _inv(m: list[list[float]]) -> list[list[float]]:
+    r = [[m[j][i] for j in range(3)] for i in range(3)]
+    return _mat(r, [-sum(r[i][k] * m[k][3] for k in range(3)) for i in range(3)])
+
+
+def _apply(m: list[list[float]], p: list[float]) -> list[float]:
+    return [sum(m[i][k] * p[k] for k in range(3)) + m[i][3] for i in range(3)]
+
+
+def _rpy(roll: float, pitch: float, yaw: float) -> list[list[float]]:
+    cr, sr, cp, sp, cy, sy = (math.cos(roll), math.sin(roll), math.cos(pitch), math.sin(pitch),
+                              math.cos(yaw), math.sin(yaw))
+    return [[cy * cp, cy * sp * sr - sy * cr, cy * sp * cr + sy * sr],
+            [sy * cp, sy * sp * sr + cy * cr, sy * sp * cr - cy * sr],
+            [-sp, cp * sr, cp * cr]]
+
+
+def _axis_angle(axis: list[float], q: float) -> list[list[float]]:
+    n = math.sqrt(sum(v * v for v in axis))
+    x, y, z = (v / n for v in axis)
+    c, s, k = math.cos(q), math.sin(q), 1 - math.cos(q)
+    return [[c + x * x * k, x * y * k - z * s, x * z * k + y * s],
+            [y * x * k + z * s, c + y * y * k, y * z * k - x * s],
+            [z * x * k - y * s, z * y * k + x * s, c + z * z * k]]
+
+
+def _floats(text: str | None, n: int = 3) -> list[float]:
+    values = [float(v) for v in (text or "").split()]
+    return values if len(values) == n else [0.0] * n
+
+
+def _urdf_parts(path: Path) -> tuple[dict[str, dict[str, Any]], dict[str, dict[str, Any]]]:
+    """URDF의 가정 패드 상자(링크·중심·크기)와 관절(부모·자식·원점·축)."""
+    root = ET.parse(path).getroot()
+    pads: dict[str, dict[str, Any]] = {}
+    for link in root.findall("link"):
+        for col in link.findall("collision"):
+            box = col.find("geometry/box")
+            if col.get("name") in URDF_PAD_NAMES.values() and box is not None:
+                origin = col.find("origin")
+                pads[col.get("name")] = {
+                    "link": link.get("name"),
+                    "center": _floats(origin.get("xyz") if origin is not None else None),
+                    "size": _floats(box.get("size")),
+                }
+    joints: dict[str, dict[str, Any]] = {}
+    for joint in root.findall("joint"):
+        origin, axis = joint.find("origin"), joint.find("axis")
+        parent, child = joint.find("parent"), joint.find("child")
+        if parent is None or child is None:
+            continue
+        joints[joint.get("name")] = {
+            "parent": parent.get("link"),
+            "child": child.get("link"),
+            "xyz": _floats(origin.get("xyz") if origin is not None else None),
+            "rpy": _floats(origin.get("rpy") if origin is not None else None),
+            "axis": _floats(axis.get("xyz")) if axis is not None else [0.0, 0.0, 1.0],
+            "type": joint.get("type"),
+        }
+    return pads, joints
+
+
+def _chain(joints: dict[str, dict[str, Any]], frm: str, to: str) -> list[dict[str, Any]]:
+    by_child = {j["child"]: j for j in joints.values()}
+    path, cur = [], to
+    while cur != frm:
+        joint = by_child.get(cur)
+        if joint is None:
+            raise ValueError(f"URDF에서 {frm} → {to} 경로를 찾지 못했습니다")
+        path.append(joint)
+        cur = joint["parent"]
+    return list(reversed(path))
+
+
+def _chain_tf(chain: list[dict[str, Any]], q: float = 0.0) -> list[list[float]]:
+    out = _mat([[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]], [0.0, 0.0, 0.0])
+    for joint in chain:
+        out = _mul(out, _mat(_rpy(*joint["rpy"]), joint["xyz"]))
+        if joint["type"] in ("revolute", "continuous") and q:
+            out = _mul(out, _mat(_axis_angle(joint["axis"], q), [0.0, 0.0, 0.0]))
+    return out
+
+
+def robot_axes(joints: dict[str, dict[str, Any]]) -> dict[str, str] | None:
+    """월드 x·y가 로봇 기준 어느 쪽인지 URDF로 정한다.
+
+    시뮬은 로봇을 장면 원점에 회전 없이 놓고 중력은 −z다(월드 = 로봇 base 좌표, z 위).
+    base_link에 고정된 `left_*` 부품(왼팔 장착부 등)이 모두 y > 0, `right_*` 부품이 모두 y < 0이면
+    +y = 로봇 왼쪽이고, 오른손 좌표(x = y × z)에서 +x = 로봇 앞이다. 근거가 맞지 않으면 None.
+    """
+    base = [j for j in joints.values() if j["parent"] == "base_link" and j["type"] == "fixed"]
+    left = [j["xyz"][1] for j in base if j["child"].startswith("left_")]
+    right = [j["xyz"][1] for j in base if j["child"].startswith("right_")]
+    if left and right and min(left) > 0 > max(right):
+        return {"x_plus_ko": "앞", "x_minus_ko": "뒤", "y_plus_ko": "왼쪽", "y_minus_ko": "오른쪽"}
+    return None
+
+
+def _hull(points: list[tuple[float, float]]) -> list[tuple[float, float]]:
+    pts = sorted({(round(p[0], 6), round(p[1], 6)) for p in points})
+    if len(pts) <= 2:
+        return pts
+
+    def cross(o, a, b):
+        return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+    lower: list[tuple[float, float]] = []
+    upper: list[tuple[float, float]] = []
+    for p in pts:
+        while len(lower) >= 2 and cross(lower[-2], lower[-1], p) <= 0:
+            lower.pop()
+        lower.append(p)
+    for p in reversed(pts):
+        while len(upper) >= 2 and cross(upper[-2], upper[-1], p) <= 0:
+            upper.pop()
+        upper.append(p)
+    return lower[:-1] + upper[:-1]
+
+
+def _poly_distance(p: tuple[float, float], poly: list[tuple[float, float]]) -> tuple[float, tuple[float, float]]:
+    """점에서 볼록 다각형 경계까지 거리(안쪽이면 음수)와 가장 가까운 경계점."""
+    best, nearest, inside = float("inf"), p, True
+    for i, a in enumerate(poly):
+        b = poly[(i + 1) % len(poly)]
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        length = dx * dx + dy * dy
+        t = 0.0 if length == 0 else max(0.0, min(1.0, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / length))
+        q = (a[0] + t * dx, a[1] + t * dy)
+        d = math.hypot(p[0] - q[0], p[1] - q[1])
+        if d < best:
+            best, nearest = d, q
+        if dx * (p[1] - a[1]) - dy * (p[0] - a[0]) < 0:
+            inside = False
+    return (-best if inside else best), nearest
+
+
+def _tool_rotation(measurement: dict[str, Any]) -> list[list[float]] | None:
+    """계획 자세의 접근축·닫힘축으로 도구 좌표 회전(왼팔: 접근 = tool z, 닫힘 = tool x;
+    팀 plan_body_side_grasp.grasp_axes 규약)."""
+    z, x = measurement.get("approach_axis"), measurement.get("closing_axis")
+    if not (isinstance(z, list) and isinstance(x, list) and len(z) == 3 and len(x) == 3):
+        return None
+    nz = math.sqrt(sum(v * v for v in z))
+    z = [v / nz for v in z]
+    d = sum(a * b for a, b in zip(x, z))
+    x = [a - d * b for a, b in zip(x, z)]
+    nx = math.sqrt(sum(v * v for v in x))
+    x = [v / nx for v in x]
+    y = [z[1] * x[2] - z[2] * x[1], z[2] * x[0] - z[0] * x[2], z[0] * x[1] - z[1] * x[0]]
+    return [[x[0], y[0], z[0]], [x[1], y[1], z[1]], [x[2], y[2], z[2]]]
+
+
+def _mm_list(values: list[float], digits: int = 2) -> list[float]:
+    return [round(float(v) * 1000.0, digits) for v in values]
+
+
+class _PadModel:
+    """샘플(접촉 중심 위치·그리퍼 각)과 계획 축으로 두 패드 상자의 월드 꼭짓점을 계산한다."""
+
+    def __init__(self, plan: dict[str, Any], urdf: Path) -> None:
+        if plan.get("active_side") != "left":
+            raise ValueError("접촉 기하는 왼팔 규약만 계산합니다")
+        pads, joints = _urdf_parts(urdf)
+        self.fixed = pads[URDF_PAD_NAMES["fixed"]]
+        self.moving = pads[URDF_PAD_NAMES["moving"]]
+        tcp = (plan.get("plan") or {}).get("tcp_frame")
+        if not tcp:
+            raise ValueError("plan.json에 tcp_frame이 없습니다")
+        self.tcp_from_link = _inv(_chain_tf(_chain(joints, self.fixed["link"], tcp)))
+        self.jaw_chain = _chain(joints, self.fixed["link"], self.moving["link"])
+        self.axes = robot_axes(joints)
+
+    def corners(
+        self, rotation: list[list[float]], tcp_m: list[float], gripper_rad: float
+    ) -> dict[str, list[list[float]]]:
+        world_link = _mul(_mat(rotation, tcp_m), self.tcp_from_link)
+        world_jaw = _mul(world_link, _chain_tf(self.jaw_chain, gripper_rad))
+        out = {}
+        for key, tf, pad in (("fixed", world_link, self.fixed), ("moving", world_jaw, self.moving)):
+            c, s = pad["center"], pad["size"]
+            out[key] = [
+                _apply(tf, [c[0] + sx * s[0] / 2, c[1] + sy * s[1] / 2, c[2] + sz * s[2] / 2])
+                for sx in (-1, 1) for sy in (-1, 1) for sz in (-1, 1)
+            ]
+        return out
+
+
+def _pose_axes(result: dict[str, Any], plan: dict[str, Any]) -> dict[tuple[int, str], list[list[float]]]:
+    """(시도, 단계) → 그 단계 목표 자세의 도구 회전. 시도 0은 plan.json, 재계획 시도는 결과 events의 plan."""
+    out: dict[tuple[int, str], list[list[float]]] = {}
+    sources = [(0, (plan.get("plan") or {}).get("poses") or [])]
+    sources += [
+        (int(ev.get("attempt", 0)), ((ev.get("plan") or {}).get("poses") or []))
+        for ev in result.get("events") or []
+        if ev.get("type") == "replanned"
+    ]
+    for attempt, poses in sources:
+        for pose in poses:
+            rot = _tool_rotation(pose.get("measurement") or {})
+            if rot is not None:
+                out[(attempt, pose.get("name"))] = rot
+    return out
+
+
+def _attempt_targets(result: dict[str, Any], plan: dict[str, Any]) -> dict[int, list[float]]:
+    """시도별 APPROACH 목표(접촉 중심을 둘 컵 위치, m)."""
+    out: dict[int, list[float]] = {}
+    sources = [(0, (plan.get("plan") or {}).get("poses") or [])]
+    sources += [
+        (int(ev.get("attempt", 0)), ((ev.get("plan") or {}).get("poses") or []))
+        for ev in result.get("events") or []
+        if ev.get("type") == "replanned"
+    ]
+    for attempt, poses in sources:
+        for pose in poses:
+            if pose.get("name") == "APPROACH" and isinstance(pose.get("target_m"), list):
+                out[attempt] = pose["target_m"]
+    return out
+
+
+def _snapshot(
+    model: _PadModel, sample: dict[str, Any], rotation: list[list[float]], cfg: dict[str, Any], *, kind: str,
+    target: list[float] | None, contact_pad: str | None,
+) -> dict[str, Any]:
+    corners = model.corners(rotation, sample["contact_center_m"], float(sample.get("gripper_actual_rad") or 0.0))
+    cup = sample["cup_position_m"]
+    r, h = float(cfg["cup_radius_m"]), float(cfg["cup_height_m"])
+    top = cup[2] + h / 2
+    pads = []
+    contact_xy = None
+    nearest_xy: dict[str, tuple[float, float]] = {}
+    for key in PAD_KEYS:
+        pts = corners[key]
+        poly = _hull([(p[0], p[1]) for p in pts])
+        dist, near = _poly_distance((cup[0], cup[1]), poly)
+        nearest_xy[key] = near
+        pads.append({
+            "key": key,
+            "top_mm": [[round(x * 1000, 2), round(y * 1000, 2)] for x, y in poly],
+            "front_mm": [[round(y * 1000, 2), round(z * 1000, 2)] for y, z in _hull([(p[1], p[2]) for p in pts])],
+            "gap_mm": round((dist - r) * 1000, 2),
+            "bottom_above_rim_mm": round((min(p[2] for p in pts) - top) * 1000, 2),
+        })
+        if key == contact_pad and dist < r:
+            d = math.hypot(near[0] - cup[0], near[1] - cup[1]) or 1.0
+            edge = (cup[0] + (near[0] - cup[0]) / d * r, cup[1] + (near[1] - cup[1]) / d * r)
+            contact_xy = ((near[0] + edge[0]) / 2, (near[1] + edge[1]) / 2)
+    focus_key = contact_pad or min(pads, key=lambda p: p["gap_mm"])["key"]
+    focus = contact_xy or nearest_xy[focus_key]
+    # 앞에서 본 단면: 접촉(또는 가장 가까운) 점을 지나는 x 평면에서 컵 현(chord)의 y 범위
+    half = math.sqrt(max(0.0, r * r - (focus[0] - cup[0]) ** 2))
+    return {
+        "kind": kind,
+        "t_s": round(float(sample["time_s"]), 3),
+        "phase": sample.get("phase"),
+        "attempt": int(sample.get("attempt", 0)),
+        "cup_mm": _mm_list(cup),
+        "tcp_mm": _mm_list(sample["contact_center_m"]),
+        "target_mm": _mm_list(target) if target else None,
+        "pads": pads,
+        "contact_mm": [round(contact_xy[0] * 1000, 2), round(contact_xy[1] * 1000, 2)] if contact_xy else None,
+        "contact_pad": contact_pad if contact_xy else None,
+        "section": {
+            "x_mm": round(focus[0] * 1000, 2),
+            "focus_y_mm": round(focus[1] * 1000, 2),
+            "cup_y_mm": [round((cup[1] - half) * 1000, 2), round((cup[1] + half) * 1000, 2)],
+            "cup_z_mm": [round((cup[2] - h / 2) * 1000, 2), round(top * 1000, 2)],
+        },
+    }
+
+
+def _cup_geometry(result: dict[str, Any], plan: dict[str, Any], urdf: Path) -> dict[str, Any]:
+    cfg = plan["config"]
+    model = _PadModel(plan, urdf)
+    axes = _pose_axes(result, plan)
+    targets = _attempt_targets(result, plan)
+    samples = result["samples"]
+    top_rel = float(cfg["cup_height_m"]) / 2
+    r = float(cfg["cup_radius_m"])
+    fail_index = {int(ev["attempt"]): int(ev["sample_index"]) for ev in result.get("events") or []
+                  if ev.get("type") == "preclose_failure" and isinstance(ev.get("sample_index"), int)}
+    best: dict[int, tuple[float, int, str]] = {}
+    for i, s in enumerate(samples):
+        if s.get("phase") not in PRECLOSE_PHASES:
+            continue
+        attempt = int(s.get("attempt", 0))
+        rot = axes.get((attempt, s["phase"]))
+        if rot is None:
+            continue
+        corners = model.corners(rot, s["contact_center_m"], float(s.get("gripper_actual_rad") or 0.0))
+        cup = s["cup_position_m"]
+        for key in PAD_KEYS:
+            pts = corners[key]
+            if min(p[2] for p in pts) > cup[2] + top_rel + RIM_TOLERANCE_M:
+                continue  # 패드가 아직 컵 윗면보다 위 — 위에서 겹쳐 보여도 닿을 수 없다
+            dist, _ = _poly_distance((cup[0], cup[1]), _hull([(p[0], p[1]) for p in pts]))
+            if attempt not in best or dist - r < best[attempt][0]:
+                best[attempt] = (dist - r, i, key)
+    snapshots = []
+    min_gap = []
+    for attempt in sorted(set(best) | set(fail_index)):
+        if attempt in fail_index:
+            i, kind = fail_index[attempt], "verdict"
+            force = samples[i].get("contact_force_n") or [0.0, 0.0]
+            pad = PAD_KEYS[max(range(len(force)), key=lambda k: force[k])] if max(force, default=0.0) > 0 else None
+        else:
+            i, kind, pad = best[attempt][1], "min_gap", None
+        s = samples[i]
+        rot = axes.get((attempt, s.get("phase")))
+        if rot is None:
+            continue
+        snapshots.append(_snapshot(model, s, rot, cfg, kind=kind, target=targets.get(attempt), contact_pad=pad))
+        if attempt in best:
+            gap, gi, key = best[attempt]
+            min_gap.append({"attempt": attempt, "gap_mm": round(gap * 1000, 2), "pad": key,
+                            "t_s": round(float(samples[gi]["time_s"]), 3)})
+    offset = cfg.get("cup_spawn_offset_m") or [0.0, 0.0, 0.0]
+    return {
+        "basis": "sample_tcp_plan_axes_urdf_pads",
+        "axes": model.axes,
+        "planned_cup_mm": _mm_list(cfg["cup_center_m"]),
+        "offset_mm": _mm_list(offset),
+        "cup_radius_mm": round(r * 1000, 2),
+        "cup_height_mm": round(float(cfg["cup_height_m"]) * 1000, 2),
+        "snapshots": snapshots,
+        "min_gap": min_gap,
+    }
+
+
+def _series_buckets(samples: list[dict[str, Any]]) -> dict[str, list]:
+    """0.05 s 칸마다 최대값(짧은 접촉 봉우리가 사라지지 않게). 시각은 칸의 마지막 샘플 시각."""
+    t: list[float] = []
+    f0: list[float] = []
+    f1: list[float] = []
+    disp: list[float] = []
+    key = None
+    for s in samples:
+        bucket = (int(s.get("attempt", 0)), int(float(s["time_s"]) / EVIDENCE_BUCKET_S + 1e-9))
+        force = list(s.get("contact_force_n") or [0.0, 0.0]) + [0.0, 0.0]
+        d = float(s.get("cup_displacement_from_start_m") or 0.0) * 1000
+        if bucket != key:
+            key = bucket
+            t.append(float(s["time_s"]))
+            f0.append(float(force[0]))
+            f1.append(float(force[1]))
+            disp.append(d)
+        else:
+            t[-1] = float(s["time_s"])
+            f0[-1] = max(f0[-1], float(force[0]))
+            f1[-1] = max(f1[-1], float(force[1]))
+            disp[-1] = max(disp[-1], d)
+    return {
+        "t": [round(v, 3) for v in t],
+        "force_n": [[round(v, 3) for v in f0], [round(v, 3) for v in f1]],
+        "cup_disp_mm": [round(v, 3) for v in disp],
+    }
+
+
+def _phase_spans(samples: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    spans: list[dict[str, Any]] = []
+    for s in samples:
+        name, attempt, t = s.get("phase"), int(s.get("attempt", 0)), round(float(s["time_s"]), 3)
+        if spans and spans[-1]["name"] == name and spans[-1]["attempt"] == attempt:
+            spans[-1]["t1"] = t
+            continue
+        if spans:
+            spans[-1]["t1"] = t
+        spans.append({"name": name, "attempt": attempt, "t0": t, "t1": t, "preclose": name in PRECLOSE_PHASES})
+    return spans
+
+
+def cup_evidence(result_path: Path) -> dict[str, Any] | None:
+    """격자점 실행의 Isaac 결과(result.json·plan.json·contact_proxy.urdf)에서 접촉 증거를 만든다."""
+    result = _load_json(result_path)
+    if result is None or not isinstance(result.get("samples"), list) or not result["samples"]:
+        return None
+    plan = _load_json(result_path.parent / "plan.json") or {}
+    cfg = plan.get("config") or {}
+    samples = result["samples"]
+    events = [
+        {k: v for k, v in {"type": ev.get("type"), "t_s": round(float(ev.get("time_s", 0.0)), 3),
+                           "attempt": ev.get("attempt"), "failure_code": ev.get("failure_code")}.items()
+         if v is not None}
+        for ev in result.get("events") or []
+        if isinstance(ev, dict)
+    ]
+    first = next((ev for ev in result.get("events") or [] if ev.get("type") == "preclose_failure"), None)
+    verdict = None
+    if first is not None and isinstance(first.get("sample_index"), int) and 0 <= first["sample_index"] < len(samples):
+        s = samples[first["sample_index"]]
+        force = [round(float(v), 3) for v in s.get("contact_force_n") or []]
+        verdict = {
+            "t_s": round(float(first.get("time_s", s["time_s"])), 3),
+            "failure_code": first.get("failure_code"),
+            "phase": s.get("phase"),
+            "attempt": int(first.get("attempt", 0)),
+            "force_n": force,
+            "pad": PAD_KEYS[force.index(max(force))] if force and max(force) > 0 else None,
+            "cup_disp_mm": round(float(s.get("cup_displacement_from_start_m") or 0.0) * 1000, 3),
+        }
+    peaks = []
+    for attempt in sorted({int(s.get("attempt", 0)) for s in samples}):
+        pre = [s for s in samples if int(s.get("attempt", 0)) == attempt and s.get("phase") in PRECLOSE_PHASES]
+        if not pre:
+            continue
+        top = max(pre, key=lambda s: max(s.get("contact_force_n") or [0.0]))
+        force = top.get("contact_force_n") or [0.0]
+        peaks.append({
+            "attempt": attempt,
+            "force_n": round(float(max(force)), 3),
+            "pad": PAD_KEYS[force.index(max(force))] if max(force) > 0 else None,
+            "t_s": round(float(top["time_s"]), 3),
+            "cup_disp_mm": round(max(float(s.get("cup_displacement_from_start_m") or 0.0) for s in pre) * 1000, 3),
+        })
+    doc: dict[str, Any] = {
+        **_series_buckets(samples),
+        "duration_s": round(float(samples[-1]["time_s"]), 3),
+        "phases": _phase_spans(samples),
+        "events": events,
+        "threshold_n": cfg.get("minimum_contact_force_n"),
+        "preclose_disp_mm": (round(float(cfg["maximum_preclose_displacement_m"]) * 1000, 3)
+                             if isinstance(cfg.get("maximum_preclose_displacement_m"), (int, float)) else None),
+        "verdict": verdict,
+        "preclose_peaks": peaks,
+        "outcome": {"task_pass": result.get("task_pass"), "stop_reason": result.get("stop_reason"),
+                    "retry_count": result.get("retry_count"), "recovery_enabled": result.get("recovery_enabled")},
+        "offset_mm": _mm_list(cfg.get("cup_spawn_offset_m") or [0.0, 0.0, 0.0]),
+        "geometry": None,
+    }
+    urdf = result_path.parent / "contact_proxy.urdf"
+    if cfg and urdf.exists():
+        try:
+            doc["geometry"] = _cup_geometry(result, plan, urdf)
+        except (KeyError, ValueError, TypeError, IndexError, ZeroDivisionError, ET.ParseError):
+            doc["geometry"] = None
+    return doc
+
+
+def _cell_result_path(artifacts_root: Path, run_id: str | None) -> Path | None:
+    if not run_id:
+        return None
+    run_dir = artifacts_root / "runs" / run_id
+    response = _load_json(run_dir / "run.response.json") or {}
+    path = _resolve(response.get("result_path"))
+    if path is None or not path.exists():
+        path = run_dir / "isaac" / "result.json"
+    return path if path.exists() else None
+
+
+def _gap_of(evidence: dict[str, Any] | None, attempt: int = 0) -> float | None:
+    for item in ((evidence or {}).get("geometry") or {}).get("min_gap") or []:
+        if item.get("attempt") == attempt:
+            return float(item["gap_mm"])
+    return None
+
+
+def grid_step(values: list[float]) -> float | None:
+    diffs = sorted({round(b - a, 6) for a, b in zip(sorted(values), sorted(values)[1:]) if b > a})
+    return diffs[0] if diffs else None
+
+
+def grid_readings(cond: dict[str, Any], xs: list[float], ys: list[float],
+                  axes: dict[str, str] | None = None) -> list[dict[str, Any]]:
+    """한쪽 끝에서 이어진 행(또는 열)만 전부 실패하고 나머지는 모두 통과일 때,
+    그쪽 여유의 범위를 격자 간격으로 추정한다."""
+    cells = {_cell_key(c): _cell_state(c) for c in cond.get("cells") or []}
+    if len(cells) < len(xs) * len(ys) or any(v not in ("pass", "fail") for v in cells.values()):
+        return []
+    fails = {k for k, v in cells.items() if v == "fail"}
+    out = []
+    for axis, lines, others in (("y", sorted(ys), xs), ("x", sorted(xs), ys)):
+        def key(line, other, axis=axis):
+            return (other, line) if axis == "y" else (line, other)
+
+        bad = [v for v in lines if all(key(v, o) in fails for o in others)]
+        covered = {key(v, o) for v in bad for o in others}
+        if not bad or covered != fails or len(bad) == len(lines):
+            continue
+        step = grid_step(lines)
+        for edge, sign in ((lines[: len(bad)], -1), (lines[len(lines) - len(bad):], 1)):
+            if edge != bad:
+                continue
+            inner = lines[len(bad)] if sign < 0 else lines[len(lines) - len(bad) - 1]
+            outer = bad[-1] if sign < 0 else bad[0]
+            if inner * sign < 0 or outer * sign <= 0:
+                continue  # 원래 위치(0)에서도 실패하면 여유 범위를 말할 수 없다
+            side = (axes or {}).get(f"{axis}_{'plus' if sign > 0 else 'minus'}_ko")
+            out.append({
+                "axis": axis,
+                "fail_lines_mm": bad,
+                "pass_line_mm": inner,
+                "sign": sign,
+                "side_ko": side,
+                "bounds_mm": [abs(inner), abs(outer)],
+                "step_mm": step,
+            })
+    return out
+
+
+def _reading_text(reading: dict[str, Any]) -> str:
+    axis, sign = reading["axis"], reading["sign"]
+    lines = ", ".join(f"{_mm(v)}" for v in reading["fail_lines_mm"])
+    unit = "행" if axis == "y" else "열"
+    signed_axis = f"{'+' if sign > 0 else '−'}{axis}"
+    where = f"로봇 {reading['side_ko']}({signed_axis})" if reading.get("side_ko") else signed_axis
+    lo, hi = reading["bounds_mm"]
+    return (f"{axis} {lines} mm {unit}만 실패 → {where} 방향 여유는 {lo:g} mm 이상 {hi:g} mm 미만"
+            f"(격자 간격 {reading['step_mm']:g} mm로 본 추정)")
+
+
+def _incident_record(scenario: dict[str, Any]) -> dict[str, Any] | None:
+    """시나리오 원천(role=incident_run)의 결과 파일에서 기록된 사고의 판정 시각·접촉력·컵 오프셋을 읽는다."""
+    for src in scenario.get("sources") or []:
+        path = _resolve(src.get("path"))
+        if src.get("role") != "incident_run" or path is None or path.name != "result.json" or not path.exists():
+            continue
+        result = _load_json(path) or {}
+        plan = _load_json(path.parent / "plan.json") or {}
+        event = next((ev for ev in result.get("events") or [] if ev.get("type") == "preclose_failure"), None)
+        samples = result.get("samples") or []
+        if event is None or not isinstance(event.get("sample_index"), int) or event["sample_index"] >= len(samples):
+            continue
+        s = samples[event["sample_index"]]
+        force = [round(float(v), 3) for v in s.get("contact_force_n") or []]
+        return {
+            "run_name": path.parent.name,
+            "path": display_path(path),
+            "offset_mm": _mm_list((plan.get("config") or {}).get("cup_spawn_offset_m") or [0.0, 0.0, 0.0]),
+            "recovery_enabled": result.get("recovery_enabled"),
+            "t_s": round(float(event.get("time_s", s["time_s"])), 3),
+            "failure_code": event.get("failure_code"),
+            "phase": s.get("phase"),
+            "force_n": force,
+            "pad": PAD_KEYS[force.index(max(force))] if force and max(force) > 0 else None,
+            "cup_disp_mm": round(float(s.get("cup_displacement_from_start_m") or 0.0) * 1000, 3),
+        }
+    return None
+
+
 def _map_subtitle(cond: dict[str, Any]) -> str:
     text = f"통과 {cond.get('pass', 0)}/{cond.get('valid', 0)}"
     infra = int(cond.get("infra", 0) or 0) + int(cond.get("timeout", 0) or 0)
@@ -575,17 +1186,35 @@ def _regress_view(
     }
     doc["runs_root"] = display_path(profile.artifacts_root / "runs")
     doc["complete"] = is_complete_grid(scenario, regress)
+    cup_task = scenario["task"] == "cup_contact"
     recordings: dict[tuple[str, float, float], dict[str, Any]] = {}
+    evidence: dict[str, dict[str, Any]] = {}
+    by_key: dict[tuple[str, float, float], dict[str, Any]] = {}
     for name, cond in (doc.get("conditions") or {}).items():
         for cell in cond.get("cells") or []:
             x, y = _cell_key(cell)
+            ev = None
+            if cup_task:
+                result_path = _cell_result_path(profile.artifacts_root, cell.get("run_id"))
+                ev = cup_evidence(result_path) if result_path else None
+                if ev is not None:
+                    stem = f"{name}_x{x:g}_y{y:g}".replace(".", "p")
+                    rel = f"data/regress-cell/{sid}/{stem}.json"
+                    cell["evidence"] = rel
+                    cell["min_gap_mm"] = _gap_of(ev, 0)
+                    evidence[rel] = ev
+                    by_key[(name, x, y)] = ev
             video, incident_t = _cell_recording(profile.artifacts_root, cell.get("run_id"))
+            video_ev = ev
             record_cell = (records or {}).get((name, x, y))
             if video is None and record_cell is not None:
                 video, incident_t = _cell_recording(profile.artifacts_root, record_cell.get("run_id"))
                 if video is not None:
                     cell["record_run_id"] = record_cell.get("run_id")
                     cell["record_verdict"] = record_cell.get("verdict")
+                    if cup_task:
+                        record_path = _cell_result_path(profile.artifacts_root, record_cell.get("run_id"))
+                        video_ev = (cup_evidence(record_path) if record_path else None) or ev
             if video is None:
                 continue
             stem = f"{sid}--{name}--x{x:g}--y{y:g}".replace(".", "p")
@@ -607,11 +1236,22 @@ def _regress_view(
                     [clip],
                 )
             cell["roi"] = list(roi) if roi else None
-            recordings[(name, x, y)] = {"path": video, "incident_t_s": incident_t, "cell": cell, "roi": roi}
+            recordings[(name, x, y)] = {
+                "path": video, "incident_t_s": incident_t, "cell": cell, "roi": roi, "evidence": video_ev,
+            }
+    axes = next((((ev.get("geometry") or {}).get("axes")) for ev in by_key.values()
+                 if (ev.get("geometry") or {}).get("axes")), None)
+    doc["axes"] = axes
     for cond in (doc.get("conditions") or {}).values():
         cond["pattern_ko"] = grid_patterns(cond, xs, ys) if doc["complete"] else []
         rows, cols = failed_lines(cond, xs, ys) if doc["complete"] else ([], [])
         cond["failed_rows_mm"], cond["failed_cols_mm"] = rows, cols
+        readings = grid_readings(cond, xs, ys, axes) if doc["complete"] else []
+        cond["readings"] = [{**r, "text_ko": _reading_text(r)} for r in readings]
+    if cup_task and by_key:
+        doc["geometry_check"] = _geometry_check(doc, by_key)
+        doc["line_gaps"] = _line_gaps(doc, by_key, xs, ys)
+        doc["story"] = _cup_story(scenario, doc, by_key)
     panels = []
     for name in ("A", "B"):
         cond = (doc.get("conditions") or {}).get(name)
@@ -630,12 +1270,17 @@ def _regress_view(
                 "cells": {_cell_key(c): _cell_state(c) for c in cond.get("cells") or []},
                 "outline_rows": cond["failed_rows_mm"],
                 "outline_cols": cond["failed_cols_mm"],
+                "x_title": f"x 오프셋 (mm, + = 로봇 {axes['x_plus_ko']})" if axes else "x 오프셋 (mm)",
+                "y_title": f"y (mm, + = 로봇 {axes['y_plus_ko']})" if axes else "y (mm)",
             }
         )
+    footer = next((r["text_ko"] for r in ((doc.get("conditions") or {}).get("A") or {}).get("readings") or []), None)
     if panels and media.enabled and media.font:
         png = media.make(
             f"{sid}--passmap.png",
-            lambda out, crf: mediacmd.pass_map_command(panels, out, font_path=media.font, bold_font_path=media.bold),
+            lambda out, crf: mediacmd.pass_map_command(
+                panels, out, font_path=media.font, bold_font_path=media.bold, footer=footer
+            ),
             [],
         )
         doc["pass_map_png"] = png
@@ -646,7 +1291,90 @@ def _regress_view(
                 [media.dir / f"{sid}--passmap.png"],
             )
     doc["_recordings"] = recordings
+    doc["_evidence"] = evidence
     return doc
+
+
+def _geometry_check(doc: dict[str, Any], by_key: dict[tuple[str, float, float], dict[str, Any]]) -> dict[str, Any]:
+    """조건 A: 계산한 닫기 전 최소 여유(첫 시도)가 0 미만인 칸과 실패한 칸이 몇 칸 일치하는지."""
+    agree = total = 0
+    for cell in ((doc.get("conditions") or {}).get("A") or {}).get("cells") or []:
+        gap = _gap_of(by_key.get(("A", *_cell_key(cell))), 0)
+        state = _cell_state(cell)
+        if gap is None or state not in ("pass", "fail"):
+            continue
+        total += 1
+        agree += int((gap < 0) == (state == "fail"))
+    return {"condition": "A", "agree": agree, "total": total}
+
+
+def _line_gaps(
+    doc: dict[str, Any], by_key: dict[tuple[str, float, float], dict[str, Any]], xs: list[float], ys: list[float]
+) -> dict[str, list[dict[str, Any]]]:
+    """조건 A의 가운데 열(x가 0에 가장 가까운 열)·가운데 행을 따라 계산한 최소 여유."""
+    cells = {_cell_key(c): c for c in ((doc.get("conditions") or {}).get("A") or {}).get("cells") or []}
+    out: dict[str, list[dict[str, Any]]] = {}
+    if xs and ys:
+        x0 = min(xs, key=abs)
+        y0 = min(ys, key=abs)
+        for axis, keys in (("y", [(x0, y) for y in sorted(ys)]), ("x", [(x, y0) for x in sorted(xs)])):
+            items = []
+            for k in keys:
+                ev = by_key.get(("A", *k))
+                gaps = ((ev or {}).get("geometry") or {}).get("min_gap") or []
+                gap = next((g for g in gaps if g.get("attempt") == 0), None)
+                if gap is None:
+                    continue
+                items.append({"x_mm": k[0], "y_mm": k[1], "gap_mm": gap["gap_mm"], "pad": gap["pad"],
+                              "state": _cell_state(cells.get(k))})
+            out[axis] = items
+    return out
+
+
+def _cup_story(
+    scenario: dict[str, Any], doc: dict[str, Any], by_key: dict[tuple[str, float, float], dict[str, Any]]
+) -> dict[str, Any]:
+    """기록된 사고 → 같은 조건 재현(조건 A 같은 오프셋) → 격자 A → 격자 B 흐름에 쓰는 사실."""
+    recorded = _incident_record(scenario)
+    conditions = doc.get("conditions") or {}
+    a_cells = {_cell_key(c): c for c in (conditions.get("A") or {}).get("cells") or []}
+    point = None
+    if recorded:
+        point = (float(recorded["offset_mm"][0]), float(recorded["offset_mm"][1]))
+    if point not in a_cells:
+        fails = [k for k, c in a_cells.items() if _cell_state(c) == "fail"]
+        point = min(fails, key=lambda k: (abs(k[0]) + abs(k[1]), k)) if fails else None
+    cells: dict[str, Any] = {}
+    for name, cond in conditions.items():
+        cell = next((c for c in cond.get("cells") or [] if point and _cell_key(c) == point), None)
+        if cell is None:
+            continue
+        ev = by_key.get((name, *point)) or {}
+        cells[name] = {
+            "state": _cell_state(cell),
+            "failure_code": cell.get("failure_code"),
+            "run_id": cell.get("run_id"),
+            "evidence": cell.get("evidence"),
+            "video": cell.get("video"),
+            "poster": cell.get("poster"),
+            "verdict": ev.get("verdict"),
+            "outcome": ev.get("outcome"),
+            "events": ev.get("events") or [],
+            "min_gap": ((ev.get("geometry") or {}).get("min_gap")) or [],
+        }
+    a_verdict = (cells.get("A") or {}).get("verdict") or {}
+    same_time = (
+        bool(recorded) and isinstance(a_verdict.get("t_s"), (int, float))
+        and abs(float(a_verdict["t_s"]) - float(recorded["t_s"])) < 1e-3
+        and a_verdict.get("failure_code") == recorded.get("failure_code")
+    )
+    return {
+        "recorded": recorded,
+        "incident": scenario.get("incident"),
+        "point": {"x_mm": point[0], "y_mm": point[1]} if point else None,
+        "cells": cells,
+        "same_time": same_time,
+    }
 
 
 # ---------------------------------------------------------------- 히어로
@@ -694,13 +1422,25 @@ def _cup_hero(
             rel = t_mark - start
             if 0.0 <= rel <= length:
                 seg["highlight"] = (round(max(0.0, rel - 0.3), 3), round(length, 3))
-                seg["highlight_label"] = f"{FAILURE_KO.get(code, '실패')} 판정 {t_mark:.1f} s"
+                seg["highlight_label"] = f"{FAILURE_KO.get(code, '실패')} 판정 {t_mark:.3f} s"
+                found = (rec.get("evidence") or {}).get("verdict") or {}
+                if found.get("pad") and found.get("force_n"):
+                    # 화면에서는 거의 보이지 않는 접촉이라 힘·이동량을 글자로 얹는다
+                    seg["highlight_detail"] = (
+                        f"{PAD_KO[found['pad']]} {max(found['force_n']):.2f} N 접촉 · "
+                        f"컵 수평 이동 {found['cup_disp_mm']:.2f} mm"
+                    )
         else:
             # 통과 셀은 결과(파지·들어 올림)가 끝부분에 있으므로 마지막 6초
             start = max(0.0, duration - 6.0)
             length = max(1.0, min(6.0, duration))
             recover = bool((scenario["conditions"].get(name, {}).get("params") or {}).get("recover"))
-            outcome = "복구 후 들어 올림 통과" if recover and verdict == "pass" else {"pass": "통과"}.get(verdict, "infra")
+            events = [ev.get("type") for ev in (rec.get("evidence") or {}).get("events") or []]
+            if recover and verdict == "pass" and "replanned" in events:
+                outcome = "접촉 판정 뒤 후퇴·재계획 → 들어 올림 통과"
+            else:
+                plain = {"pass": "통과"}.get(verdict, "infra")
+                outcome = "복구 후 들어 올림 통과" if recover and verdict == "pass" else plain
             seg["label"] = f"조건 {name} {label} · 같은 격자점 · {outcome}"
         seg["start_s"] = round(start, 3)
         seg["length_s"] = round(length, 3)
@@ -745,6 +1485,13 @@ def _cup_hero(
         "width": mediacmd.HERO_SIZE[0],
         "height": mediacmd.HERO_SIZE[1],
         "pattern_ko": {name: c.get("pattern_ko") or [] for name, c in (("A", cond_a), ("B", cond_b)) if c},
+        "readings": {
+            name: [r["text_ko"] for r in c.get("readings") or []] for name, c in (("A", cond_a), ("B", cond_b)) if c
+        },
+        "segments": [
+            {k: seg.get(k) for k in ("label", "highlight_label", "highlight_detail", "length_s") if seg.get(k)}
+            for seg in segments
+        ],
         "length_s": round(sum(float(s["length_s"]) for s in segments), 2),
     }
 
@@ -787,6 +1534,72 @@ def _freeze_hero(scenario: dict[str, Any], view: dict[str, Any], media: MediaBui
         "judgement_basis": scenario["judgement_basis"],
         "real_label_ko": view["real"]["label_ko"],
     }
+
+
+def _story_summary(story: dict[str, Any] | None) -> dict[str, Any] | None:
+    if not story:
+        return None
+    recorded = story.get("recorded") or {}
+    a = ((story.get("cells") or {}).get("A") or {}).get("verdict") or {}
+    return {
+        "point": story.get("point"),
+        "recorded_run": recorded.get("run_name"),
+        "recorded_t_s": recorded.get("t_s"),
+        "recorded_force_n": max(recorded.get("force_n") or [0.0]) if recorded else None,
+        "replay_t_s": a.get("t_s"),
+        "replay_force_n": max(a.get("force_n") or [0.0]) if a else None,
+        "replay_pad": a.get("pad"),
+        "replay_cup_disp_mm": a.get("cup_disp_mm"),
+        "same_time": story.get("same_time"),
+    }
+
+
+def _cases(
+    first_freeze: tuple[dict[str, Any], dict[str, Any]] | None,
+    cup: dict[str, Any] | None,
+    cup_regress: dict[str, Any] | None,
+    cards: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """첫 화면의 사례 두 가지: ① 실측 기록 재생 ② 시뮬 회귀 평가. 둘은 서로 다른 로봇·기록이다."""
+    posters = {c["scenario_id"]: c.get("poster") for c in cards}
+    out = []
+    if first_freeze is not None:
+        scenario, view = first_freeze
+        out.append({
+            "kind": "replay",
+            "scenario_id": scenario["scenario_id"],
+            "title_ko": scenario["title_ko"],
+            "origin": scenario["origin"],
+            "judgement_basis": scenario["judgement_basis"],
+            "assembly": scenario.get("assembly"),
+            "condition": view["condition"],
+            "incident": view["incident"],
+            "metrics": view["metrics"],
+            "poster": view["real"].get("poster") or posters.get(scenario["scenario_id"]),
+        })
+    if cup is not None:
+        measured = cup_regress is not None and bool(cup_regress.get("complete"))
+        conditions = (cup_regress or {}).get("conditions") or {}
+        out.append({
+            "kind": "grid",
+            "scenario_id": cup["scenario_id"],
+            "title_ko": cup["title_ko"],
+            "origin": cup["origin"],
+            "judgement_basis": cup["judgement_basis"],
+            "assembly": cup.get("assembly"),
+            "measured": measured,
+            "grid": _grid_summary(cup),
+            "conditions": {
+                name: {
+                    "label_ko": c.get("label_ko"),
+                    **({k: (conditions.get(name) or {}).get(k) for k in ("pass", "valid")} if measured else {}),
+                }
+                for name, c in cup["conditions"].items()
+            },
+            "readings": [r["text_ko"] for r in (conditions.get("A") or {}).get("readings") or []] if measured else [],
+            "poster": (cup_regress or {}).get("pass_map_webp") or posters.get(cup["scenario_id"]),
+        })
+    return out
 
 
 # ---------------------------------------------------------------- 빌드
@@ -951,7 +1764,18 @@ def build(
             },
             "assembly": cup.get("assembly"),
             "origin": cup.get("origin"),
+            "readings": {
+                name: [r["text_ko"] for r in (c or {}).get("readings") or []]
+                for name, c in ((cup_regress or {}).get("conditions") or {}).items()
+            } if measured else {},
+            "pattern_ko": {
+                name: (c or {}).get("pattern_ko") or []
+                for name, c in ((cup_regress or {}).get("conditions") or {}).items()
+            } if measured else {},
+            "geometry_check": (cup_regress or {}).get("geometry_check") if measured else None,
+            "story": _story_summary((cup_regress or {}).get("story")) if measured else None,
         }
+    hero["cases"] = _cases(first_freeze, cup, cup_regress, cards)
 
     write_json(data_dir / "scenarios.json", cards)
     for sid, detail in details.items():
@@ -961,6 +1785,11 @@ def build(
         write_json(data_dir / "scenario" / f"{sid}.json", scrub(detail))
     for sid, doc in sorted(regress_views.items()):
         doc.pop("_recordings", None)
+        for rel, ev in sorted((doc.pop("_evidence", None) or {}).items()):
+            path = out / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            # 시계열 배열이 길어 들여쓰기 없이 쓴다
+            path.write_text(json.dumps(scrub(ev), ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
         write_json(data_dir / "regress" / f"{sid}.json", scrub(doc))
     write_json(data_dir / "hero.json", scrub(hero))
     write_json(data_dir / "out_of_scope.json", OUT_OF_SCOPE)
