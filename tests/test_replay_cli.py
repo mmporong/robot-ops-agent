@@ -8,6 +8,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -17,7 +18,7 @@ from robot_ops.cli import main  # noqa: E402
 
 REPLAY_MODULES = (
     "profile", "schema", "adapter", "divergence", "grid", "scenario_bank",
-    "regress", "artifacts", "media", "report",
+    "regress", "artifacts", "media", "report", "doctor",
 )
 
 
@@ -35,6 +36,27 @@ class ReplayCliTest(unittest.TestCase):
         with contextlib.redirect_stdout(buffer):
             code = main(list(argv))
         return code, json.loads(buffer.getvalue())
+
+    def test_doctor_maps_readiness_to_exit_code(self) -> None:
+        for status, expected in (("ready", 0), ("blocked", 2)):
+            with self.subTest(status=status), patch(
+                "robot_ops.replay.doctor.check_profile", return_value={"status": status}
+            ) as check:
+                code, out = self._main(
+                    "doctor", "--profile", str(self.profile.path), "--task", "cup_contact"
+                )
+            self.assertEqual(code, expected)
+            self.assertEqual(out["status"], status)
+            self.assertEqual(check.call_args.kwargs, {"task": "cup_contact"})
+            self.assertEqual(check.call_args.args[0].id, self.profile.id)
+
+    def test_doctor_rejects_unknown_task_without_creating_artifacts(self) -> None:
+        code, out = self._main(
+            "doctor", "--profile", str(self.profile.path), "--task", "missing-task"
+        )
+        self.assertEqual(code, 2)
+        self.assertIn("missing-task", out["error"])
+        self.assertFalse(self.profile.artifacts_root.exists())
 
     def test_replay_detects_freeze_with_tcp(self) -> None:
         code, out = self._main(

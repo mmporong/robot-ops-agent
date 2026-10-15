@@ -1,6 +1,6 @@
 # 사고 재생·회귀 평가 설계
 
-실행 기록을 다시 읽어 명령과 관측이 언제부터 어긋났는지 수치와 영상으로 보여 주고, 재현한 사고를 회귀 시나리오로 저장해 결정적 격자로 다시 평가하는 기능의 설계 문서다. CLI는 `robot-ops replay`, `robot-ops regress`, `robot-ops report build|serve` 셋이다.
+실행 기록을 다시 읽어 명령과 관측이 언제부터 어긋났는지 수치와 영상으로 보여 주고, 재현한 사고를 회귀 시나리오로 저장해 결정적 격자로 다시 평가하는 기능의 설계 문서다. 실행 명령은 `robot-ops replay`, `robot-ops regress`, `robot-ops report build|serve`이며, `robot-ops doctor`로 실행 전 기본 조건을 확인한다.
 
 ## 1. 구조: 코어와 어댑터
 
@@ -68,12 +68,20 @@ judge = "core"
 | `[project]` | `id`, `source_repo`(팀 저장소, 읽기 전용), `pinned_commit`(불일치면 경고, dirty tree면 regress 거부) |
 | `[adapter]` | `entry`, `protocol` |
 | `[interpreters]`, `[adapter.tasks.*]` | 위 1.2 |
-| `[adapter.allowlist]` | 어댑터가 실행·import할 수 있는 팀 파일 전부. `scripts = ["tools/simulate_cup_contact.py"]`, `imports = ["tools/mobile_service_control.py"]`. 원본은 이 표이고, 실제로 막는 지점은 어댑터 쪽이다: 코어는 요청에 `scripts`·`imports`를 싣지 않고(코어 검사는 요청에 값이 있을 때만 걸린다), 각 run 모듈이 여는 팀 파일을 상수(`TEAM_SCRIPT`·`TEAM_FILE`)로 고정한다. `tests/test_replay_profile.py`가 `entry.py`의 `TEAM_SCRIPTS`·`TEAM_IMPORTS`가 이 표와 같고 run 모듈 상수가 그 안에 있는지 확인한다. |
+| `[adapter.allowlist]` | 어댑터가 시작할 팀 코드의 경로 후보. `scripts`는 `simulation/simulate_cup_contact.py`·`tools/simulate_cup_contact.py`, `imports`는 `tools/mobile_service_control.py`·`simulation/mobile_service_control.py`다. 원본은 이 표이고, 실제로 막는 지점은 어댑터 쪽이다. 코어는 요청에 `scripts`·`imports`를 싣지 않으며, 각 run 모듈은 후보를 상수(`TEAM_SCRIPTS`·`TEAM_FILES`)로 고정한다. `tests/test_replay_profile.py`가 진입점의 허용 목록과 run 모듈의 후보 집합이 이 표와 같은지 확인한다. |
 | `[mirror]` | SO-101 MuJoCo 미러 위치, 작업 물체 제거 여부 |
 | `[limits]` | `timeout_s`, `gpu_tasks`, `gpu_tolerance_mib`, `gpu_settle_s`, `memory_max`, `min_free_disk_gb`, `lock_file`, `per_run_keep_mb`(삭제 뒤 run 폴더 보존 크기 상한, MP4 제외. 넘으면 regress 결과 `warnings`에 남기고 실패로 치지 않는다) |
 | `[artifacts]` | 산출물 root(`/data/$USER/robot-ops/bimanual`), 리포트 출력(`.local/report`), `delete_patterns` |
 | `[replay]` | 임계 `joint_deg = 3.0`, `tcp_mm = 20.0` |
 | `[public]` | `exclude_status`: 공개 빌드에서 뺄 시나리오 status |
+
+컵 실행은 현재 저장소의 `simulation/` 경로를 우선하고, 없으면 이전 `tools/` 경로를 사용한다. 팀 루트를 subprocess의 `PYTHONPATH` 앞에 두어 이동된 스크립트의 패키지 import를 지원하며, 작업 디렉터리와 출력은 계속 산출물 폴더에 둔다. 주행 스냅샷은 현재 작업 트리 대신 요청한 커밋의 트리에서 이전 경로와 새 경로를 순서대로 확인한다. 따라서 과거 커밋은 당시 소스와 경로를 보존하고, 새 커밋은 이동된 경로로 읽는다. 프로파일의 `pinned_commit`, 과거 결과 파일과 판정 수치는 경로 호환 처리로 바뀌지 않는다.
+
+### 1.4 실행 전 환경 진단
+
+`robot-ops doctor --profile profiles/bimanual.toml [--task cup_contact]`는 프로파일의 어댑터·인터프리터 파일, 팀 저장소 HEAD·작업 트리 상태, 산출물 경로의 디스크 여유와 자원 격리 조건을 읽는다. GPU 과제는 `nvidia-smi` 조회와 systemd 사용자 환경을 추가로 검사한다. 프로브는 고정 인자와 짧은 timeout을 사용하며 산출물 폴더 생성이나 시뮬레이터 실행을 하지 않는다.
+
+JSON 스키마는 `robot-ops-doctor/1`, 검사 범위는 `replay_runtime_prerequisites`다. 개별 검사는 `ok`·`warning`·`blocked`, 전체 상태는 `ready`·`blocked`로 구분한다. 차단 항목이 없을 때만 종료 코드 0을 반환한다. `ready`는 검사한 기본 조건에 한정하며 서드파티 import, 실제 시뮬 실행, 결과 품질까지 보증하지 않는다. 실행 중 가드와 별개인 진단 명령이므로 자동으로 `regress`를 호출하지 않는다.
 
 ## 2. 판정 조건과 출처 배지
 

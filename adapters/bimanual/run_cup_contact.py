@@ -1,6 +1,6 @@
 """cup_contact `run` (leisaac python): Isaac Sim 5.1 컵 접촉 격자 셀 1개.
 
-- 팀 스크립트는 allowlist의 `tools/simulate_cup_contact.py` 하나만 subprocess로 실행한다.
+- 팀 스크립트는 allowlist의 고정 후보 중 현재 worktree에 있는 파일 하나만 subprocess로 실행한다.
   팀 저장소에는 쓰지 않는다(출력은 `<workdir>/isaac/`, cwd = workdir, `PYTHONDONTWRITEBYTECODE=1`).
 - 인자: `--headless --output-dir <workdir>/isaac --spawn-x-offset-mm X --spawn-y-offset-mm Y`
   + 조건 params `recover=true`면 `--recover` + 요청 `record=true`면 `--record`.
@@ -23,10 +23,12 @@ import sys
 import time
 from pathlib import Path
 
+from team_source import resolve_team_file
+
 sys.dont_write_bytecode = True
 
 TEAM_REPO = Path.home() / "bimanual-robot"
-TEAM_SCRIPT = "tools/simulate_cup_contact.py"  # allowlist 포함 여부는 tests/test_replay_profile.py가 고정한다
+TEAM_SCRIPTS = ("simulation/simulate_cup_contact.py", "tools/simulate_cup_contact.py")
 FPS = 10
 OK_EXIT = (0, 2)
 INFRA_STOP_PREFIXES = ("exception:", "initializing", "window_closed")
@@ -77,15 +79,16 @@ def encode_frames(frames_dir: Path, out: Path) -> dict:
 
 
 def run(request: dict, workdir: Path) -> dict:
-    script = TEAM_REPO / TEAM_SCRIPT
-    if not script.is_file():
-        raise RuntimeError(f"팀 스크립트가 없습니다: {script}")
+    script, team_script = resolve_team_file(TEAM_REPO, TEAM_SCRIPTS)
     out_dir = workdir / "isaac"
     if out_dir.exists():
         raise RuntimeError(f"출력 폴더가 이미 있습니다(재사용 금지): {out_dir}")
 
     argv = build_argv(sys.executable, script, out_dir, request)
-    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+    pythonpath = str(TEAM_REPO.resolve())
+    if os.environ.get("PYTHONPATH"):
+        pythonpath += os.pathsep + os.environ["PYTHONPATH"]
+    env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONPATH=pythonpath)
     started = time.monotonic()
     with (workdir / "isaac.log").open("wb") as log:
         proc = subprocess.run(argv, cwd=str(workdir), env=env, stdout=log, stderr=subprocess.STDOUT, check=False)
@@ -127,6 +130,7 @@ def run(request: dict, workdir: Path) -> dict:
         "tool_sha256": plan.get("tool_sha256") or {},
         "sim_version": sim_version,
         "team_exit_code": proc.returncode,
+        "team_script": team_script,
         "team_args": ["<workdir>/isaac" if a == str(out_dir) else a for a in argv[2:]],
         "hardware_accessed": result.get("hardware_accessed"),
     }

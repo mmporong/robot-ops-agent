@@ -8,7 +8,7 @@
 - 종료 코드: 0 ok, 2 unsupported, 3 infra_error. 그 밖은 crash로 취급된다.
 - 팀 파일 allowlist: 요청의 `scripts`·`imports`가 아래 목록 밖이면 거부(unsupported).
   이 목록은 profiles/bimanual.toml `[adapter.allowlist]`와 같아야 하고, 각 run 모듈이 여는 팀 파일
-  상수(`TEAM_SCRIPT`·`TEAM_FILE`)가 이 목록 안에 있어야 한다(tests/test_replay_profile.py가 확인).
+  상수(`TEAM_SCRIPTS`·`TEAM_FILES`)가 이 목록 안에 있어야 한다(tests/test_replay_profile.py가 확인).
 """
 
 from __future__ import annotations
@@ -25,8 +25,8 @@ sys.dont_write_bytecode = True
 PROTOCOL = "robot-ops-adapter/1"
 VERBS = ("convert", "run", "judge")
 EXIT = {"ok": 0, "unsupported": 2, "infra_error": 3}
-TEAM_SCRIPTS = frozenset({"tools/simulate_cup_contact.py"})
-TEAM_IMPORTS = frozenset({"tools/mobile_service_control.py"})
+TEAM_SCRIPTS = frozenset({"simulation/simulate_cup_contact.py", "tools/simulate_cup_contact.py"})
+TEAM_IMPORTS = frozenset({"tools/mobile_service_control.py", "simulation/mobile_service_control.py"})
 
 # (동사, 과제) → 모듈 이름. 모듈은 handle(verb, task, request, workdir) -> dict 를 제공한다.
 HANDLERS = {

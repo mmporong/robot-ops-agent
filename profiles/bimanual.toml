@@ -26,8 +26,8 @@ run   = "lerobot"
 judge = "core"
 
 [adapter.allowlist]              # 어댑터가 실행·import할 수 있는 팀 파일 전부
-scripts = ["tools/simulate_cup_contact.py"]
-imports = ["tools/mobile_service_control.py"]
+scripts = ["simulation/simulate_cup_contact.py", "tools/simulate_cup_contact.py"]
+imports = ["tools/mobile_service_control.py", "simulation/mobile_service_control.py"]
 
 [mirror]                         # 궤적 모델 = SO-101 MuJoCo 미러 (URDF 대비 RMS 0.00 mm)
 root = "~/so101_tools/sim"

@@ -65,8 +65,14 @@ class AdapterAllowlistTest(unittest.TestCase):
         entry = _module_constants(adapters / "entry.py")
         self.assertEqual(set(entry["TEAM_SCRIPTS"]), set(profile.allowlist_scripts))
         self.assertEqual(set(entry["TEAM_IMPORTS"]), set(profile.allowlist_imports))
-        self.assertIn(_module_constants(adapters / "run_cup_contact.py")["TEAM_SCRIPT"], profile.allowlist_scripts)
-        self.assertIn(_module_constants(adapters / "run_drive_kinematic.py")["TEAM_FILE"], profile.allowlist_imports)
+        self.assertEqual(
+            set(_module_constants(adapters / "run_cup_contact.py")["TEAM_SCRIPTS"]),
+            set(profile.allowlist_scripts),
+        )
+        self.assertEqual(
+            set(_module_constants(adapters / "run_drive_kinematic.py")["TEAM_FILES"]),
+            set(profile.allowlist_imports),
+        )
 
 
 class LoadProfileTest(unittest.TestCase):

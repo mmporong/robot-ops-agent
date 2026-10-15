@@ -95,6 +95,10 @@ def build_parser() -> argparse.ArgumentParser:
         default="keyword",
     )
 
+    doctor_parser = subparsers.add_parser("doctor", help="재생·회귀 실행 환경을 읽기 전용으로 검사")
+    doctor_parser.add_argument("--profile", type=Path, required=True)
+    doctor_parser.add_argument("--task", help="검사할 프로파일 과제 (생략하면 모든 과제)")
+
     replay_parser = subparsers.add_parser("replay", help="실행 기록 재생과 명령·관측 어긋남 계산")
     replay_parser.add_argument("--profile", type=Path, required=True)
     replay_parser.add_argument(
@@ -259,6 +263,17 @@ def _embedder_from_args(args: argparse.Namespace) -> Embedder:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "doctor":
+        from .replay.doctor import check_profile
+        from .replay.profile import load_profile
+
+        try:
+            result = check_profile(load_profile(args.profile), task=args.task)
+        except (OSError, ValueError) as error:
+            print(json.dumps({"error": str(error), "type": type(error).__name__}, ensure_ascii=False))
+            return 2
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["status"] == "ready" else 2
     if args.command in ("replay", "regress", "report"):
         return _replay_main(args)
     settings = _settings_from_args(args)

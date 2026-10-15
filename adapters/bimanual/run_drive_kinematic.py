@@ -1,7 +1,7 @@
 """drive_kinematic `run` (lerobot python): FAIL-20260921-1004 운동학 격자 셀 1개.
 
-- 팀 코드는 `tools/mobile_service_control.py` 하나만, `git show <rev>:<path>`로 꺼낸 단일 파일
-  사본(workdir/snapshot/)을 import한다. 팀 저장소에는 쓰지 않는다.
+- 팀 코드는 고정 후보 중 exact commit tree에 있는 파일 하나만 사본(workdir/snapshot/)으로
+  가져와 import한다. 팀 저장소에는 쓰지 않는다.
 - 적분식·상수·반전 계산은 M0 `drive_discriminate.py`(팀 테스트 적분식)를 그대로 가져다 쓴다.
 - 격자점 (x_mm, y_mm)은 사고 자세(FAIL_POSE)의 x·y 오프셋(mm)이다. 바퀴 지연·좌우 게인·yaw
   오프셋은 조건 params가 정한다.
@@ -16,7 +16,6 @@ import hashlib
 import importlib.util
 import json
 import math
-import subprocess
 import sys
 import time
 from pathlib import Path
@@ -26,9 +25,10 @@ sys.dont_write_bytecode = True
 import numpy as np  # noqa: E402
 
 import drive_discriminate as dd  # noqa: E402 - 같은 폴더(M0) 적분 상수·반전 계산
+from team_source import snapshot_git_file  # noqa: E402
 
 TEAM_REPO = Path.home() / "bimanual-robot"
-TEAM_FILE = "tools/mobile_service_control.py"
+TEAM_FILES = ("tools/mobile_service_control.py", "simulation/mobile_service_control.py")
 REPO_ROOT = Path(__file__).resolve().parents[2]
 THRESHOLDS = REPO_ROOT / "evaluations" / "replay" / "f1004_thresholds.json"
 TRAJ_HZ = 10
@@ -38,21 +38,16 @@ def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def snapshot(rev: str, workdir: Path) -> tuple[Path, str]:
-    commit = subprocess.run(["git", "-C", str(TEAM_REPO), "rev-parse", "--verify", f"{rev}^{{commit}}"],
-                            check=True, capture_output=True, text=True).stdout.strip()
-    source = subprocess.run(["git", "-C", str(TEAM_REPO), "show", f"{commit}:{TEAM_FILE}"],
-                            check=True, capture_output=True).stdout
-    out = workdir / "snapshot" / f"{commit[:7]}_mobile_service_control.py"
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_bytes(source)
-    return out, commit
+def snapshot(rev: str, workdir: Path) -> tuple[Path, str, str]:
+    out = workdir / "snapshot" / "mobile_service_control.py"
+    return snapshot_git_file(TEAM_REPO, rev, TEAM_FILES, out)
 
 
 def load_module(path: Path, name: str):
     spec = importlib.util.spec_from_file_location(name, path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"스냅샷 모듈을 읽을 수 없습니다: {path}")
     module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
     spec.loader.exec_module(module)
     return module
 
@@ -131,7 +126,7 @@ def run(request: dict, workdir: Path) -> dict:
              dd.FAIL_POSE[1] + float(point["y_mm"]) / 1000.0,
              dd.FAIL_POSE[2] + yaw_off)
 
-    snap, commit = snapshot(rev, workdir)
+    snap, commit, team_file = snapshot(rev, workdir)
     module = load_module(snap, f"msc_{commit[:7]}_{workdir.name}".replace("-", "_").replace(".", "_"))
     summary, rows = simulate(module, pose0, lag, gains, horizon, window, deadband)
 
@@ -142,7 +137,7 @@ def run(request: dict, workdir: Path) -> dict:
         "joint_names": ["left_wheel", "right_wheel"],
         "units": "rad",
         "fps": TRAJ_HZ,
-        "source": {"kind": "kinematic_drive", "path": f"~/bimanual-robot@{commit[:7]}:{TEAM_FILE}",
+        "source": {"kind": "kinematic_drive", "path": f"~/bimanual-robot@{commit[:7]}:{team_file}",
                    "episode": None, "sha256": _sha256(snap)},
         "origin": "sim_run",
         "note_ko": "차동 구동 운동학 모델(팀 테스트 적분식). q=바퀴 누적 각, pose=[x,y,yaw]",
@@ -160,7 +155,7 @@ def run(request: dict, workdir: Path) -> dict:
         "condition": request.get("condition"),
         "rev": rev,
         "commit": commit,
-        "team_file": TEAM_FILE,
+        "team_file": team_file,
         "snapshot_sha256": _sha256(snap),
         "grid_point": point,
         "pose0": list(pose0),
