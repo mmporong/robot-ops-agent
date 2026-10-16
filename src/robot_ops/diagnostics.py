@@ -1,22 +1,29 @@
 from __future__ import annotations
 
 import hashlib
+import json
+import math
 import os
 import re
 import selectors
 import shutil
+import stat
 import subprocess
+import tempfile
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Callable, Mapping, Protocol, Sequence
 
 from .audit import AuditLogger, AuditSpan
+from .replay.divergence import compute_divergence, read_trajectory
 from .secrets import redact_text
 
 
 ROS_NAME_RE = re.compile(r"^/[A-Za-z0-9_/]+$")
 UNIT_RE = re.compile(r"^[A-Za-z0-9_.@-]+$")
+MAX_TRAJECTORY_BYTES = 32 * 1024 * 1024
+MAX_TRAJECTORY_ROWS = 100_000
 
 
 @dataclass(frozen=True, slots=True)
@@ -184,6 +191,10 @@ class DiagnosticToolService:
         "rosbag_info": "허용된 경로의 rosbag/MCAP 메타데이터를 조회합니다.",
         "journal_tail": "허용된 systemd unit의 최근 로그만 조회합니다.",
         "log_tail": "허용된 경로의 텍스트 로그 마지막 줄을 읽습니다.",
+        "analyze_trajectory": (
+            "허용된 경로의 trajectory/1 JSONL을 읽어 "
+            "추종 오차와 동결 구간을 분석합니다."
+        ),
     }
 
     def __init__(self, policy: ToolPolicy, runner: CommandRunner | None = None) -> None:
@@ -203,6 +214,7 @@ class DiagnosticToolService:
             "rosbag_info": self._rosbag_info,
             "journal_tail": self._journal_tail,
             "log_tail": self._log_tail,
+            "analyze_trajectory": self._analyze_trajectory,
         }
 
     def list_tools(self) -> list[dict[str, str]]:
@@ -376,6 +388,105 @@ class DiagnosticToolService:
             truncated=truncated,
         )
 
+    def _analyze_trajectory(self, arguments: Mapping[str, object]) -> ProcessResult:
+        _require_only(arguments, {"path"})
+        raw_path = _require_string(arguments, "path", max_length=4096)
+        requested_path = Path(raw_path).expanduser()
+        if requested_path.is_symlink():
+            raise ToolRejected(
+                "symlink_not_allowed: 궤적 파일 심볼릭 링크는 허용하지 않습니다"
+            )
+        path = self._resolve_allowed_path(raw_path)
+        if path.suffix.lower() != ".jsonl":
+            raise ToolRejected("invalid_trajectory_path: .jsonl 일반 파일만 허용합니다")
+
+        started = time.perf_counter()
+        flags = (
+            os.O_RDONLY
+            | getattr(os, "O_NOFOLLOW", 0)
+            | getattr(os, "O_NONBLOCK", 0)
+        )
+        try:
+            descriptor = os.open(path, flags)
+        except FileNotFoundError as error:
+            raise ToolRejected("path_not_found: 궤적 파일이 없습니다") from error
+        except OSError as error:
+            raise ToolRejected(f"read_error: {type(error).__name__}") from error
+        try:
+            file_stat = os.fstat(descriptor)
+            if not stat.S_ISREG(file_stat.st_mode):
+                raise ToolRejected(
+                    "invalid_trajectory_path: .jsonl 일반 파일만 허용합니다"
+                )
+            if file_stat.st_size > MAX_TRAJECTORY_BYTES:
+                raise ToolRejected(
+                    f"trajectory_too_large: {MAX_TRAJECTORY_BYTES}바이트 이하여야 합니다"
+                )
+            with os.fdopen(descriptor, "rb", closefd=False) as stream:
+                source_bytes = stream.read(MAX_TRAJECTORY_BYTES + 1)
+        finally:
+            os.close(descriptor)
+
+        if len(source_bytes) > MAX_TRAJECTORY_BYTES:
+            raise ToolRejected(
+                f"trajectory_too_large: {MAX_TRAJECTORY_BYTES}바이트 이하여야 합니다"
+            )
+        try:
+            source_text = source_bytes.decode("utf-8")
+        except UnicodeDecodeError as error:
+            raise ToolRejected("invalid_trajectory: UTF-8 JSONL이어야 합니다") from error
+        nonempty_lines = sum(1 for line in source_text.splitlines() if line.strip())
+        if nonempty_lines <= 1:
+            raise ToolRejected("invalid_trajectory: 궤적 행이 없습니다")
+        if nonempty_lines - 1 > MAX_TRAJECTORY_ROWS:
+            raise ToolRejected(
+                f"trajectory_too_many_rows: {MAX_TRAJECTORY_ROWS}행 이하여야 합니다"
+            )
+
+        try:
+            with tempfile.NamedTemporaryFile(suffix=".jsonl") as stable_copy:
+                stable_copy.write(source_bytes)
+                stable_copy.flush()
+                header, rows = read_trajectory(Path(stable_copy.name))
+            if not _all_numbers_finite(header) or not _all_numbers_finite(rows):
+                raise ToolRejected(
+                    "invalid_trajectory: NaN 또는 무한대는 허용하지 않습니다"
+                )
+            divergence = compute_divergence(header, rows)
+            summary = {
+                "source_path": str(path),
+                "source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+                "frame_count": len(rows),
+                "duration_s": float(rows[-1]["t"]) - float(rows[0]["t"]),
+                "joint_names": divergence["joint_names"],
+                "thresholds": divergence["thresholds"],
+                "freeze_rule": divergence["freeze_rule"],
+                "incidents": divergence["incidents"],
+                "tcp": divergence["tcp"],
+                "max_joint_err_deg": divergence["max_joint_err_deg"],
+            }
+            output = json.dumps(
+                summary,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            )
+        except ToolRejected:
+            raise
+        except (ValueError, TypeError, KeyError, json.JSONDecodeError) as error:
+            raise ToolRejected(f"invalid_trajectory: {type(error).__name__}") from error
+        if len(output) > self.policy.max_output_chars:
+            raise ToolRejected(
+                "analysis_output_too_large: 분석 요약이 출력 제한을 넘었습니다"
+            )
+        return ProcessResult(
+            returncode=0,
+            stdout=output,
+            stderr="",
+            duration_ms=(time.perf_counter() - started) * 1000.0,
+        )
+
     def _resolve_allowed_path(self, raw_path: str) -> Path:
         candidate = Path(raw_path).expanduser().resolve()
         for root in self.policy.allowed_roots:
@@ -460,6 +571,18 @@ def _require_only(arguments: Mapping[str, object], allowed: set[str]) -> None:
     unexpected = sorted(set(arguments) - allowed)
     if unexpected:
         raise ToolRejected(f"unexpected_arguments: 허용하지 않는 인자 {','.join(unexpected)}")
+
+
+def _all_numbers_finite(value: object) -> bool:
+    if isinstance(value, bool):
+        return True
+    if isinstance(value, (int, float)):
+        return math.isfinite(value)
+    if isinstance(value, Mapping):
+        return all(_all_numbers_finite(item) for item in value.values())
+    if isinstance(value, (list, tuple)):
+        return all(_all_numbers_finite(item) for item in value)
+    return True
 
 
 def _require_string(

@@ -19,7 +19,7 @@ src/robot_ops/replay/            adapters/<id>/entry.py
 
 - **코어**(`src/robot_ops/replay`)는 표준 라이브러리만 import한다. 로봇·시뮬레이터·numpy를 모른다. 프로파일 로드, 스키마 검증, 어댑터 호출과 자원 격리, 어긋남 계산, 격자·판정 일치율, 시나리오 status, 산출물 manifest와 삭제, ffmpeg 명령 조립, 정적 리포트를 맡는다.
 - **어댑터**(`adapters/<id>/`)는 로봇별 코드다. 코어가 subprocess로 부르고, 응답 파일만 진실로 본다. stdout·stderr는 로그(`<verb>.log`)로만 남긴다.
-- 문서 검색·MCP·LLM 경로와 코드를 공유하지 않고 서로 호출하지 않는다.
+- 어댑터 실행 경로는 문서 검색·MCP·LLM과 분리한다. 저장 궤적 분석은 예외로, replay와 조회 전용 MCP 도구가 같은 `read_trajectory`·`compute_divergence` 코드를 사용한다. `agent_demo`는 저장된 공개 사례에 MCP를 호출하지만 어댑터, 시뮬레이터, LLM은 호출하지 않는다.
 
 ### 1.1 어댑터 프로토콜 `robot-ops-adapter/1`
 
@@ -226,19 +226,25 @@ git -C ~/bimanual-robot status --porcelain --ignored | diff "$BEFORE" -
 find ~/bimanual-robot -newer "$STAMP" -not -path '*/.git/*' | wc -l # 0
 
 # 리포트 굽기(기본 = 공개 빌드)와 미리보기
+PYTHONPATH=src .venv/bin/python -m robot_ops.agent_demo \
+  --profile profiles/bimanual.toml
 uv run robot-ops report build --profile profiles/bimanual.toml
 uv run robot-ops report serve --dir .local/report --port 8766
 ```
 
 미리보기는 `robot-ops report serve`를 쓴다. 이 서버는 HTTP Range 요청에 `206 Partial Content`로 답하므로 브라우저에서 영상 탐색(seek)과 그래프 클릭 이동이 동작한다. `python3 -m http.server`는 Range를 처리하지 않아 영상 탐색이 맞지 않는다. 서버는 기본으로 `127.0.0.1`에만 바인딩한다.
 
-`report build --private`는 공개 제외 status의 시나리오까지 포함하는 로컬 확인용 빌드이고, 배포하지 않는다. 공개 폴더를 덮어쓰지 않도록 `<report_dir>-private`(bimanual 기준 `.local/report-private`)에 굽는다. 공개 빌드는 마지막에 산출물 전체 바이트(미디어 포함)에서 제외 시나리오 id와 제외 status 문자열을 찾고, 하나라도 남아 있으면 개인 절대경로 검사와 같이 빌드를 실패시킨다. `--hero`로 대표 영상 소스(`auto`·`bimanual_pour`·`cup_grid`·`observation_freeze`)를 고른다. `auto`는 `[report.showcase]`에 명시한 따르기 녹화의 조건이 확인되면 우선 사용하고, 없으면 기존 컵 격자·관측 동결 순서로 선택한다. 따르기 원본의 결과·계획은 허용 필드만 읽어 출처 해시와 함께 기록하며 새 회귀 실행 결과로 집계하지 않는다.
+`report build --private`는 공개 제외 status의 시나리오까지 포함하는 로컬 확인용 빌드이고, 배포하지 않는다. 공개 폴더를 덮어쓰지 않도록 `<report_dir>-private`(bimanual 기준 `.local/report-private`)에 굽는다. 공개 빌드는 마지막에 산출물 전체 바이트(미디어 포함)에서 제외 시나리오 id와 제외 status 문자열을 찾고, 하나라도 남아 있으면 개인 절대경로 검사와 같이 빌드를 실패시킨다.
+
+`--hero`로 대표 영상 소스(`auto`·`agent_replay`·`bimanual_pour`·`cup_grid`·`observation_freeze`)를 고른다. 프로파일에 `[report.agent_demo]`가 있으면 `auto`는 `agent_replay`를 우선한다. trace의 MCP 시작·완료 쌍, 도구 순서, 응답 해시, 궤적·영상 해시, 재생 결과의 동결 구간을 다시 맞춘다. 자료가 없거나 하나라도 다르면 미디어 빌드를 실패시킨다. `[report.agent_demo]`가 없는 프로파일에서만 양팔 따르기, 컵 격자, 관측 동결 순서로 전환한다.
+
+원시 MCP 응답과 감사 JSONL은 `.local/agent-demo`에 보관하고 공개 리포트로 복사하지 않는다. 공개 데이터에는 출처 해시가 확인된 도구 상태와 동결 요약만 들어간다. 대표 영상은 실측 녹화와 저장된 고스트 시뮬레이션을 계속 보여 주며, 검색·로그 조회·궤적 분석 단계의 타이밍은 설명용이다.
 
 ### 6.1 리포트 화면 구성
 
 | 화면 | 내용 |
 | --- | --- |
-| 첫 화면 `#/` | 스크롤 중에도 보이는 대표 영상과 구간 탐색. 양팔 따르기 녹화는 전 과정을 확대·3배속 재생한다. 컵 격자 대표 영상은 조건 A의 판정 순간과 같은 점 조건 B의 들어 올림을 이어 보여 주고, 통과 지도는 영상 밖에서 확인한다. 아래에 사례 ① 실측 기록 재생, ② 시뮬 회귀 평가를 구분한다 |
+| 첫 화면 `#/` | 스크롤 중에도 실측 녹화와 고스트 시뮬레이션이 보이는 Agent 실행 재생. 실제 MCP의 근거 검색, 로그 조회, 궤적 분석, 검출 결과를 단계별로 표시한다. 단계 시각은 설명용이다. 아래에 사례 ① 실측 기록 재생, ② 시뮬 회귀 평가를 구분한다 |
 | 사례 ② `#/s/<컵 시나리오>` | 네 단계 흐름(기록된 사고 → 같은 조건 재현 → 주변 25점 → 복구 켬 비교), 기록과 재현의 판정 시각·접촉력·컵 이동 비교표, 두 격자점(조건 A·B)의 접촉 증거 |
 | 격자 평가 `#/eval/<시나리오>[/<조건>/<x>/<y>]` | 흐름(3·4단계 강조), 격자 읽는 법(실제 비율 도식·칸의 뜻·축 방향·여유 범위), 통과 지도, 칸을 누르면 녹화·접촉 증거·검사값. 주소에 조건·x·y를 붙이면 그 칸을 연 채로 열린다 |
 
@@ -271,5 +277,6 @@ uv run robot-ops report serve --dir .local/report --port 8766
 - **proxy 판정**: 컵 과제 판정은 왼팔 단독 강체 패드 접촉 시뮬 기준이다. 실물 핑거 파지 검증(`real_finray_grasp_verified`)은 없고, 관측은 시뮬레이터 정답 좌표이며 RGB 인식이 아니다.
 - **정답 좌표 조건**: 조건 B의 복구는 시뮬레이터 정답 좌표로 제한된 접촉 복구다. 조건 B의 25/25는 실물 복구 성능을 뜻하지 않는다.
 - **양팔 실물 기록 없음**: 양팔 LeRobot 데이터셋과 정책 체크포인트가 아직 없다. 실측 재생은 같은 기구인 SO-101 텔레옵 기록으로 하고, 양팔 로봇 프로젝트는 시뮬 실행 기록만 다룬다. 양팔 텔레옵 기록이 생기면 같은 `convert`로 추가한다.
+- **Agent 시연 범위**: `agent_demo`는 저장된 공개 궤적을 CPU로 분석하는 고정 흐름이다. LLM 질의 루프, 실시간 ROS 2 조회, 시뮬레이터 실행, 실물 동작을 포함하지 않는다. 영상의 단계 타이밍은 당시 MCP 지연을 재생한 값이 아니다.
 - **운동학 모델 미재현**: 차동 구동 운동학 모델은 동역학에 의존하는 사고를 재현하지 못할 수 있다. 이런 경우 `not_reproducible_in_model`로 표기하고 원인을 단정하지 않는다.
 - **결정성 범위**: 판정 일치율은 조건 A의 5점 × 3회에서 잰 값이다. 다른 조건·격자점의 비결정성은 따로 측정하지 않았다.

@@ -12,7 +12,8 @@
   `/home/<user>`·`/data/<user>`가 남지 않았는지 검사한다(남으면 빌드 실패).
 
 히어로 영상 소스(`hero_source`, 환경변수 `ROBOT_OPS_HERO_SOURCE`로도 지정):
-- `auto`(기본): 프로필의 저장된 `bimanual_pour` → `cup_grid` → `observation_freeze` 순서로 선택.
+- `auto`(기본): 설정된 `agent_replay`를 사용한다. 설정이 없으면 `bimanual_pour` → `cup_grid` → `observation_freeze` 순서로 선택.
+- `agent_replay`: 실제 MCP 도구 실행 기록과 같은 원본의 시뮬레이션을 함께 표시한다.
 - `bimanual_pour`: 양팔 파지·따르기·복귀 전체 녹화를 확대해 3배속으로 표시한다.
 - `cup_grid`: 조건 A 실패 격자점 클립(접촉 순간 강조) → 같은 격자점 조건 B 클립.
   조건 A 실패가 0이면 판정 여유가 가장 작은 조건 A 셀의 녹화로 대신한다.
@@ -41,7 +42,7 @@ from .scenario_bank import STATUS_RULE_TASKS, is_public, list_scenarios
 REPORT_SCHEMA = "robot-ops-report/1"
 ASSETS_DIR = Path(__file__).resolve().parent / "report_assets"
 ASSET_FILES = ("index.html", "app.js", "style.css")
-HERO_SOURCES = ("auto", "bimanual_pour", "cup_grid", "observation_freeze")
+HERO_SOURCES = ("auto", "agent_replay", "bimanual_pour", "cup_grid", "observation_freeze")
 GRID_TASKS = frozenset({"cup_contact", "drive_kinematic"})
 FPS = 10
 CLIP_BUDGET = 3 * 1024 * 1024
@@ -1390,6 +1391,36 @@ def _cup_story(
 # ---------------------------------------------------------------- 히어로
 
 
+def _agent_hero(profile: Profile, scenario: dict, view: dict, media: MediaBuilder) -> dict | None:
+    from ..agent_demo import verified_trace
+    report = profile.raw.get("report") or {}
+    config = report.get("agent_demo") if isinstance(report, dict) else None
+    if not config or not media.enabled or not media.font:
+        return None
+    try:
+        path = expand_path(config["trace"], profile.base_dir)
+        trace = verified_trace(path, profile, scenario["scenario_id"], view)
+        real, ghost = view["_real_path"], view["_ghost_path"]
+        length = min(mediacmd.probe_duration(real), mediacmd.probe_duration(ghost), view["duration_s"])
+        # 원시 응답·원시 감사 파일은 공개 산출물에 복사하지 않는다.
+        demo = {k: trace[k] for k in ("question_ko", "recorded_at", "steps", "analysis", "note_ko")}
+        video = media.make("hero.mp4", lambda out, crf: mediacmd.agent_demo_command(
+            real, ghost, out, demo=demo, length_s=length, font_path=media.font, fps=FPS, crf=crf),
+            [real, ghost, path], budget=HERO_BUDGET)
+        if video is None:
+            return None
+        poster = media.make("hero.webp", lambda out, crf: mediacmd.poster_command(media.dir / "hero.mp4", out, at_s=8.0),
+                            [media.dir / "hero.mp4"])
+        return {"source": "agent_replay", "title_ko": "Robot Ops Agent가 관측 동결을 찾는 과정",
+                "scenario_id": scenario["scenario_id"], "condition": view["condition"], "agent_demo": demo,
+                "video": video, "poster": poster, "width": 1600, "height": 900, "length_s": length,
+                "chapters": [{"label_ko": "근거 검색", "start_s": 0}, {"label_ko": "로그 조회", "start_s": 3},
+                             {"label_ko": "궤적 분석", "start_s": 6}, {"label_ko": "검출 결과", "start_s": 8}]}
+    except (OSError, ValueError, TypeError, KeyError, StopIteration, RuntimeError) as exc:
+        media.warnings.append(f"Agent 실행 기록 영상을 사용할 수 없습니다: {exc}")
+        return None
+
+
 def _showcase_hero(profile: Profile, media: MediaBuilder, *, required: bool = False) -> dict[str, Any] | None:
     """프로필에 명시한 저장 시뮬레이션을 검증해 대표 영상 메타데이터를 만든다."""
     report_config = profile.raw.get("report")
@@ -1899,7 +1930,13 @@ def build(
     hero: dict[str, Any] | None = None
     cup = next((s for s in scenarios if s["task"] == "cup_contact"), None)
     cup_regress = regress_views.get(cup["scenario_id"]) if cup is not None else None
-    if hero_source in ("auto", "bimanual_pour"):
+    if hero_source in ("auto", "agent_replay") and first_freeze is not None:
+        hero = _agent_hero(profile, *first_freeze, builder)
+    agent_configured = bool((profile.raw.get("report") or {}).get("agent_demo"))
+    if media and hero is None and (hero_source == "agent_replay" or (hero_source == "auto" and agent_configured)):
+        reason = "; ".join(builder.warnings) or "공개 재생 자료·실행 기록·미디어 도구를 확인하세요"
+        raise ValueError(f"agent_replay 영상을 만들 수 없습니다: {reason}")
+    if hero is None and hero_source in ("auto", "bimanual_pour"):
         hero = _showcase_hero(profile, builder, required=hero_source == "bimanual_pour")
         if hero is None and hero_source == "bimanual_pour" and not media and not builder.warnings:
             builder.warnings.append("bimanual_pour 대표 영상은 media=false 빌드에서 생성하지 않습니다")

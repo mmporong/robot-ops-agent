@@ -63,5 +63,8 @@ plan = "/data/$USER/robot-artifacts/pour_20260921/runs/inward02/plan.json"
 crop = [720, 480, 300, 230]
 playback_speed = 3
 
+[report.agent_demo]
+trace = ".local/agent-demo/trace.json"
+
 [public]
 exclude_status = ["after_fix_regression"]       # report build 기본(공개) 빌드에서 시나리오 카드 전체 제외

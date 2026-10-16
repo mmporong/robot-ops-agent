@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 import os
 import time
 import uuid
-from typing import Any, Mapping
 from pathlib import Path
+from typing import Any, Mapping
+
 from mcp.server import MCPServer
 from mcp.server.context import CallNext, HandlerResult, ServerRequestContext
 from mcp.server.mcpserver.exceptions import ToolError
@@ -26,6 +28,7 @@ REGISTERED_TOOL_NAMES = frozenset(
         "rosbag_info",
         "journal_tail",
         "log_tail",
+        "analyze_trajectory",
     }
 )
 
@@ -110,6 +113,20 @@ def _tool_result_or_error(
     return result.to_dict()
 
 
+def _json_tool_result_or_error(
+    service: DiagnosticToolService,
+    tool: str,
+    arguments: dict[str, object],
+) -> dict[str, object]:
+    result = service.execute(tool, arguments)
+    if not result.ok:
+        raise ToolError(result.error or result.status)
+    parsed = json.loads(result.output)
+    if not isinstance(parsed, dict):
+        raise ToolError("invalid_tool_output: JSON 객체가 아닙니다")
+    return parsed
+
+
 def create_server(
     service: DiagnosticToolService,
     *,
@@ -185,6 +202,13 @@ def create_server(
         """허용된 읽기 루트에 있는 텍스트 로그의 마지막 줄을 조회합니다."""
         return _tool_result_or_error(
             service, "log_tail", {"path": path, "lines": lines}
+        )
+
+    @server.tool()
+    def analyze_trajectory(path: str) -> dict[str, object]:
+        """저장된 trajectory/1 JSONL의 추종 오차와 동결 구간을 분석합니다."""
+        return _json_tool_result_or_error(
+            service, "analyze_trajectory", {"path": path}
         )
 
     return server

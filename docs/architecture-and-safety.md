@@ -11,14 +11,28 @@ ROS 2 graph·topic·rosbag·log ──▶ 고정 allowlist ──▶ MCP stdio
                                       │
                                       └──▶ JSONL 감사 로그
 
+저장 trajectory/1 ──▶ analyze_trajectory(CPU) ──▶ 오차·동결 요약
+                              │
+                              └──▶ 같은 trace ID의 감사 기록
+
 검색 근거 ──▶ 로컬 LLM 벤치마크 클라이언트 ──▶ 답변·출처 평가
 ```
 
 경계는 세 층으로 나뉜다.
 
 1. PKM 계층은 Markdown만 읽는다. SQLite에는 생성 시점의 절대 소스 루트를 기록하므로, 같은 DB를 다른 루트에 연결해 문서를 덮어쓰거나 삭제할 수 없다.
-2. ROS 2 진단 계층은 노드·토픽·서비스 목록, 토픽 한 건, rosbag 정보, 허용된 로그만 읽는다. 인자는 고정된 배열로 만들고 `shell=False`로 실행한다.
+2. 진단 계층은 ROS 2 노드·토픽·서비스 목록, 토픽 한 건, rosbag 정보, 허용된 로그와 저장 궤적만 읽는다. ROS 명령은 고정된 배열과 `shell=False`로 실행한다. `analyze_trajectory`는 외부 프로세스 없이 표준 라이브러리로 관절 추종 오차, TCP 거리, 관측 동결을 계산한다.
 3. MCP 계층은 검색과 진단 도구를 노출한다. 등록되지 않은 도구와 스키마가 틀린 요청까지 실행 전에 감사 로그에 남긴다.
+
+## 저장 사례 MCP 시연
+
+```bash
+cd "$HOME/robot-ops-agent"
+PYTHONPATH=src .venv/bin/python -m robot_ops.agent_demo \
+  --profile profiles/bimanual.toml
+```
+
+시연은 프로세스 안의 MCP 서버에 `search_documents`, `log_tail`, `analyze_trajectory`를 순서대로 호출한다. 저장된 공개 관측 동결 사례만 읽으며 LLM, 실시간 ROS 2, 시뮬레이터, 실물 로봇은 호출하지 않는다. 응답과 감사 원본은 `.local/agent-demo`에 남고, 공개 리포트에는 해시와 출처를 확인한 요약만 들어간다.
 
 ## 의도적으로 없는 기능
 
@@ -35,6 +49,8 @@ ROS 2 graph·topic·rosbag·log ──▶ 고정 allowlist ──▶ MCP stdio
 도구를 실행하기 전에 `started` 레코드를 디스크에 쓰고 `fsync`한다. 이 기록에 실패하면 명령을 실행하지 않는다. 완료·실패·거부 결과는 같은 trace ID의 `completed` 레코드로 이어진다. 감사 파일과 인덱스 DB의 권한은 `0600`이다.
 
 인덱서와 진단 도구는 같은 비밀정보 탐지 규칙을 쓴다. 개인 키, AWS 키, GitHub·Slack·Bearer 토큰, JWT, 인증정보가 든 DB URL, `*_TOKEN`·`*_PASSWORD`·`*_API_KEY`·`*_SECRET` 형식의 값은 인덱싱에서 제외하거나 출력에서 가린다.
+
+`analyze_trajectory`는 허용 루트 안의 일반 `.jsonl`만 받는다. 심볼릭 링크, 32 MiB 초과 파일, 100,000행 초과 입력, 잘못된 스키마와 비유한수는 분석 전에 거부한다. 공개 리포트 빌드는 Agent trace와 원시 응답·감사 로그의 해시를 다시 확인하며, 불일치하거나 자료가 없으면 미디어 생성을 실패시킨다.
 
 ## 배포 경계
 

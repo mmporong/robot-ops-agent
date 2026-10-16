@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import math
 import sys
 import tempfile
 import unittest
@@ -69,6 +71,37 @@ class MCPServerTest(unittest.IsolatedAsyncioTestCase):
         )
         self.server = create_server(service, db_path=self.db_path)
 
+    def _write_trajectory(self) -> Path:
+        path = self.root / "trajectory.jsonl"
+        header = {
+            "schema": "robot-ops-trajectory/1",
+            "robot_id": "so101",
+            "arm": "left",
+            "joint_names": ["shoulder"],
+            "units": "rad",
+            "fps": 10,
+            "source": {
+                "kind": "fixture",
+                "path": "fixture",
+                "episode": 0,
+                "sha256": "0" * 64,
+            },
+            "origin": "real_recording",
+        }
+        rows = [
+            {
+                "t": index / 10,
+                "q_cmd": [math.radians(index * 1.2)],
+                "q_obs": [0.0],
+            }
+            for index in range(6)
+        ]
+        path.write_text(
+            "\n".join(json.dumps(item) for item in [header, *rows]) + "\n",
+            encoding="utf-8",
+        )
+        return path
+
     async def asyncTearDown(self) -> None:
         self.temp_dir.cleanup()
 
@@ -79,6 +112,7 @@ class MCPServerTest(unittest.IsolatedAsyncioTestCase):
         names = {tool.name for tool in tools.tools}
         self.assertIn("ros_topic_sample", names)
         self.assertIn("search_documents", names)
+        self.assertIn("analyze_trajectory", names)
         self.assertNotIn("ros_topic_publish", names)
         self.assertNotIn("shell", names)
         self.assertNotIn("restart_process", names)
@@ -93,6 +127,37 @@ class MCPServerTest(unittest.IsolatedAsyncioTestCase):
             [("/opt/ros/jazzy/bin/ros2", "node", "list")],
         )
         self.assertTrue(result.structured_content["ok"])
+
+    async def test_analyze_trajectory_runs_through_mcp_without_command(self) -> None:
+        path = self._write_trajectory()
+
+        async with Client(self.server, raise_exceptions=True) as client:
+            result = await client.call_tool(
+                "analyze_trajectory", {"path": str(path)}
+            )
+
+        self.assertFalse(result.is_error)
+        self.assertEqual(self.runner.calls, [])
+        summary = result.structured_content
+        self.assertEqual(summary["source_path"], str(path.resolve()))
+        self.assertEqual(
+            summary["source_sha256"], hashlib.sha256(path.read_bytes()).hexdigest()
+        )
+        self.assertEqual(summary["frame_count"], 6)
+        self.assertEqual(summary["thresholds"], {"joint_deg": 3.0, "tcp_mm": 20.0})
+        self.assertNotIn("series", summary)
+        records = [
+            json.loads(line)
+            for line in self.audit_log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(
+            [
+                record["phase"]
+                for record in records
+                if record.get("tool") == "analyze_trajectory"
+            ],
+            ["started", "started", "completed", "completed"],
+        )
 
     async def test_invalid_topic_is_tool_error_and_never_runs_command(self) -> None:
         async with Client(self.server, raise_exceptions=True) as client:

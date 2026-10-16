@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import hashlib
 import json
+import math
+import os
 import sys
 import tempfile
 import unittest
 from pathlib import Path
 from typing import Sequence
+from unittest import mock
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -51,6 +55,39 @@ class DiagnosticToolServiceTest(unittest.TestCase):
 
     def _audit_records(self) -> list[dict[str, object]]:
         return [json.loads(line) for line in self.audit_log.read_text(encoding="utf-8").splitlines()]
+
+    def _write_trajectory(self, name: str = "trajectory.jsonl") -> Path:
+        path = self.root / name
+        header = {
+            "schema": "robot-ops-trajectory/1",
+            "robot_id": "so101",
+            "arm": "left",
+            "joint_names": ["shoulder"],
+            "units": "rad",
+            "fps": 10,
+            "source": {
+                "kind": "fixture",
+                "path": "fixture",
+                "episode": 0,
+                "sha256": "0" * 64,
+            },
+            "origin": "real_recording",
+        }
+        rows = [
+            {
+                "t": index / 10,
+                "q_cmd": [math.radians(index * 1.2)],
+                "q_obs": [0.0],
+                "tcp_cmd_m": [index * 0.01, 0.0, 0.0],
+                "tcp_obs_m": [0.0, 0.0, 0.0],
+            }
+            for index in range(6)
+        ]
+        path.write_text(
+            "\n".join(json.dumps(item) for item in [header, *rows]) + "\n",
+            encoding="utf-8",
+        )
+        return path
 
     def test_unknown_motion_tool_is_rejected_without_process(self) -> None:
         result = self.service.execute(
@@ -187,6 +224,118 @@ class DiagnosticToolServiceTest(unittest.TestCase):
         self.assertTrue(result.ok)
         self.assertTrue(result.truncated)
         self.assertEqual(len(result.output), self.service.policy.max_output_chars)
+
+    def test_analyze_trajectory_returns_bounded_summary_without_process(self) -> None:
+        path = self._write_trajectory()
+
+        result = self.service.execute("analyze_trajectory", {"path": str(path)})
+
+        self.assertTrue(result.ok)
+        self.assertEqual(self.runner.calls, [])
+        summary = json.loads(result.output)
+        self.assertEqual(
+            set(summary),
+            {
+                "source_path",
+                "source_sha256",
+                "frame_count",
+                "duration_s",
+                "joint_names",
+                "thresholds",
+                "freeze_rule",
+                "incidents",
+                "tcp",
+                "max_joint_err_deg",
+            },
+        )
+        self.assertEqual(
+            summary["source_sha256"], hashlib.sha256(path.read_bytes()).hexdigest()
+        )
+        self.assertEqual(summary["frame_count"], 6)
+        self.assertEqual(summary["thresholds"], {"joint_deg": 3.0, "tcp_mm": 20.0})
+        self.assertEqual(
+            summary["freeze_rule"],
+            {"eps_deg": 0.1, "delta_deg": 0.5, "min_frames": 3},
+        )
+        self.assertNotIn("series", result.output)
+        self.assertTrue(summary["incidents"])
+
+    def test_analyze_trajectory_rejects_invalid_inputs_and_audits_completion(self) -> None:
+        outside = self.root.parent / f"outside-{self.root.name}-trajectory.jsonl"
+        outside.write_text("{}\n", encoding="utf-8")
+        symlink = self.root / "linked.jsonl"
+        valid = self._write_trajectory()
+        symlink.symlink_to(valid)
+        no_rows = self.root / "no-rows.jsonl"
+        no_rows.write_text(
+            valid.read_text(encoding="utf-8").splitlines()[0] + "\n",
+            encoding="utf-8",
+        )
+        nonfinite = self.root / "nonfinite.jsonl"
+        nonfinite.write_text(
+            valid.read_text(encoding="utf-8").replace("0.0]", "NaN]", 1),
+            encoding="utf-8",
+        )
+        invalid_schema = self.root / "invalid-schema.jsonl"
+        invalid_schema.write_text(
+            valid.read_text(encoding="utf-8").replace(
+                "robot-ops-trajectory/1", "robot-ops-trajectory/999", 1
+            ),
+            encoding="utf-8",
+        )
+        wrong_extension = self.root / "trajectory.txt"
+        wrong_extension.write_bytes(valid.read_bytes())
+        try:
+            cases = (
+                (outside, "path_not_allowed"),
+                (symlink, "symlink_not_allowed"),
+                (no_rows, "궤적 행이 없습니다"),
+                (nonfinite, "invalid_trajectory"),
+                (invalid_schema, "invalid_trajectory"),
+                (wrong_extension, "invalid_trajectory_path"),
+            )
+            for candidate, reason in cases:
+                with self.subTest(candidate=candidate.name):
+                    result = self.service.execute(
+                        "analyze_trajectory", {"path": str(candidate)}
+                    )
+                    self.assertEqual(result.status, "rejected")
+                    self.assertIn(reason, result.error or "")
+                    self.assertEqual(self._audit_records()[-1]["phase"], "completed")
+            self.assertEqual(self.runner.calls, [])
+        finally:
+            outside.unlink()
+
+    def test_analyze_trajectory_enforces_size_and_row_limits(self) -> None:
+        oversized = self.root / "oversized.jsonl"
+        with oversized.open("wb") as stream:
+            stream.truncate(32 * 1024 * 1024 + 1)
+        size_result = self.service.execute(
+            "analyze_trajectory", {"path": str(oversized)}
+        )
+        self.assertEqual(size_result.status, "rejected")
+        self.assertIn("trajectory_too_large", size_result.error or "")
+
+        path = self._write_trajectory()
+        with mock.patch("robot_ops.diagnostics.MAX_TRAJECTORY_ROWS", 2):
+            rows_result = self.service.execute(
+                "analyze_trajectory", {"path": str(path)}
+            )
+        self.assertEqual(rows_result.status, "rejected")
+        self.assertIn("trajectory_too_many_rows", rows_result.error or "")
+        self.assertEqual(self.runner.calls, [])
+
+    @unittest.skipUnless(hasattr(os, "mkfifo"), "FIFO는 이 플랫폼에서 지원되지 않습니다")
+    def test_analyze_trajectory_rejects_fifo_without_blocking(self) -> None:
+        fifo = self.root / "trajectory.jsonl"
+        os.mkfifo(fifo)
+
+        result = self.service.execute("analyze_trajectory", {"path": str(fifo)})
+
+        self.assertEqual(result.status, "rejected")
+        self.assertIn("일반 파일", result.error or "")
+        self.assertEqual(self.runner.calls, [])
+        self.assertEqual(self._audit_records()[-1]["phase"], "completed")
 
     def test_subprocess_runner_caps_captured_output(self) -> None:
         runner = SubprocessRunner(max_output_bytes=128)

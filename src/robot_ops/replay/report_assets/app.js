@@ -184,9 +184,69 @@
   }
 
   // ------------------------------------------------------------ 히어로
+  function agentAudit(hero) {
+    var demo = hero.agent_demo || {};
+    var steps = demo.steps || [];
+    if (!steps.length) return null;
+    return h("details", { class: "agent-audit" },
+      h("summary", null,
+        h("span", { text: "MCP 도구 실행 " + steps.length + "건" }),
+        h("span", { class: "agent-audit-hint", text: "감사 기록 보기" })
+      ),
+      h("ol", { class: "agent-step-list" }, steps.map(function (step, index) {
+        var args = step.arguments && Object.keys(step.arguments).length ? JSON.stringify(step.arguments) : "인자 없음";
+        var citations = step.citations || [];
+        return h("li", { class: "agent-step" },
+          h("div", { class: "agent-step-head" },
+            h("span", { class: "agent-step-number", text: String(index + 1).padStart(2, "0") }),
+            h("code", { class: "agent-tool", text: step.tool || "도구" }),
+            h("span", { class: "agent-status " + (step.status === "ok" || step.status === "success" ? "is-ok" : ""), text: step.status || "기록됨" })
+          ),
+          h("p", { class: "agent-step-summary", text: step.summary_ko || "실행 결과가 기록되었습니다." }),
+          h("dl", { class: "agent-trace" },
+            h("div", null, h("dt", { text: "trace" }), h("dd", null, h("code", { text: step.trace_id || "–" }))),
+            h("div", null, h("dt", { text: "duration" }), h("dd", { text: step.duration_ms === null || step.duration_ms === undefined ? "–" : fmt(step.duration_ms, 0) + " ms" })),
+            h("div", null, h("dt", { text: "arguments" }), h("dd", null, h("code", { text: args })))
+          ),
+          citations.length ? h("ul", { class: "agent-citations", "aria-label": "근거 파일" }, citations.map(function (citation) {
+            return h("li", null,
+              h("code", { text: citation.path || "근거 파일" }),
+              citation.sha256 ? h("span", { text: "sha256 " + String(citation.sha256).slice(0, 12) }) : null
+            );
+          })) : null
+        );
+      }))
+    );
+  }
+
   function heroSummary(hero) {
     var lines = [];
     var cup = hero.cup_grid;
+    if (hero.source === "agent_replay") {
+      var demo = hero.agent_demo || {};
+      var analysis = demo.analysis || {};
+      var incident = analysis.incident || {};
+      lines.push(h("p", { class: "hero-kicker", text: "Robot Ops Agent 실행 기록" }));
+      lines.push(h("p", { class: "agent-question" },
+        h("span", { text: "시연 질문" }),
+        demo.question_ko || "저장된 로봇 기록에서 이상 구간의 근거를 찾아 주세요."
+      ));
+      lines.push(h("p", { class: "hero-facts agent-facts" },
+        "고정된 MCP 호출 순서로 근거를 검색하고 저장 궤적을 분석해 ",
+        h("strong", { class: "num", text: fmt(incident.t_start_s, 1) + "–" + fmt(incident.t_end_s, 1) + " s" }),
+        "의 관측 동결 구간을 찾았습니다. TCP 거리 ",
+        h("strong", { class: "num", text: fmt(analysis.max_tcp_mm, 0) + " mm" }),
+        "는 SO-101 모델 재생으로 계산한 값입니다."
+      ));
+      lines.push(h("div", { class: "badges" },
+        badge("origin", "기록", demo.recorded_at || "저장된 실행"),
+        badge("basis", "분석 대상", fmt(analysis.frame_count, 0) + " 프레임"),
+        h("a", { class: "text-link", href: "#/s/" + hero.scenario_id + "/" + hero.condition, text: "사례 상세 보기" })
+      ));
+      lines.push(agentAudit(hero));
+      lines.push(h("p", { class: "note agent-note", text: demo.note_ko || "실제 MCP 도구 실행 기록 재생 · 저장된 실측·모델 영상" }));
+      return lines;
+    }
     if (hero.source === "bimanual_pour") {
       lines.push(h("p", { class: "hero-kicker", text: "저장된 양팔 시뮬레이션" }));
       lines.push(h("p", { class: "hero-facts" },
@@ -254,10 +314,12 @@
   function heroMedia(hero) {
     if (!hero.video) return h("div", { class: "hero-media hero-empty" }, h("p", { text: "히어로 영상이 아직 없습니다. 재생 실행 뒤 리포트를 다시 빌드하면 채워집니다." }));
     var pour = hero.source === "bimanual_pour";
-    var label = pour ? "양팔 따르기 시뮬레이션" : hero.source === "cup_grid" ? "컵 격자 히어로 영상" : "관측 동결 나란히 영상";
+    var agentReplay = hero.source === "agent_replay";
+    var label = agentReplay ? "Robot Ops Agent가 MCP 도구로 관측 동결 근거를 찾는 실행 재생" : pour ? "양팔 따르기 시뮬레이션" : hero.source === "cup_grid" ? "컵 격자 히어로 영상" : "관측 동결 나란히 영상";
     var fig = h("figure", { class: "hero-media" });
     var video = h("video", { controls: true, playsinline: true, preload: "auto", poster: hero.poster || null, src: hero.video,
-      class: "hero-video", muted: true, loop: pour, autoplay: !reducedMotion(), "aria-label": label });
+      class: "hero-video", muted: true, loop: pour || agentReplay, autoplay: !reducedMotion(), width: hero.width || null, height: hero.height || null,
+      "aria-label": label });
     append(fig, video);
     startVideo(video, true);
     state.cleanup.push(function () { video.pause(); });
@@ -270,7 +332,9 @@
       })));
     }
     var detail = ((hero.segments || [])[0] || {}).highlight_detail;
-    append(fig, h("figcaption", null, pour
+    append(fig, h("figcaption", null, agentReplay
+      ? ((hero.agent_demo || {}).note_ko || "실제 MCP 도구 실행 기록 재생 · 저장된 실측·모델 영상")
+      : pour
       ? (hero.conditions_note_ko || "저장된 시뮬레이션입니다.")
       : hero.source === "cup_grid"
       ? "조건 A 격자점 x " + mm((hero.point || {}).x_mm) + " mm, y " + mm((hero.point || {}).y_mm) + " mm 녹화와 같은 격자점의 조건 B 녹화입니다. " +
@@ -284,9 +348,10 @@
   function routeHero(label) {
     var hero = state.hero || {};
     if (!hero.video) return null;
-    return h("aside", { class: "route-viewer", "aria-label": label || "대표 시뮬레이션" },
+    var viewerLabel = hero.source === "agent_replay" ? "사례를 읽는 동안 표시되는 Robot Ops Agent 실행 재생" : (label || "대표 실행 영상");
+    return h("aside", { class: "route-viewer", "aria-label": viewerLabel },
       h("div", { class: "route-viewer-head" },
-        h("strong", { text: hero.title_ko || "대표 시뮬레이션" }),
+        h("strong", { text: hero.title_ko || "대표 실행 영상" }),
         h("a", { href: "#/", text: "전체 화면" })
       ),
       heroMedia(hero)
@@ -330,10 +395,11 @@
 
   function renderHome(main) {
     var hero = state.hero || {};
+    var agentReplay = hero.source === "agent_replay";
     main.appendChild(h("section", { class: "hero", "aria-labelledby": "hero-title" },
       h("div", { class: "hero-head" },
         h("h1", { id: "hero-title", tabindex: "-1", text: hero.title_ko || "로봇 실행을 영상으로 다시 봅니다" }),
-        h("p", { class: "lead", text: "움직임을 먼저 보고, 필요한 구간과 판정 근거를 이어서 확인할 수 있습니다." })
+        h("p", { class: "lead", text: agentReplay ? "실제 MCP 호출 · 근거 검색 → 로그 조회 → 궤적 분석" : "움직임을 먼저 보고, 필요한 구간과 판정 근거를 이어서 확인할 수 있습니다." })
       ),
       heroMedia(hero),
       h("div", { class: "hero-summary" }, heroSummary(hero))

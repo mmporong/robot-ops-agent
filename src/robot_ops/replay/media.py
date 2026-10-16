@@ -346,6 +346,56 @@ def _fit_canvas(width: int, height: int, fps: int) -> str:
     )
 
 
+def agent_demo_command(
+    real: Path, ghost: Path, out: Path, *, demo: dict, length_s: float,
+    font_path: str, fps: int = 10, crf: int = 23,
+) -> list[str]:
+    """모델 영상을 유지하면서 실제 MCP 호출·응답 기록을 같은 화면에 표시한다."""
+    analysis = demo["analysis"]
+    incident = analysis["incident"]
+    if not math.isfinite(length_s) or length_s <= 9:
+        raise ValueError("실행 기록 영상은 9초보다 길어야 합니다")
+    graph = [
+        f"[0:v]{_fit_canvas(960, 720, fps)},setpts=PTS-STARTPTS[g]",
+        f"[1:v]{_fit_canvas(320, 240, fps)},setpts=PTS-STARTPTS[r]",
+        "[2:v][g]overlay=24:128:shortest=1[base]",
+        "[base][r]overlay=656:592:shortest=1[canvas]",
+    ]
+    filters = ["drawbox=x=1008:y=128:w=568:h=704:color=0xF3F6FA:t=fill"]
+
+    def line(text: str, x: int, y: int, size: int = 24, color: str = "0x172635", at: float = 0) -> None:
+        filters.append(drawtext_filter(text, font_path, x=str(x), y=str(y), size=size, color=color, box=False)
+                       + (f":enable='gte(t,{at:g})'" if at else ""))
+
+    line("Robot Ops Agent  |  기록을 읽고 이상 구간 찾기", 24, 24, 34)
+    line("시연 질문: " + demo["question_ko"], 24, 78, 25)
+    line("모델 재생 · 파랑 = 명령 / 노랑 = 관측", 36, 140, 24)
+    filters.append("drawbox=x=656:y=562:w=320:h=30:color=white:t=fill")
+    line("같은 기록의 실측 카메라", 664, 565, 19)
+    filters.append(f"drawbox=x=24:y=128:w=960:h=720:color=0xDC5539:t=6:enable='between(t,{incident['t_start_s']:g},{incident['t_end_s']:g})'")
+    for index, step in enumerate(demo["steps"]):
+        y, at = 156 + index * 212, index * 3
+        line(f"{index + 1:02d}  {step['tool']}", 1032, y, 28, at=at)
+        line(f"호출 성공 · {step['duration_ms']:.1f} ms", 1032, y + 42, 23, "0x287652", at + 1)
+        line("trace " + step["trace_id"][:16], 1032, y + (208 if index == 2 else 154), 17, "0x607084", at + 1)
+    hits = demo["steps"][0].get("citations", [])
+    line(f"키워드 검색 → 근거 {len(hits)}건", 1032, 244, at=1)
+    if hits:
+        line(Path(hits[0]["path"]).name, 1032, 278, 20, at=1)
+    line("trajectory_mujoco.jsonl", 1032, 456, 22, at=4)
+    line("마지막 2프레임의 명령·관측 읽기", 1032, 490, 22, at=4)
+    line(f"{analysis['frame_count']}프레임 분석", 1032, 668, 24, at=7)
+    line(f"동결 {incident['t_start_s']:g}–{incident['t_end_s']:g} s · {incident['n_frames']}프레임", 1032, 706, 28, "0xC4472D", 7)
+    tcp = analysis.get("max_tcp_mm")
+    if tcp is not None:
+        line(f"최대 TCP 거리 {tcp:.0f} mm (모델 기준)", 1032, 752, 22, at=7)
+    line("실제 MCP 실행 기록 재생 · 도구 단계 표시는 설명용 · 로봇 제어 없음", 24, 867, 21, "0x526376")
+    graph.append("[canvas]" + ",".join(filters) + "[v]")
+    return [*FFMPEG, "-i", str(ghost), "-i", str(real), "-f", "lavfi", "-i",
+            f"color=c=white:s=1600x900:r={fps}:d={length_s:g}", "-filter_complex", ";".join(graph),
+            "-map", "[v]", "-an", "-t", f"{length_s:g}", *h264_args(fps, crf=crf), str(out)]
+
+
 def showcase_command(
     src: Path,
     out: Path,

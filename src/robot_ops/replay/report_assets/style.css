@@ -116,12 +116,48 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
 }
 .poster-button:hover .play-mark { background: #fff; transform: scale(1.04); }
 .poster-button:focus-visible { outline-offset: -4px; outline-color: #fff; }
-.hero-video { width: 100%; max-height: min(72vh, 720px); object-fit: contain; background: #10151c; border-radius: 8px; }
+.hero-video { width: 100%; height: auto; max-height: min(72vh, 720px); object-fit: contain; background: #10151c; border-radius: 8px; }
 .hero-empty { padding: 48px 24px; color: #cfd5dc; }
 .hero-summary { margin-top: 12px; display: grid; gap: 4px; }
 .hero-facts { font-size: 18px; margin: 8px 0 0; max-width: 72ch; }
 .hero-facts strong { font-weight: 800; }
 .hero-facts-minor { font-size: 16px; color: var(--ink-2); margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.agent-question {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: baseline;
+  margin: 8px 0 0; max-width: 78ch; font-size: 17px; font-weight: 700;
+}
+.agent-question span {
+  color: var(--ink-3); font-size: 12px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.agent-facts { max-width: 78ch; }
+.agent-audit { margin-top: 12px; border: 1px solid var(--rule); border-radius: 8px; background: var(--panel); overflow: hidden; }
+.agent-audit summary {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; padding: 0 16px;
+  cursor: pointer; font-weight: 800;
+}
+.agent-audit summary::marker { color: var(--ink-3); }
+.agent-audit-hint { color: var(--ink-3); font-size: 13px; font-weight: 600; }
+.agent-step-list { list-style: none; display: grid; margin: 0; padding: 0 16px 16px; }
+.agent-step { padding: 14px 0; border-top: 1px solid var(--rule-soft); }
+.agent-step-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.agent-step-number { color: var(--ink-3); font: 700 12px/1 var(--mono); }
+.agent-tool { color: var(--ink); font-size: 14px; font-weight: 800; }
+.agent-status {
+  margin-left: auto; border: 1px solid var(--rule); border-radius: 999px; padding: 2px 9px;
+  color: var(--ink-2); font-size: 12px; font-weight: 800;
+}
+.agent-status.is-ok { border-color: rgba(27, 133, 95, 0.35); background: rgba(27, 133, 95, 0.08); color: #126646; }
+.agent-step-summary { margin: 7px 0 0 26px; color: var(--ink-2); font-size: 14px; }
+.agent-trace { display: flex; flex-wrap: wrap; gap: 5px 22px; margin: 10px 0 0 26px; font-size: 12px; color: var(--ink-3); }
+.agent-trace div { display: flex; gap: 6px; min-width: 0; }
+.agent-trace dt { font-weight: 700; }
+.agent-trace dd { margin: 0; min-width: 0; }
+.agent-trace code { overflow-wrap: anywhere; }
+.agent-citations { display: grid; gap: 4px; margin: 10px 0 0 26px; padding-left: 16px; color: var(--ink-3); font-size: 12px; }
+.agent-citations li { padding-left: 4px; }
+.agent-citations code { color: var(--ink-2); overflow-wrap: anywhere; }
+.agent-citations span { margin-left: 8px; white-space: nowrap; }
+.agent-note { margin-top: 4px; }
 .chapter-row { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 10px; }
 .chapter {
   min-height: 44px; padding: 8px 14px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel);
@@ -338,6 +374,10 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
   .play-mark { width: 56px; height: 56px; margin: -28px 0 0 -28px; }
   .play-mark::after { left: 22px; top: 17px; border-width: 11px 0 11px 17px; }
   .map-grid { grid-template-columns: 36px repeat(var(--cols, 5), minmax(44px, 1fr)); gap: 3px; }
+  .agent-audit summary { align-items: flex-start; flex-direction: column; gap: 1px; justify-content: center; }
+  .agent-step-summary, .agent-trace, .agent-citations { margin-left: 0; }
+  .agent-trace { display: grid; gap: 4px; }
+  .agent-trace div { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
