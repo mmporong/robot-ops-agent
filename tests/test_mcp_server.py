@@ -150,6 +150,52 @@ class MCPServerTest(unittest.IsolatedAsyncioTestCase):
         (target / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
         return path
 
+    def _write_alignment_simulation(self) -> Path:
+        target = self.root / "alignment" / "isaac"
+        target.mkdir(parents=True)
+        samples = [
+            {
+                "time_s": index / 10,
+                "physics_time_s": 0.525 + index / 10,
+                "phase": "RESET" if index <= 5 else "CLOSE",
+                "attempt": 0,
+                "cup_position_m": [0.39, 0.165, 0.78],
+                "contact_force_n": [0.0, 0.0],
+            }
+            for index in range(7)
+        ]
+        result = {
+            "hardware_accessed": False,
+            "observation_source": "simulator_ground_truth_not_rgb",
+            "task_pass": True,
+            "completed": True,
+            "stop_reason": "sequence_finished",
+            "recovery_enabled": False,
+            "retry_count": 0,
+            "events": [],
+            "samples": samples,
+            "failure": "not_formula_input",
+        }
+        plan = {
+            "hardware_accessed": False,
+            "observation_source": "simulator_ground_truth_not_rgb",
+            "runtime_overrides": {"grid_point": [999.0, 999.0]},
+            "config": {
+                "physics_dt_s": 0.1,
+                "minimum_contact_force_n": 0.02,
+                "cup_center_m": [0.39, 0.17, 0.78],
+                "cup_spawn_offset_m": [88.0, 88.0, 88.0],
+                "recovery": {
+                    "observation_duration_s": 0.5,
+                    "maximum_observation_motion_m": 0.001,
+                },
+            },
+        }
+        path = target / "result.json"
+        path.write_text(json.dumps(result), encoding="utf-8")
+        (target / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
+        return path
+
     async def asyncTearDown(self) -> None:
         self.temp_dir.cleanup()
 
@@ -162,6 +208,7 @@ class MCPServerTest(unittest.IsolatedAsyncioTestCase):
         self.assertIn("search_documents", names)
         self.assertIn("analyze_trajectory", names)
         self.assertIn("analyze_simulation", names)
+        self.assertIn("analyze_cup_alignment", names)
         self.assertNotIn("ros_topic_publish", names)
         self.assertNotIn("shell", names)
         self.assertNotIn("restart_process", names)
@@ -234,6 +281,43 @@ class MCPServerTest(unittest.IsolatedAsyncioTestCase):
                 record["phase"]
                 for record in records
                 if record.get("tool") == "analyze_simulation"
+            ],
+            ["started", "started", "completed", "completed"],
+        )
+
+    async def test_analyze_cup_alignment_runs_through_mcp_without_metadata_leak(self) -> None:
+        path = self._write_alignment_simulation()
+
+        async with Client(self.server, raise_exceptions=True) as client:
+            result = await client.call_tool(
+                "analyze_cup_alignment", {"path": str(path)}
+            )
+
+        self.assertFalse(result.is_error)
+        self.assertEqual(self.runner.calls, [])
+        summary = result.structured_content
+        self.assertEqual(summary["status"], "candidate_available")
+        self.assertAlmostEqual(summary["proposal"]["correction_mm"][1], -5.0)
+        self.assertEqual(summary["scope"]["cause_status"], "undetermined")
+        encoded = json.dumps(summary, ensure_ascii=False)
+        for forbidden in (
+            "cup_spawn_offset_m",
+            "grid_point",
+            "failure",
+            "task_pass",
+            "completed",
+            "stop_reason",
+        ):
+            self.assertNotIn(forbidden, encoded)
+        records = [
+            json.loads(line)
+            for line in self.audit_log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(
+            [
+                record["phase"]
+                for record in records
+                if record.get("tool") == "analyze_cup_alignment"
             ],
             ["started", "started", "completed", "completed"],
         )

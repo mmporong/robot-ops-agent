@@ -199,6 +199,10 @@ class DiagnosticToolService:
             "허용된 경로의 저장된 시뮬레이션 결과를 읽어 "
             "닫기 전 접촉 이상과 저장 판정의 일치 여부를 분석합니다."
         ),
+        "analyze_cup_alignment": (
+            "허용된 저장 시뮬레이션의 계획 컵 중심과 초기 RESET 관측 중심의 "
+            "상대 오차만 검사합니다."
+        ),
     }
 
     def __init__(self, policy: ToolPolicy, runner: CommandRunner | None = None) -> None:
@@ -220,6 +224,7 @@ class DiagnosticToolService:
             "log_tail": self._log_tail,
             "analyze_trajectory": self._analyze_trajectory,
             "analyze_simulation": self._analyze_simulation,
+            "analyze_cup_alignment": self._analyze_cup_alignment,
         }
 
     def list_tools(self) -> list[dict[str, str]]:
@@ -502,7 +507,9 @@ class DiagnosticToolService:
             duration_ms=(time.perf_counter() - started) * 1000.0,
         )
 
-    def _analyze_simulation(self, arguments: Mapping[str, object]) -> ProcessResult:
+    def _read_simulation_pair(
+        self, arguments: Mapping[str, object]
+    ) -> tuple[Path, Path, bytes, bytes, Mapping[str, object], Mapping[str, object]]:
         _require_only(arguments, {"path"})
         raw_path = _require_string(arguments, "path", max_length=4096)
         requested_path = Path(raw_path).expanduser()
@@ -545,6 +552,13 @@ class DiagnosticToolService:
             raise ToolRejected(
                 "invalid_simulation: NaN 또는 무한대는 허용하지 않습니다"
             )
+        return path, plan_path, result_bytes, plan_bytes, result, plan
+
+    def _analyze_simulation(self, arguments: Mapping[str, object]) -> ProcessResult:
+        started = time.perf_counter()
+        path, plan_path, result_bytes, plan_bytes, result, plan = (
+            self._read_simulation_pair(arguments)
+        )
 
         try:
             from .simulation_inspection import inspect_simulation_result
@@ -565,6 +579,99 @@ class DiagnosticToolService:
                 allow_nan=False,
             )
         except (ValueError, TypeError, KeyError) as error:
+            raise ToolRejected(f"invalid_simulation: {error}") from error
+        if len(output) > self.policy.max_output_chars:
+            raise ToolRejected(
+                "analysis_output_too_large: 분석 요약이 출력 제한을 넘었습니다"
+            )
+        return ProcessResult(
+            returncode=0,
+            stdout=output,
+            stderr="",
+            duration_ms=(time.perf_counter() - started) * 1000.0,
+        )
+
+    def _analyze_cup_alignment(self, arguments: Mapping[str, object]) -> ProcessResult:
+        started = time.perf_counter()
+        path, plan_path, result_bytes, plan_bytes, result, plan = (
+            self._read_simulation_pair(arguments)
+        )
+        try:
+            from .cup_diagnosis import derive_plan_correction
+            from .simulation_inspection import inspect_simulation_result
+
+            # 같은 읽기 경계뿐 아니라 hardware=false, 시뮬레이터 정답 관측,
+            # 물리 시간 진행까지 기존 검사와 동일하게 검증한다. 저장 판정은
+            # 정렬 보정 수식에 전달하지 않는다.
+            inspect_simulation_result(
+                result,
+                plan,
+                result_sha256=hashlib.sha256(result_bytes).hexdigest(),
+                plan_sha256=hashlib.sha256(plan_bytes).hexdigest(),
+            )
+            config = plan["config"]
+            recovery = config["recovery"]
+            duration_s = recovery["observation_duration_s"]
+            raw_samples = result["samples"]
+            start_s = raw_samples[0]["time_s"]
+            fields = (
+                "time_s",
+                "physics_time_s",
+                "phase",
+                "attempt",
+                "cup_position_m",
+                "contact_force_n",
+            )
+            reset_window = []
+            for sample in raw_samples:
+                if (
+                    sample["time_s"] > start_s + duration_s + 1e-9
+                    or sample["phase"] != "RESET"
+                ):
+                    break
+                reset_window.append({field: sample[field] for field in fields})
+            proposal = derive_plan_correction(
+                config["cup_center_m"],
+                reset_window,
+                window_s=duration_s,
+                max_motion_m=recovery["maximum_observation_motion_m"],
+                contact_threshold_n=config["minimum_contact_force_n"],
+            )
+            summary = {
+                "schema": "robot-ops-cup-alignment-analysis/1",
+                "status": proposal["status"],
+                "headline_ko": (
+                    "계획 컵 중심과 초기 관측 중심의 위치 차이 후보가 있습니다."
+                    if proposal["status"] == "candidate_available"
+                    else "계획 컵 중심과 초기 관측 중심에 유의미한 차이가 없습니다."
+                ),
+                "source": {
+                    "result_path": str(path),
+                    "plan_path": str(plan_path),
+                    "result_sha256": hashlib.sha256(result_bytes).hexdigest(),
+                    "plan_sha256": hashlib.sha256(plan_bytes).hexdigest(),
+                },
+                "proposal": proposal,
+                "scope": {
+                    "read_only": True,
+                    "coordinates": "simulator_ground_truth",
+                    "cause_status": "undetermined",
+                    "limitations_ko": [
+                        "계획 좌표와 초기 RESET 관측 좌표의 상대 오차만 검사합니다.",
+                        "실물 센서나 카메라 관측을 검증한 결과가 아닙니다.",
+                        "위치 차이가 생긴 일반적인 물리 원인을 확정하지 않습니다.",
+                        "언어 모델이 독자적으로 원인을 진단한 결과가 아닙니다.",
+                    ],
+                },
+            }
+            output = json.dumps(
+                summary,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            )
+        except (ValueError, TypeError, KeyError, IndexError) as error:
             raise ToolRejected(f"invalid_simulation: {error}") from error
         if len(output) > self.policy.max_output_chars:
             raise ToolRejected(

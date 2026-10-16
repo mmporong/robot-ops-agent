@@ -29,7 +29,7 @@ button { min-height: 44px; cursor: pointer; }
 .sim-proof-question { max-width: 70ch; margin: 10px 0 0; color: var(--proof-muted); font-size: 16px; }
 .sim-proof-execution { margin: 7px 0 0; color: var(--proof-muted); font-size: 13px; }
 .sim-proof-workspace { min-width: 0; }
-.sim-proof-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+.sim-proof-tabs { display: grid; grid-template-columns: repeat(var(--sim-proof-stage-count, 3), 1fr); gap: 8px; margin-bottom: 10px; }
 .sim-proof-tab { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; padding: 11px 13px; border: 1px solid var(--proof-rule); border-radius: 7px; color: var(--proof-ink); background: var(--proof-panel); text-align: left; }
 .sim-proof-tab:hover { border-color: #96a7b8; }
 .sim-proof-tab[aria-selected="true"] { border-color: var(--proof-blue); box-shadow: inset 0 -3px 0 var(--proof-blue); background: var(--proof-blue-wash); }
@@ -40,8 +40,15 @@ button { min-height: 44px; cursor: pointer; }
 .sim-proof-tab-verdict.is-missing { color: #7a5a1a; }
 .sim-proof-panel { min-width: 0; }
 .sim-proof-video-frame { position: sticky; top: 0; z-index: 3; overflow: hidden; border-radius: 10px; background: var(--proof-dark); box-shadow: 0 10px 30px rgba(21, 32, 43, .14); }
-.sim-proof-video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: var(--proof-dark); }
+.sim-proof-video { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: var(--proof-dark); transition: transform 180ms ease; }
+.sim-proof-video.is-detail-zoom { transform: scale(1.6); transform-origin: 52% 47%; }
 .sim-proof-video-error { display: grid; width: 100%; aspect-ratio: 16 / 9; place-items: center; padding: 28px; color: #e7edf2; text-align: center; }
+.sim-proof-zoom { position: absolute; left: 12px; top: 12px; z-index: 2; min-height: 38px; padding: 7px 11px; border: 1px solid rgba(255, 255, 255, .45); border-radius: 5px; color: #fff; background: rgba(10, 17, 24, .82); font-size: 12px; font-weight: 800; backdrop-filter: blur(4px); }
+.sim-proof-zoom:hover { border-color: #fff; background: rgba(10, 17, 24, .94); }
+.sim-proof-scene-context { position: absolute; right: 12px; top: 12px; z-index: 2; display: grid; justify-items: end; gap: 4px; max-width: min(470px, calc(100% - 170px)); color: #fff; text-align: right; pointer-events: none; }
+.sim-proof-scene-legend, .sim-proof-scene-description { padding: 4px 7px; border-radius: 4px; background: rgba(10, 17, 24, .78); backdrop-filter: blur(4px); }
+.sim-proof-scene-legend { font-size: 11px; font-weight: 800; }
+.sim-proof-scene-description { font-size: 11px; }
 .sim-proof-overlay { position: absolute; right: 14px; bottom: 14px; display: grid; justify-items: end; gap: 5px; max-width: calc(100% - 28px); color: #fff; pointer-events: none; }
 .sim-proof-overlay-phase, .sim-proof-overlay-verdict { padding: 5px 9px; border-radius: 4px; background: rgba(10, 17, 24, .82); backdrop-filter: blur(4px); }
 .sim-proof-overlay-phase { font-size: 13px; }
@@ -59,6 +66,35 @@ button { min-height: 44px; cursor: pointer; }
 .sim-proof-metric-label, .sim-proof-metric-value { display: block; }
 .sim-proof-metric-label { color: var(--proof-muted); font-size: 12px; }
 .sim-proof-metric-value { margin-top: 3px; font-size: 16px; font-variant-numeric: tabular-nums; }
+.sim-proof-diagnosis { margin-top: 18px; padding: 20px; border: 1px solid #b9cfe3; border-radius: 10px; background: var(--proof-blue-wash); }
+.sim-proof-diagnosis-heading { max-width: 850px; }
+.sim-proof-diagnosis-kicker { margin: 0 0 4px; color: var(--proof-blue); font-size: 12px; font-weight: 900; }
+.sim-proof-diagnosis-title { margin: 0; font-size: clamp(20px, 2.4vw, 27px); line-height: 1.35; letter-spacing: -.02em; }
+.sim-proof-coordinate-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 16px; }
+.sim-proof-coordinate { min-width: 0; padding: 13px; border: 1px solid var(--proof-rule); border-radius: 7px; background: var(--proof-panel); }
+.sim-proof-coordinate.is-emphasis { border-color: #8db5d9; }
+.sim-proof-coordinate-label, .sim-proof-coordinate-value { display: block; }
+.sim-proof-coordinate-label { color: var(--proof-muted); font-size: 11px; }
+.sim-proof-coordinate-value { margin-top: 4px; font-size: 15px; font-variant-numeric: tabular-nums; }
+.sim-proof-subtitle { margin: 0; font-size: 15px; }
+.sim-proof-core-checks, .sim-proof-regression { margin-top: 18px; }
+.sim-proof-core-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+.sim-proof-core-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-width: min(260px, 100%); padding: 9px 11px; border: 1px solid var(--proof-rule); border-radius: 6px; background: var(--proof-panel); font-size: 13px; }
+.sim-proof-core-row.is-pass strong { color: var(--proof-green); }
+.sim-proof-core-row.is-fail strong { color: var(--proof-red); }
+.sim-proof-regression-help { margin: 4px 0 9px; color: var(--proof-muted); font-size: 12px; }
+.sim-proof-regression-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+.sim-proof-regression-cell { min-width: 0; padding: 10px 11px; border: 1px solid var(--proof-rule); border-left: 4px solid var(--proof-red); border-radius: 6px; background: var(--proof-panel); }
+.sim-proof-regression-cell.is-pass { border-left-color: var(--proof-green); }
+.sim-proof-regression-position, .sim-proof-regression-result { display: block; }
+.sim-proof-regression-position { color: var(--proof-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.sim-proof-regression-result { margin-top: 2px; font-size: 14px; }
+.sim-proof-regression-cell.is-pass .sim-proof-regression-result { color: var(--proof-green); }
+.sim-proof-regression-cell.is-fail .sim-proof-regression-result { color: var(--proof-red); }
+.sim-proof-diagnosis-note { margin-top: 17px; padding-top: 13px; border-top: 1px solid #bdd1e4; color: var(--proof-muted); font-size: 12px; }
+.sim-proof-diagnosis-note strong { color: var(--proof-ink); }
+.sim-proof-diagnosis-note ul { margin: 5px 0 0; padding-left: 19px; }
+.sim-proof-diagnosis-note li + li { margin-top: 3px; }
 .sim-proof-answer { position: relative; margin-top: 18px; padding: 18px 190px 18px 19px; border-left: 5px solid var(--proof-green); border-radius: 7px; background: #eef8f2; }
 .sim-proof-answer.is-fail { border-color: var(--proof-red); background: var(--proof-red-wash); }
 .sim-proof-answer.is-missing { border-color: #a5751b; background: #fff8e8; }
@@ -93,11 +129,13 @@ button { min-height: 44px; cursor: pointer; }
 @media (max-width: 800px) {
   #sim-proof-app { padding-top: 22px; }
   .sim-proof-video-frame { position: sticky; top: 0; z-index: 3; border-radius: 7px; }
+  .sim-proof-tabs.is-comparison { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .sim-proof-readout { grid-template-columns: 1fr 1fr; }
   .sim-proof-metric:nth-child(3) { border-left: 0; }
   .sim-proof-metric:nth-child(n+3) { border-top: 1px solid var(--proof-rule); }
   .sim-proof-answer { padding-right: 19px; }
   .sim-proof-jump { position: static; margin-top: 13px; transform: none; }
+  .sim-proof-coordinate-grid { grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 520px) {
@@ -110,6 +148,8 @@ button { min-height: 44px; cursor: pointer; }
   .sim-proof-tab-label, .sim-proof-tab-verdict { display: block; }
   .sim-proof-tab-verdict { margin-top: 2px; font-size: 10px; }
   .sim-proof-video-frame { margin-inline: -12px; border-radius: 0; }
+  .sim-proof-zoom { left: 8px; top: 8px; }
+  .sim-proof-scene-context { left: 8px; right: 8px; top: 55px; max-width: none; justify-items: start; text-align: left; }
   .sim-proof-overlay { right: 8px; bottom: 8px; }
   .sim-proof-overlay-phase, .sim-proof-overlay-verdict { font-size: 11px; }
   .sim-proof-controls { grid-template-columns: auto 1fr; gap: 7px; }
@@ -120,6 +160,10 @@ button { min-height: 44px; cursor: pointer; }
   .sim-proof-metric-value { font-size: 14px; }
   .sim-proof-answer { padding: 15px; }
   .sim-proof-answer-title { font-size: 18px; }
+  .sim-proof-diagnosis { padding: 15px 12px; }
+  .sim-proof-coordinate-grid { grid-template-columns: 1fr; }
+  .sim-proof-regression-grid { grid-template-columns: 1fr 1fr; gap: 5px; }
+  .sim-proof-regression-cell { padding: 8px; }
   .sim-proof-graph-section { padding: 14px 7px; }
   .sim-proof-chart { min-height: 180px; }
   .sim-proof-detail { grid-template-columns: 1fr; gap: 1px; }

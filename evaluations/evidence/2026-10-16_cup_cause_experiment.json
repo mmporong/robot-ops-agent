@@ -1,0 +1,4614 @@
+{
+  "schema": "robot-ops-cup-cause-evidence/1",
+  "source_commit": "8a09a02b818fb691613e9cc89d642ca29dda7f50",
+  "development_case": true,
+  "llm_used": false,
+  "camera_used": false,
+  "hardware_accessed": false,
+  "diagnostic_method": "deterministic planned-vs-RESET-median position comparison",
+  "observation_source": "simulator_ground_truth_not_rgb",
+  "proposal": {
+    "schema": "robot-ops-cup-plan-correction/1",
+    "status": "candidate_available",
+    "correction_mm": [
+      7.510185240366951e-05,
+      -4.999978542327893
+    ],
+    "planned_center_m": [
+      0.39,
+      0.17,
+      0.78
+    ],
+    "observed_center_m": [
+      0.3900000751018524,
+      0.16500002145767212,
+      0.7800000309944153
+    ],
+    "observed_minus_planned_xy_mm": [
+      7.510185240366951e-05,
+      -4.999978542327893
+    ],
+    "observation": {
+      "sample_count": 61,
+      "start_time_s": 0.0,
+      "end_time_s": 0.5000000000000007,
+      "elapsed_s": 0.5000000000000007,
+      "sample_interval_s": 0.008333333333333333,
+      "maximum_motion_m": 6.664001874625056e-08,
+      "maximum_contact_force_n": 0.0
+    },
+    "thresholds": {
+      "window_s": 0.5,
+      "maximum_observation_motion_m": 0.001,
+      "minimum_contact_force_n": 0.02
+    },
+    "interpretation": {
+      "cause_status": "undetermined",
+      "coordinates": "simulator_ground_truth",
+      "limitations_ko": [
+        "보정값은 계획 중심과 RESET 관측 중심의 상대 오차입니다.",
+        "이 오차가 생긴 물리 원인은 이 결과만으로 확정할 수 없습니다.",
+        "시뮬레이터 정답 좌표를 사용하는 실험에만 적용됩니다."
+      ]
+    }
+  },
+  "intervention": "P_new=P+C; D_new=D-C; actual spawn unchanged",
+  "evaluation": "frozen baseline observed center; same thresholds; recovery disabled",
+  "core_summary": [
+    {
+      "label_ko": "원래 목표",
+      "passed": 0,
+      "total": 3
+    },
+    {
+      "label_ko": "같은 목표 재실행",
+      "passed": 0,
+      "total": 3
+    },
+    {
+      "label_ko": "관측 위치로 목표 보정",
+      "passed": 3,
+      "total": 3
+    },
+    {
+      "label_ko": "반대 방향으로 목표 변경",
+      "passed": 0,
+      "total": 3
+    }
+  ],
+  "regression": [
+    {
+      "x_mm": -5,
+      "y_mm": -5,
+      "baseline": "grid_-5_-5_baseline",
+      "corrected": "grid_-5_-5_corrected",
+      "baseline_pass": false,
+      "corrected_pass": true
+    },
+    {
+      "x_mm": -5,
+      "y_mm": 0,
+      "baseline": "grid_-5_0_baseline",
+      "corrected": "grid_-5_0_corrected",
+      "baseline_pass": true,
+      "corrected_pass": true
+    },
+    {
+      "x_mm": -5,
+      "y_mm": 5,
+      "baseline": "grid_-5_5_baseline",
+      "corrected": "grid_-5_5_corrected",
+      "baseline_pass": true,
+      "corrected_pass": true
+    },
+    {
+      "x_mm": 0,
+      "y_mm": -5,
+      "baseline": "core_original_0",
+      "corrected": "core_corrected_0",
+      "baseline_pass": false,
+      "corrected_pass": true
+    },
+    {
+      "x_mm": 0,
+      "y_mm": 0,
+      "baseline": "grid_0_0_baseline",
+      "corrected": "grid_0_0_corrected",
+      "baseline_pass": true,
+      "corrected_pass": true
+    },
+    {
+      "x_mm": 0,
+      "y_mm": 5,
+      "baseline": "grid_0_5_baseline",
+      "corrected": "grid_0_5_corrected",
+      "baseline_pass": true,
+      "corrected_pass": true
+    },
+    {
+      "x_mm": 5,
+      "y_mm": -5,
+      "baseline": "grid_5_-5_baseline",
+      "corrected": "grid_5_-5_corrected",
+      "baseline_pass": false,
+      "corrected_pass": true
+    },
+    {
+      "x_mm": 5,
+      "y_mm": 0,
+      "baseline": "grid_5_0_baseline",
+      "corrected": "grid_5_0_corrected",
+      "baseline_pass": true,
+      "corrected_pass": true
+    },
+    {
+      "x_mm": 5,
+      "y_mm": 5,
+      "baseline": "grid_5_5_baseline",
+      "corrected": "grid_5_5_corrected",
+      "baseline_pass": true,
+      "corrected_pass": true
+    }
+  ],
+  "experiment_criteria_passed": true,
+  "runs": [
+    {
+      "name": "core_original_0",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.899322509765625,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": null,
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "004b360459f0eafa24dc51479a9dbfcc18538fedd0bd30fab7ee84add4f3c108",
+      "plan_sha256": "0053dcafed2848d8cc2f73ebcf183fbfda52e4a6b0c63de6be002a0e5ecece30"
+    },
+    {
+      "name": "core_sham_0",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": [
+        0.0,
+        0.0
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.899322509765625,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "004b360459f0eafa24dc51479a9dbfcc18538fedd0bd30fab7ee84add4f3c108",
+      "plan_sha256": "ccfc090ccc07f501ed7c8d246dcea9d4b51a8f792c6d2ff5965bee1d25a26059"
+    },
+    {
+      "name": "core_corrected_0",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": [
+        7.510185240366951e-05,
+        -4.999978542327893
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.10305881500244,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.763878345489502,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028496086597442627,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.051844242783484,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.3221137114782335,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.6125513030936642,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.07130782822110755,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "361bb2e65aa285a6a08fa6071adb91a315bfc7720e23dc6f5a623daa1e90a1d1",
+      "plan_sha256": "2be0cf43a0ab210a18aa1272827ecf1d45fe1dcfe3a9fa4d5c090978380ecbb5"
+    },
+    {
+      "name": "core_opposite_0",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": [
+        -7.510185240366951e-05,
+        4.999978542327893
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.9023701548576355,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "117dfb469261beabcb2272fc10ef2ae360cb752e6b51d94ea8ad138afa8522c4",
+      "plan_sha256": "0708dfa4f816a5c957c7cbccda179efb2a724b29200411d5e728584365baf21e"
+    },
+    {
+      "name": "core_original_1",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.899322509765625,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "004b360459f0eafa24dc51479a9dbfcc18538fedd0bd30fab7ee84add4f3c108",
+      "plan_sha256": "efe51d83a0c72e428aee934ee6a9803528ec1ba4e58689d63cb948f6ea98457f"
+    },
+    {
+      "name": "core_sham_1",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": [
+        0.0,
+        0.0
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.899322509765625,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "004b360459f0eafa24dc51479a9dbfcc18538fedd0bd30fab7ee84add4f3c108",
+      "plan_sha256": "f7b84b8f6826c48012d245fe0f1b5162bd162d94a505b843472fb620fc2d64c6"
+    },
+    {
+      "name": "core_corrected_1",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": [
+        7.510185240366951e-05,
+        -4.999978542327893
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.10305881500244,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.763878345489502,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028496086597442627,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.051844242783484,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.3221137114782335,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.6125513030936642,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.07130782822110755,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "361bb2e65aa285a6a08fa6071adb91a315bfc7720e23dc6f5a623daa1e90a1d1",
+      "plan_sha256": "6b9a9ea45bbc580e40d85a0dc9322ca92d6e598d90ac983dc8e1c82705890bec"
+    },
+    {
+      "name": "core_opposite_1",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": [
+        -7.510185240366951e-05,
+        4.999978542327893
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.9023701548576355,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "117dfb469261beabcb2272fc10ef2ae360cb752e6b51d94ea8ad138afa8522c4",
+      "plan_sha256": "10af56d63dc9b0f52029338f9e4c3f0e2f94dce86750c304ceac76b5b398c4f5"
+    },
+    {
+      "name": "core_original_2",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.899322509765625,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "004b360459f0eafa24dc51479a9dbfcc18538fedd0bd30fab7ee84add4f3c108",
+      "plan_sha256": "359c0cad758f64e2cd5b94b468aa202461af5d71d1f618c9c2729fffb3ddf2e5"
+    },
+    {
+      "name": "core_sham_2",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": [
+        0.0,
+        0.0
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.899322509765625,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "004b360459f0eafa24dc51479a9dbfcc18538fedd0bd30fab7ee84add4f3c108",
+      "plan_sha256": "b48bd5fac591cf0cc82af696cb85ffb5b79580d5d9162349a1d0fba9f4ed181c"
+    },
+    {
+      "name": "core_corrected_2",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": [
+        7.510185240366951e-05,
+        -4.999978542327893
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.10305881500244,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.763878345489502,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028496086597442627,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.051844242783484,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.3221137114782335,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.6125513030936642,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.07130782822110755,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "361bb2e65aa285a6a08fa6071adb91a315bfc7720e23dc6f5a623daa1e90a1d1",
+      "plan_sha256": "afbf4b472ebcb50351d6612d68970feb4099a05e5f82d18dc8b0278b033b065a"
+    },
+    {
+      "name": "core_opposite_2",
+      "position_mm": [
+        0.0,
+        -5.0
+      ],
+      "correction_mm": [
+        -7.510185240366951e-05,
+        4.999978542327893
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3900000751018524,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.9023701548576355,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "117dfb469261beabcb2272fc10ef2ae360cb752e6b51d94ea8ad138afa8522c4",
+      "plan_sha256": "a7db9ef2f69501aa211a7b49d11a66bf4ce3e2ae5c4fab8d996fbb2fc8e4d056"
+    },
+    {
+      "name": "grid_-5_-5_baseline",
+      "position_mm": [
+        -5,
+        -5
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.3850000500679016,
+        0.16500000655651093,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3850000500679016,
+          0.16500000655651093,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.897252082824707,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": null,
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "8d246b5ac66b320a3be817157d9cb266262baab77711309679bb8c34a9cfebd2",
+      "plan_sha256": "824637fa2b981cea26ecbd76951749946aa90962735798abf4947cb79fe21500"
+    },
+    {
+      "name": "grid_-5_-5_corrected",
+      "position_mm": [
+        -5,
+        -5
+      ],
+      "correction_mm": [
+        -4.999949932098402,
+        -4.999993443489087
+      ],
+      "reference_m": [
+        0.3850000500679016,
+        0.16500000655651093,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3850000500679016,
+          0.16500000655651093,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.13631820678711,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.765672206878662,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028307735919952393,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0131739688015173,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.3040511627556497,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.602486750380063,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.06491738209661155,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "bd0d392ced890d8d9c031ecbe971423c1c335cd0260654701c943d7833bceec1",
+      "plan_sha256": "7cec08439cfecd6c9483ba337b5452f18c3048f83e7f7dddac188374dfbd1900"
+    },
+    {
+      "name": "grid_-5_0_baseline",
+      "position_mm": [
+        -5,
+        0
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.3850000500679016,
+        0.17000001668930054,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3850000500679016,
+          0.17000001668930054,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.10931730270386,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 4.220304012298584,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028269588947296143,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0556837229611649,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 5.116645343396497,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.6875901341342376,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.10822707959104258,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": null,
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "28608a4ee429067d3fb32540c54b5619002b8bea3437a0d3b181cb4a42ba7edf",
+      "plan_sha256": "7b2b2573d75e734aa878f55a99f74640edbc91f4941bdf880aad1e8523adfe75"
+    },
+    {
+      "name": "grid_-5_0_corrected",
+      "position_mm": [
+        -5,
+        0
+      ],
+      "correction_mm": [
+        -4.999949932098402,
+        1.6689300524896922e-05
+      ],
+      "reference_m": [
+        0.3850000500679016,
+        0.17000001668930054,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3850000500679016,
+          0.17000001668930054,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.14615297317505,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.7624611854553223,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.002828150987625122,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0223869055184798,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.3086133560465165,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.603523553451336,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.10755623692990947,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "164eb1f526d49a50367c76def7208543628c69366fa129eeacb4b6386aa9c400",
+      "plan_sha256": "764af7012ee8687233d25323904b55bf76c84dee2c96e4bcf73ee0cc38e164da"
+    },
+    {
+      "name": "grid_-5_5_baseline",
+      "position_mm": [
+        -5,
+        5
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.385000079870224,
+        0.17500002682209015,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.385000079870224,
+          0.17500002682209015,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.116469860076904,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 4.034616947174072,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.002841740846633911,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0848440636029855,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.9224137103100083,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 7.934484421832111,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.22200166063263668,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": null,
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "43d059339bede5f48d7c3b6da22aedb46e8dd90d6c551892eb1be0137b17f0af",
+      "plan_sha256": "e662e65dfdd655c747cac9f4e999f5a940657fa8685c5aa94c169fa1ca290a96"
+    },
+    {
+      "name": "grid_-5_5_corrected",
+      "position_mm": [
+        -5,
+        5
+      ],
+      "correction_mm": [
+        -4.999920129776014,
+        5.0000268220901365
+      ],
+      "reference_m": [
+        0.385000079870224,
+        0.17500002682209015,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.385000079870224,
+          0.17500002682209015,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.13131141662598,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.7557058334350586,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.002835899591445923,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0257724770760257,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.2980203391501557,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.6034771828088563,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.17427796505208448,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "fb9aa2ebddfb0662225eadd1fa5c65835a6ded101abe16871984d5308f101080",
+      "plan_sha256": "34e61ea3f74b1942701a2dfb921990bf37e9b8987cd4dbbcb21d00709938d2de"
+    },
+    {
+      "name": "grid_0_0_baseline",
+      "position_mm": [
+        0,
+        0
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.3900000751018524,
+        0.17000001668930054,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3900000751018524,
+          0.17000001668930054,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.108184814453125,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.7656359672546387,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028500258922576904,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0564710676302935,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.3200540107474548,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.610647361433731,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.06230202006639763,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": null,
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "1e0cf34724aa5268116f451adbebdc4b161786e233bb667e6c08ea61e30653e1",
+      "plan_sha256": "25fa3c768feb93e477a5b11b0735989fd150366b94f6b923e3d1a3f0cf479477"
+    },
+    {
+      "name": "grid_0_0_corrected",
+      "position_mm": [
+        0,
+        0
+      ],
+      "correction_mm": [
+        0.0,
+        0.0
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.17000001668930054,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3900000751018524,
+          0.17000001668930054,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.108184814453125,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.7656359672546387,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028500258922576904,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0564710676302935,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.3200540107474548,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.610647361433731,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.06230202006639763,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "1e0cf34724aa5268116f451adbebdc4b161786e233bb667e6c08ea61e30653e1",
+      "plan_sha256": "019a720bbd6d1594117bc96258e468ab9aeab0f8590bac00d6f26ed6268256c5"
+    },
+    {
+      "name": "grid_0_5_baseline",
+      "position_mm": [
+        0,
+        5
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.3900000751018524,
+        0.17500002682209015,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3900000751018524,
+          0.17500002682209015,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.09858846664429,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.645117998123169,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028570592403411865,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0477092813845346,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 4.038967172171533,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 7.810105676154309,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.06073705654657834,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": null,
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "dd77fed3c1d6ac42daa0bdb5969bc8857d2cfc1ecd404b6d0d94948f1670a57a",
+      "plan_sha256": "49bff753487453868042b5fbd5f7deb3609310ac1bcf8568a05d3a61a4badbf8"
+    },
+    {
+      "name": "grid_0_5_corrected",
+      "position_mm": [
+        0,
+        5
+      ],
+      "correction_mm": [
+        7.510185240366951e-05,
+        5.0000268220901365
+      ],
+      "reference_m": [
+        0.3900000751018524,
+        0.17500002682209015,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3900000751018524,
+          0.17500002682209015,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.10359525680542,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.7674098014831543,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.002850472927093506,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.052613194752694,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.3123166501063603,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.606853185166946,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.06425289335036223,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "fd5d3cd84b69d96fc415bedfb2b8ab2fb1ade58a2ff0a8d4156afc773506f86a",
+      "plan_sha256": "cc1003ca111286df95f2fb551b54453944b08d5f8bc9cb5b933ac790cb29dc96"
+    },
+    {
+      "name": "grid_5_-5_baseline",
+      "position_mm": [
+        5,
+        -5
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.3950001001358032,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "fail",
+        "passed": false,
+        "failure_code": "completed_failed",
+        "reference_m": [
+          0.3950001001358032,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": false,
+            "value": "premature_cup_contact",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": false,
+            "value": 0.9062463641166687,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": false,
+            "value": 0,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": false,
+            "value": false,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": false,
+            "value": null,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": false,
+            "value": null,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": false,
+            "value": null,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": false,
+            "value": null,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": null,
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "802054cb5744ac22e9ceb8e72dbcd702dffa286ce6fb6b77c0f945c4f0f29248",
+      "plan_sha256": "bd0103112b4c9da2d917661807531ee651e5df3923b6c7aa09b522795492d7aa"
+    },
+    {
+      "name": "grid_5_-5_corrected",
+      "position_mm": [
+        5,
+        -5
+      ],
+      "correction_mm": [
+        5.000100135803209,
+        -4.999978542327893
+      ],
+      "reference_m": [
+        0.3950001001358032,
+        0.16500002145767212,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3950001001358032,
+          0.16500002145767212,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.07617712020874,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.7613117694854736,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028741657733917236,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0948581648216882,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.3388476810232475,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.6202054961670265,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.10471887420003478,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "e3f43657f3392424b891f5359019fb25b1e3e8a5eab675e5e753f28fe1500818",
+      "plan_sha256": "826ee84e0ead49779103831a9fb84cd90a332da4da7ebc164f9c21beaf5fc131"
+    },
+    {
+      "name": "grid_5_0_baseline",
+      "position_mm": [
+        5,
+        0
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.3950001001358032,
+        0.17000000178813934,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3950001001358032,
+          0.17000000178813934,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.0966215133667,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.3989322185516357,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028739869594573975,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0631877365374631,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 6.661439398419608,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.5374381039648,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.14811882704160012,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": null,
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "95c88e4041c00beb482e368f349e197a409125a61185ec99065db0115e27c4b0",
+      "plan_sha256": "06cc0322899ad1f970d3a7776529b0f6edcd08ad9ea695e4b0837d7319c02f25"
+    },
+    {
+      "name": "grid_5_0_corrected",
+      "position_mm": [
+        5,
+        0
+      ],
+      "correction_mm": [
+        5.000100135803209,
+        1.7881393310492655e-06
+      ],
+      "reference_m": [
+        0.3950001001358032,
+        0.17000000178813934,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3950001001358032,
+          0.17000000178813934,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.08678674697876,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.7567620277404785,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028788745403289795,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.1205743287980852,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.336352504103897,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.613418885473312,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.15876239872617412,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "b67333db8a6b38c8603567b5c47e227fb610b2569459587e7d4d8024bebbad23",
+      "plan_sha256": "b8329021acf1e62d4a7cff2f47a3c98d1b8d3aef99307a653ff695832b4ccecb"
+    },
+    {
+      "name": "grid_5_5_baseline",
+      "position_mm": [
+        5,
+        5
+      ],
+      "correction_mm": null,
+      "reference_m": [
+        0.3950001001358032,
+        0.17500002682209015,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3950001001358032,
+          0.17500002682209015,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.09650230407715,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.307410478591919,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.002879917621612549,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0617964659124235,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 7.958493296695731,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 7.6994081526160185,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.1297857201643477,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": null,
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "96fbf015f1e2ba2ab339eb06752ef9fc8ba4760561d3962f600cade344d47235",
+      "plan_sha256": "b39a0f55cba5682ebede6114199401c354eb8844b2f634170fc2c908844c0118"
+    },
+    {
+      "name": "grid_5_5_corrected",
+      "position_mm": [
+        5,
+        5
+      ],
+      "correction_mm": [
+        5.000100135803209,
+        5.0000268220901365
+      ],
+      "reference_m": [
+        0.3950001001358032,
+        0.17500002682209015,
+        0.7800000309944153
+      ],
+      "common_evaluation": {
+        "schema": "robot-ops-common-reference-evaluation/1",
+        "verdict": "pass",
+        "passed": true,
+        "failure_code": null,
+        "reference_m": [
+          0.3950001001358032,
+          0.17500002682209015,
+          0.7800000309944153
+        ],
+        "reference_basis": "frozen_observed_initial_position",
+        "attempt": 0,
+        "checks": [
+          {
+            "id": "completed",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "normal_stop_reason",
+            "pass": true,
+            "value": "sequence_finished",
+            "threshold": "sequence_finished",
+            "unit": "text"
+          },
+          {
+            "id": "recovery_disabled",
+            "pass": true,
+            "value": false,
+            "threshold": false,
+            "unit": "bool"
+          },
+          {
+            "id": "retry_count_zero",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "count"
+          },
+          {
+            "id": "single_attempt",
+            "pass": true,
+            "value": 0,
+            "threshold": 0,
+            "unit": "attempt"
+          },
+          {
+            "id": "no_preclose_contact",
+            "pass": true,
+            "value": 0.0,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "hold_window_samples",
+            "pass": true,
+            "value": 120,
+            "threshold": 120,
+            "unit": "samples"
+          },
+          {
+            "id": "samples_finite",
+            "pass": true,
+            "value": true,
+            "threshold": true,
+            "unit": "bool"
+          },
+          {
+            "id": "proxy_lift_height",
+            "pass": true,
+            "value": 60.07486581802368,
+            "threshold": 40.0,
+            "unit": "mm"
+          },
+          {
+            "id": "finger_contact_force_min",
+            "pass": true,
+            "value": 3.765150785446167,
+            "threshold": 0.02,
+            "unit": "N"
+          },
+          {
+            "id": "arm_tracking_error_max",
+            "pass": true,
+            "value": 0.0028752386569976807,
+            "threshold": 0.12,
+            "unit": "rad"
+          },
+          {
+            "id": "midbody_height_error_max",
+            "pass": true,
+            "value": 1.0937008702347484,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "contact_center_error_max",
+            "pass": true,
+            "value": 3.333148947684043,
+            "threshold": 15.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_lateral_drift_max",
+            "pass": true,
+            "value": 2.6170213000584917,
+            "threshold": 20.0,
+            "unit": "mm"
+          },
+          {
+            "id": "cup_tilt_max",
+            "pass": true,
+            "value": 0.054009785666384376,
+            "threshold": 15.0,
+            "unit": "deg"
+          }
+        ],
+        "stored_outcome_ignored": true,
+        "planned_center_ignored": true
+      },
+      "controls": {
+        "physical_spawn_equal": true,
+        "physics_and_thresholds_equal": true,
+        "source_tools_equal": true,
+        "initial_position_delta_mm": 0.0,
+        "reset_median_position_delta_mm": 0.0,
+        "initial_joint_max_delta_rad": 0.0,
+        "position_tolerance_mm": 0.1,
+        "joint_tolerance_rad": 0.0001
+      },
+      "gpu_check": {
+        "tolerance_mib": 200.0,
+        "settle_s": 20.0,
+        "runs": 1,
+        "all_released": true,
+        "max_excess_mib": 0,
+        "max_waited_s": 0.0,
+        "baseline_range_mib": [
+          16,
+          16
+        ]
+      },
+      "result_sha256": "bc77e9a821d969ade232918840b8389053c4795f1af99e43eccfd33071b55af3",
+      "plan_sha256": "16171fa9f2deae3ff432d2808c8192f8c2642c906020f49052ab885ddc55bea7"
+    }
+  ],
+  "source_tools_sha256": {
+    "simulate_cup_contact.py": "85c90169cd2e6b10ea80e4dd80f370ddbecc822aebb19acf2d15b02b953525ec",
+    "cup_contact_model.py": "7e48eb14c0a294bd8c05329bcda785d5b5dc5741510240002ad2e3cc1c442b90",
+    "cup_contact_recovery.py": "798828a75de3a1a4e0292196026af41d68ce33808abb558c4e144bbf7f7c5206",
+    "cup_contact_place.py": "5b504cd101b50beab0a2e3630df2f4a9875a185a4a6bca8f86d435f38ec50bb6",
+    "plan_body_side_grasp.py": "bfa0acdd44c9c6da931744b5b973a08528a1e42541332b72e2610c81b408c472",
+    "workcell_preview_inputs.py": "b9e1eda52e970632410e7e4a1ea7b11979d709390d51430c9f4406ba1038d7de",
+    "workcell_preview_motion.py": "f3fe37faf76696ab04e2e328a367033eee5a07c8e19f484c33ac6e01643bd144"
+  },
+  "representative_videos": [
+    {
+      "condition": "original",
+      "sha256": "b25526dd880ae94da0e8a2f77b91cbadcd849a8836eb25ff542fff3681223b21"
+    },
+    {
+      "condition": "sham",
+      "sha256": "ac3d25b96c41bb0e00936f4aa7e6a7e7d51c1acaa4060f8e4de73a293b333d3c"
+    },
+    {
+      "condition": "corrected",
+      "sha256": "df8581b50a5aae909b36fb85e773ce0e18f258dd14df86154f8fe8c1b3cedcb5"
+    },
+    {
+      "condition": "opposite",
+      "sha256": "dbe45be0881e24b9a7f8bcf36bef219eecda87b2f303ddfe0ec6e22c78d37f89"
+    }
+  ],
+  "mcp": {
+    "run_rechecks": 28,
+    "audit_sha256": "1743d7cf7888760b0aaf33b3046e1ffd33b50580286617d8e32e159def9ac4cb",
+    "input_case_audit_sha256": "0a0e730068c1b6e0106d6ae70c793965bd65c72208ac687dc4ef1a1445be7575",
+    "alignment_rechecks": 29,
+    "alignment_audit_sha256": "2f6cfb249254ddc68ff2dbbd807854c764e9bef3417500a1c560dae50897b849",
+    "alignment_tool_use_in_this_evidence": "post_run_recheck"
+  },
+  "claim_scope": "rigid-pad simulation with simulator ground-truth positions; development experiment"
+}

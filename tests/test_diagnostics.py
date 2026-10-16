@@ -131,6 +131,53 @@ class DiagnosticToolServiceTest(unittest.TestCase):
         (target / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
         return result_path
 
+    def _write_alignment_simulation(self, directory: str = "alignment/isaac") -> Path:
+        target = self.root / directory
+        target.mkdir(parents=True)
+        samples = [
+            {
+                "time_s": index / 10,
+                "physics_time_s": 0.525 + index / 10,
+                "phase": "RESET" if index <= 5 else "CLOSE",
+                "attempt": 0,
+                "cup_position_m": [0.39, 0.165, 0.78],
+                "contact_force_n": [0.0, 0.0],
+            }
+            for index in range(7)
+        ]
+        result = {
+            "hardware_accessed": False,
+            "observation_source": "simulator_ground_truth_not_rgb",
+            "task_pass": True,
+            "completed": True,
+            "stop_reason": "sequence_finished",
+            "recovery_enabled": False,
+            "retry_count": 0,
+            "events": [],
+            "samples": samples,
+            "failure": "must_not_reach_alignment_formula",
+            "evaluation_center_m": [99.0, 99.0, 99.0],
+        }
+        plan = {
+            "hardware_accessed": False,
+            "observation_source": "simulator_ground_truth_not_rgb",
+            "runtime_overrides": {"grid_point": [999.0, 999.0]},
+            "config": {
+                "physics_dt_s": 0.1,
+                "minimum_contact_force_n": 0.02,
+                "cup_center_m": [0.39, 0.17, 0.78],
+                "cup_spawn_offset_m": [88.0, 88.0, 88.0],
+                "recovery": {
+                    "observation_duration_s": 0.5,
+                    "maximum_observation_motion_m": 0.001,
+                },
+            },
+        }
+        path = target / "result.json"
+        path.write_text(json.dumps(result), encoding="utf-8")
+        (target / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
+        return path
+
     def test_unknown_motion_tool_is_rejected_without_process(self) -> None:
         result = self.service.execute(
             "ros_topic_publish",
@@ -220,6 +267,132 @@ class DiagnosticToolServiceTest(unittest.TestCase):
 
         self.assertEqual(nonfinite.status, "rejected")
         self.assertIn("NaN 또는 무한대", nonfinite.error or "")
+
+    def test_analyze_cup_alignment_returns_bounded_initial_reset_proposal(self) -> None:
+        path = self._write_alignment_simulation()
+
+        tool_result = self.service.execute(
+            "analyze_cup_alignment", {"path": str(path)}
+        )
+
+        self.assertTrue(tool_result.ok, tool_result.error)
+        self.assertEqual(self.runner.calls, [])
+        summary = json.loads(tool_result.output)
+        self.assertEqual(summary["status"], "candidate_available")
+        self.assertAlmostEqual(summary["proposal"]["correction_mm"][0], 0.0)
+        self.assertAlmostEqual(summary["proposal"]["correction_mm"][1], -5.0)
+        self.assertEqual(summary["proposal"]["observation"]["sample_count"], 6)
+        self.assertEqual(
+            summary["source"]["result_sha256"],
+            hashlib.sha256(path.read_bytes()).hexdigest(),
+        )
+        plan_path = path.with_name("plan.json")
+        self.assertEqual(
+            summary["source"]["plan_sha256"],
+            hashlib.sha256(plan_path.read_bytes()).hexdigest(),
+        )
+        self.assertTrue(summary["scope"]["read_only"])
+        self.assertEqual(summary["scope"]["cause_status"], "undetermined")
+        for forbidden in (
+            "cup_spawn_offset_m",
+            "grid_point",
+            "failure",
+            "task_pass",
+            "completed",
+            "stop_reason",
+            "evaluation_center_m",
+        ):
+            self.assertNotIn(forbidden, tool_result.output)
+
+    def test_analyze_cup_alignment_metadata_cannot_change_proposal(self) -> None:
+        clean_path = self._write_alignment_simulation("clean-alignment/isaac")
+        poisoned_path = self._write_alignment_simulation("poisoned-alignment/isaac")
+        poisoned_result = json.loads(poisoned_path.read_text(encoding="utf-8"))
+        poisoned_result.update(
+            {
+                "failure": "different_failure",
+                "task_pass": False,
+                "completed": False,
+                "stop_reason": "pretend_stop",
+                "evaluation_center_m": [-99.0, -99.0, -99.0],
+            }
+        )
+        poisoned_path.write_text(json.dumps(poisoned_result), encoding="utf-8")
+        poisoned_plan_path = poisoned_path.with_name("plan.json")
+        poisoned_plan = json.loads(poisoned_plan_path.read_text(encoding="utf-8"))
+        poisoned_plan["config"]["cup_spawn_offset_m"] = [-77.0, -77.0, -77.0]
+        poisoned_plan["runtime_overrides"] = {"grid_point": [-500.0, 500.0]}
+        poisoned_plan_path.write_text(json.dumps(poisoned_plan), encoding="utf-8")
+
+        clean = self.service.execute("analyze_cup_alignment", {"path": str(clean_path)})
+        poisoned = self.service.execute(
+            "analyze_cup_alignment", {"path": str(poisoned_path)}
+        )
+
+        self.assertTrue(clean.ok, clean.error)
+        self.assertTrue(poisoned.ok, poisoned.error)
+        self.assertEqual(
+            json.loads(clean.output)["proposal"],
+            json.loads(poisoned.output)["proposal"],
+        )
+
+    def test_analyze_cup_alignment_reuses_safe_path_and_size_boundary(self) -> None:
+        path = self._write_alignment_simulation("safe-alignment/isaac")
+        linked_dir = self.root / "linked-alignment" / "isaac"
+        linked_dir.mkdir(parents=True)
+        linked = linked_dir / "result.json"
+        linked.symlink_to(path)
+        linked_result = self.service.execute(
+            "analyze_cup_alignment", {"path": str(linked)}
+        )
+        self.assertEqual(linked_result.status, "rejected")
+        self.assertIn("symlink_not_allowed", linked_result.error or "")
+
+        outside_dir = self.root.parent / f"{self.root.name}-alignment-outside"
+        outside_dir.mkdir()
+        outside = outside_dir / "result.json"
+        outside.write_text("{}", encoding="utf-8")
+        try:
+            outside_result = self.service.execute(
+                "analyze_cup_alignment", {"path": str(outside)}
+            )
+            self.assertEqual(outside_result.status, "rejected")
+            self.assertIn("path_not_allowed", outside_result.error or "")
+        finally:
+            outside.unlink()
+            outside_dir.rmdir()
+
+        oversized_dir = self.root / "oversized-alignment" / "isaac"
+        oversized_dir.mkdir(parents=True)
+        oversized = oversized_dir / "result.json"
+        with oversized.open("wb") as stream:
+            stream.truncate(32 * 1024 * 1024 + 1)
+        size_result = self.service.execute(
+            "analyze_cup_alignment", {"path": str(oversized)}
+        )
+        self.assertEqual(size_result.status, "rejected")
+        self.assertIn("simulation_file_too_large", size_result.error or "")
+
+    def test_analyze_cup_alignment_requires_simulator_ground_truth_without_hardware(self) -> None:
+        hardware_path = self._write_alignment_simulation("alignment-hardware/isaac")
+        hardware_doc = json.loads(hardware_path.read_text(encoding="utf-8"))
+        hardware_doc["hardware_accessed"] = True
+        hardware_path.write_text(json.dumps(hardware_doc), encoding="utf-8")
+        hardware = self.service.execute(
+            "analyze_cup_alignment", {"path": str(hardware_path)}
+        )
+        self.assertEqual(hardware.status, "rejected")
+        self.assertIn("hardware_accessed", hardware.error or "")
+
+        camera_path = self._write_alignment_simulation("alignment-camera/isaac")
+        camera_doc = json.loads(camera_path.read_text(encoding="utf-8"))
+        camera_doc["observation_source"] = "rgb_camera"
+        camera_path.write_text(json.dumps(camera_doc), encoding="utf-8")
+        camera = self.service.execute(
+            "analyze_cup_alignment", {"path": str(camera_path)}
+        )
+        self.assertEqual(camera.status, "rejected")
+        self.assertIn("simulator_ground_truth_not_rgb", camera.error or "")
 
     def test_prompt_injection_in_topic_is_rejected(self) -> None:
         result = self.service.execute(

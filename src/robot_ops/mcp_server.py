@@ -30,6 +30,7 @@ REGISTERED_TOOL_NAMES = frozenset(
         "log_tail",
         "analyze_trajectory",
         "analyze_simulation",
+        "analyze_cup_alignment",
     }
 )
 
@@ -217,6 +218,13 @@ def create_server(
         """저장된 시뮬레이션의 닫기 전 접촉 이상과 판정 일치를 분석합니다."""
         return _json_tool_result_or_error(
             service, "analyze_simulation", {"path": path}
+        )
+
+    @server.tool()
+    def analyze_cup_alignment(path: str) -> dict[str, object]:
+        """계획 컵 중심과 초기 RESET 시뮬레이터 관측의 상대 오차를 검사합니다."""
+        return _json_tool_result_or_error(
+            service, "analyze_cup_alignment", {"path": path}
         )
 
     return server

@@ -24,15 +24,18 @@ EARLY_PHASES = {"RESET", "REORIENT_ABOVE", "PREGRASP_ABOVE", "ALIGN_MIDDLE", "AP
 ASSETS = Path(__file__).parent / "replay/report_assets"
 
 
-async def inspect_via_mcp(path: Path, allowed: Path, audit: Path) -> dict:
+async def inspect_via_mcp(path: Path, allowed: Path, audit: Path, *, tool_name: str = "analyze_simulation") -> dict:
     from mcp import Client
     from .diagnostics import DiagnosticToolService, ToolPolicy
     from .mcp_server import create_server
 
     service = DiagnosticToolService(ToolPolicy(audit_log=audit, allowed_roots=(allowed,)))
+    schemas = {"analyze_simulation": "robot-ops-simulation-inspection/1", "analyze_cup_alignment": "robot-ops-cup-alignment-analysis/1"}
+    if tool_name not in schemas:
+        raise ValueError("지원하지 않는 시뮬 검사 도구입니다")
     try:
         async with Client(create_server(service), raise_exceptions=False) as client:
-            result = await client.call_tool("analyze_simulation", {"path": str(path)})
+            result = await client.call_tool(tool_name, {"path": str(path)})
     except Exception as exc:
         # SDK의 TaskGroup 예외도 CLI의 구조화된 실패 응답으로 전달한다.
         raise ValueError(f"MCP 검사 요청을 완료하지 못했습니다: {type(exc).__name__}") from exc
@@ -43,7 +46,7 @@ async def inspect_via_mcp(path: Path, allowed: Path, audit: Path) -> dict:
         data = json.loads(result.content[0].text)
     if isinstance(data, dict) and set(data) == {"result"}:
         data = data["result"]
-    if not isinstance(data, dict) or data.get("schema") != "robot-ops-simulation-inspection/1":
+    if not isinstance(data, dict) or data.get("schema") != schemas[tool_name]:
         raise ValueError("MCP 검사 응답 형식이 올바르지 않습니다")
     return data
 

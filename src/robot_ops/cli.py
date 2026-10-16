@@ -114,6 +114,14 @@ def build_parser() -> argparse.ArgumentParser:
     sim_check.add_argument("--source-commit", help="실행할 원천 커밋 (기본: 프로파일 pinned_commit)")
     sim_check.add_argument("--out", type=Path)
 
+    cause_check = subparsers.add_parser("cup-cause-check", help="계획·관측 위치 오차를 목표 보정 대조 실험으로 검증")
+    cause_inputs = cause_check.add_mutually_exclusive_group(required=True)
+    cause_inputs.add_argument("--case", type=Path, help="초기 RESET 관측이 포함된 컵 시뮬 result.json")
+    cause_inputs.add_argument("--from-experiment", type=Path, help="완료한 실험 재검사와 화면 생성(CPU)")
+    cause_check.add_argument("--profile", type=Path)
+    cause_check.add_argument("--source-commit")
+    cause_check.add_argument("--out", type=Path, required=True)
+
     replay_parser = subparsers.add_parser("replay", help="실행 기록 재생과 명령·관측 어긋남 계산")
     replay_parser.add_argument("--profile", type=Path, required=True)
     replay_parser.add_argument(
@@ -280,6 +288,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     if args.command == "sim-check":
         from .simulation_workflow import command
+        return command(args)
+    if args.command == "cup-cause-check":
+        from .cup_cause_experiment import command
         return command(args)
     if args.command == "inspect":
         from .recording_inspection import command
