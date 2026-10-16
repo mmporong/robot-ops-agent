@@ -9,9 +9,30 @@
 
 ## 현업 효용 검증 상태
 
-현재 검출기는 명령이 변하는 동안 관측값이 정체되는 후보 구간을 찾습니다. 원인 확정과 현업 도입 효과는 검증되지 않았습니다. 기존 기록 113건에서 중복 22건을 제외한 고유 입력 91건을 다시 검사했으며, 과거에 기준 선택에 쓴 자료라 홀드아웃 정확도로 계산하지 않았습니다.
+현재는 **수집한 로봇 기록에서 확인할 구간을 골라 영상·관절 그래프로 검토하는 도구**로 사용할 수 있습니다. `robot-ops inspect`가 관절별 정체 후보, 기록 간격, 검사하지 못한 신호를 표시합니다. 사람의 검토를 돕는 실험용 검사이며, 원인 확정·정상 데이터 자동 승인·현업 도입 효과는 검증되지 않았습니다.
 
-정답 구간을 정해 만든 통제 시험에서는 빠른 명령 중 전체 관측이 멈춘 경우를 찾았지만, 느린 명령·일부 관절만 멈춘 경우·그리퍼 값은 갱신되는 경우를 놓쳤습니다. 검출기 설정은 평가 중 바꾸지 않았습니다. [평가 방법·실패 조건·도입 판단](docs/field-validation.md)과 [기계 판독용 결과](evaluations/evidence/2026-10-16_state_recording_validation.json)에 근거를 남겼습니다.
+관절별·시간 기준 검사(v2)는 기존 개발용 시험의 주입 구간 11개 중 10개를 찾았습니다(v1 4개). 하지만 실제 기록 91개 중 89개에 경고가 생겼고, 정상적인 계단형 센서 값도 분해능 정보가 없으면 경고했습니다. 따라서 검출 범위 확대와 과민 경고 가능성을 함께 평가합니다. 이 자료는 모두 개발에 사용한 기존 자료라 신규 홀드아웃 정확도로 계산하지 않습니다. [평가 방법·실패 조건·도입 판단](docs/field-validation.md)과 [v2 비교 결과](evaluations/evidence/2026-10-16_joint_time_validation.json)에 근거를 남겼습니다.
+
+## 수집 기록 검사와 영상 확인
+
+LeRobot v3 데이터셋들이 있는 폴더를 지정하면 CPU에서 파일을 읽어 전체 목록과 기록별 확인 화면을 만듭니다. 이 경로는 ROS 2·실물 로봇·시뮬레이터를 시작하지 않습니다. 프로파일의 `lerobot` 환경에 numpy·pyarrow가 필요합니다.
+
+```bash
+cd "$HOME/robot-ops-agent"
+uv run robot-ops inspect --dataset-root "$HOME/so101_datasets" \
+  --profile profiles/bimanual.toml --out .local/recording-inspection/all
+```
+
+결과는 `$HOME/robot-ops-agent/.local/recording-inspection/all/index.html`입니다. 기록을 선택하고 **이 구간 보기**를 누르면 해당 시각의 실물 녹화·저장된 모델 재생·관절 그래프를 함께 확인합니다. 기록별 화면에서 영상은 스크롤 중에도 남습니다. 같은 원본 해시와 관절 기록이 일치하는 기존 영상만 연결하며, 없는 영상은 없다고 표시합니다. 모델을 새로 렌더하지 않습니다. 전체 목록은 영상이 없는 기록도 포함합니다.
+
+표준 `robot-ops-trajectory/1` JSONL 한 건은 `--trajectory "$HOME/path/to/trajectory.jsonl"`로, 정규화한 묶음은 `--corpus "$HOME/path/to/manifest.json"`으로 검사할 수 있습니다. `--profile`은 저장 영상 연결에 사용하며 JSONL 검사에서는 생략할 수 있습니다. HTML은 로컬 파일로 열거나 Range 지원 서버로 볼 수 있습니다.
+
+```bash
+cd "$HOME/robot-ops-agent"
+uv run robot-ops report serve --dir .local/recording-inspection/all --port 8876
+```
+
+새 관절별 검사는 MCP `analyze_trajectory` 응답의 `recording_check`에도 포함됩니다. 기존 재생 분석의 `freeze`와 TCP 결과는 종전 규칙을 유지합니다. 에이전트가 규칙을 선택하고 원인을 확정하는 사용자용 `ask` 루프는 아직 없습니다.
 
 ## 별도 프로젝트로 만든 이유
 
@@ -36,7 +57,7 @@ JD-AMR 한 대의 로그 분석 기능으로 시작했지만, 검색·출처 평
 - 임베딩 요청은 명시한 루프백 IP로만 보냅니다. 외부 주소, 시스템 프록시, HTTP 리다이렉트는 차단합니다.
 - 개발용 고정 평가셋의 해시와 Hit Rate·Recall@k·MRR·출처 정밀도를 JSON으로 남깁니다.
 - ROS 2 상태·rosbag 메타데이터·허용된 로그만 읽는 진단 도구 계층이 있습니다.
-- MCP의 `analyze_trajectory`는 허용된 `trajectory/1` JSONL을 CPU로 읽어 관절 추종 오차, TCP 거리, 관측 동결 구간을 요약합니다. 원시 시계열은 응답에 싣지 않습니다.
+- MCP의 `analyze_trajectory`는 허용된 `trajectory/1` JSONL을 CPU로 읽어 관절 추종 오차, TCP 거리, 기존 관측 동결 구간과 새 관절별 정체 후보를 요약합니다. 원시 시계열은 응답에 싣지 않습니다.
 - 이동 명령, 서비스 호출, 프로세스 재시작, 임의 셸은 도구 allowlist에 없습니다.
 - MCP의 미등록 도구와 잘못된 스키마 요청도 실행 전에 감사 로그에 기록합니다.
 - llama.cpp의 스트리밍 응답에서 TTFT·처리량·서버 RSS·답변 개념·인용 경로를 함께 측정합니다.

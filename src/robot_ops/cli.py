@@ -99,6 +99,14 @@ def build_parser() -> argparse.ArgumentParser:
     doctor_parser.add_argument("--profile", type=Path, required=True)
     doctor_parser.add_argument("--task", help="검사할 프로파일 과제 (생략하면 모든 과제)")
 
+    inspect_parser = subparsers.add_parser("inspect", help="수집 기록의 확인 구간과 영상·그래프 리포트 생성(CPU 전용)")
+    inputs = inspect_parser.add_mutually_exclusive_group(required=True)
+    inputs.add_argument("--trajectory", type=Path, help="표준 JSONL 궤적 한 건")
+    inputs.add_argument("--corpus", type=Path, help="정규화된 기록 묶음 manifest.json")
+    inputs.add_argument("--dataset-root", type=Path, help="LeRobot v3 데이터셋 폴더들이 있는 상위 폴더")
+    inspect_parser.add_argument("--profile", type=Path, help="판독 환경과 같은 출처의 저장 녹화를 찾을 프로파일")
+    inspect_parser.add_argument("--out", type=Path, default=Path(".local/recording-inspection"))
+
     replay_parser = subparsers.add_parser("replay", help="실행 기록 재생과 명령·관측 어긋남 계산")
     replay_parser.add_argument("--profile", type=Path, required=True)
     replay_parser.add_argument(
@@ -263,6 +271,15 @@ def _embedder_from_args(args: argparse.Namespace) -> Embedder:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "inspect":
+        from .recording_inspection import command
+        import subprocess
+
+        try:
+            return command(args)
+        except (OSError, ValueError, subprocess.SubprocessError) as error:
+            print(json.dumps({"error": str(error), "type": type(error).__name__}, ensure_ascii=False))
+            return 2
     if args.command == "doctor":
         from .replay.doctor import check_profile
         from .replay.profile import load_profile

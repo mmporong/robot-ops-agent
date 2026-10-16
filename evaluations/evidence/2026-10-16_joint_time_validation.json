@@ -1,0 +1,2108 @@
+{
+  "schema": "robot-ops-recording-check-evaluation/1",
+  "scope": "known_development_regression",
+  "deployment_verdict": "not_validated",
+  "field_validated": false,
+  "protocol": {
+    "challenge_source": "field_eval.build_challenges",
+    "challenge_count": 17,
+    "challenge_sha256": "30cbd82e6feda12f1861e2d6d6db7b171100496064a93f4134e4d71092c66e83",
+    "v1_detector_sha256": "69f754c7b81840c724f83b57b445b9b3b0750844ba33891f4712b6ac4d0b822c",
+    "v2_detector_sha256": "e5f35d73cfb964dbd92cd52587ef27bfed827522b39a9934e9a359eb6995ff72",
+    "inspection_sha256": "edfdcd8ed5d7f52a06c07017a1a3ffd37b104183e3efb3e09ac80793aca5b916",
+    "evaluator_sha256": "a5b39c4406a2e562ebcc9c2fd8cc3fed84289a7bff243d61c6e135484217650a",
+    "v1_parameters": {
+      "eps_deg": 0.1,
+      "delta_deg": 0.5,
+      "min_frames": 3
+    },
+    "v2_parameters": {
+      "min_hold_s": 0.3,
+      "obs_span_deg": 0.1,
+      "min_command_span_deg": 0.5,
+      "max_gap_s": 0.25,
+      "gripper_observation_span": 0.1,
+      "gripper_command_span": 1.0,
+      "basis": "proposed_default",
+      "field_validated": false,
+      "effective_max_gap_s": 0.25,
+      "effective_command_span_deg": {
+        "shoulder_pan": 0.5,
+        "shoulder_lift": 0.5,
+        "elbow_flex": 0.5,
+        "wrist_flex": 0.5,
+        "wrist_roll": 0.5
+      }
+    },
+    "v2_parameter_basis": "proposed_default",
+    "per_joint_overlap_policy": "frame_set_union_then_contiguous_intervals"
+  },
+  "aggregate": {
+    "v1": {
+      "event_hits": 4,
+      "event_total": 11,
+      "false_positive_frames": 0,
+      "normal_cases_with_alert": 0
+    },
+    "v2": {
+      "event_hits": 10,
+      "event_total": 11,
+      "false_positive_frames": 1,
+      "normal_cases_with_alert": 0
+    }
+  },
+  "quantization_probes": [
+    {
+      "id": "normal_coarse_quantization_unknown",
+      "normal_case": true,
+      "observation_resolution_deg": null,
+      "v2_union_intervals": [
+        {
+          "frame_start": 4,
+          "frame_end": 7
+        },
+        {
+          "frame_start": 9,
+          "frame_end": 12
+        },
+        {
+          "frame_start": 14,
+          "frame_end": 17
+        },
+        {
+          "frame_start": 19,
+          "frame_end": 22
+        },
+        {
+          "frame_start": 24,
+          "frame_end": 27
+        },
+        {
+          "frame_start": 29,
+          "frame_end": 32
+        },
+        {
+          "frame_start": 34,
+          "frame_end": 37
+        },
+        {
+          "frame_start": 39,
+          "frame_end": 42
+        },
+        {
+          "frame_start": 44,
+          "frame_end": 47
+        },
+        {
+          "frame_start": 49,
+          "frame_end": 52
+        },
+        {
+          "frame_start": 54,
+          "frame_end": 57
+        },
+        {
+          "frame_start": 59,
+          "frame_end": 62
+        },
+        {
+          "frame_start": 64,
+          "frame_end": 67
+        },
+        {
+          "frame_start": 69,
+          "frame_end": 72
+        },
+        {
+          "frame_start": 74,
+          "frame_end": 77
+        }
+      ],
+      "v2_per_joint_issue_count": 15,
+      "warning": true
+    },
+    {
+      "id": "normal_coarse_quantization_known",
+      "normal_case": true,
+      "observation_resolution_deg": 1.0,
+      "v2_union_intervals": [],
+      "v2_per_joint_issue_count": 0,
+      "warning": false
+    }
+  ],
+  "intentional_below_minimum": {
+    "case_id": "fault_two_frame_hold",
+    "expected_behavior": "miss",
+    "reason_ko": "0.3초 최소 근거 시간보다 짧아 의도적으로 경고하지 않는 구간입니다."
+  },
+  "cause_status": "undetermined",
+  "unmeasured": [
+    "real_world_precision_recall",
+    "prospective_holdout_performance",
+    "root_cause_accuracy",
+    "human_review_time_saved"
+  ],
+  "limitations": [
+    "17개 통제 사례는 검출기 개발에 사용한 회귀 자료이며 독립 holdout이나 실제 정확도가 아닙니다.",
+    "실제 기록에는 정답 라벨이 없어 경고 건수만 집계하며 정확도를 계산하지 않습니다.",
+    "센서 해상도를 모르면 정상적인 계단형 양자화도 정체 후보로 경고할 수 있습니다.",
+    "경고는 증상 구간이며 기록 갱신 정지와 물리적 걸림의 원인을 구분하지 않습니다."
+  ],
+  "result_sha256": "4fe160c9fc6f8b9461d3ae323d3edc850cf5f78dce9495e6141001b8d5f2778f",
+  "synthetic": [
+    {
+      "id": "normal_fast_tracking",
+      "kind": "normal",
+      "scope": "in_contract",
+      "expected": [],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "normal_slow_tracking",
+      "kind": "normal",
+      "scope": "in_contract",
+      "expected": [],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "normal_stationary",
+      "kind": "normal",
+      "scope": "in_contract",
+      "expected": [],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "normal_pause_resume",
+      "kind": "normal",
+      "scope": "in_contract",
+      "expected": [],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "normal_quantized_slow",
+      "kind": "normal",
+      "scope": "in_contract",
+      "expected": [],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "normal_gripper_only",
+      "kind": "normal",
+      "scope": "in_contract",
+      "expected": [],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "normal_stationary_sensor_noise",
+      "kind": "normal",
+      "scope": "in_contract",
+      "expected": [],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 119,
+          "frame_precision": null,
+          "frame_recall": null,
+          "event_expected": 0,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 0,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "fault_fast_full_hold",
+      "kind": "injected",
+      "scope": "in_contract",
+      "expected": [
+        [
+          20,
+          49
+        ]
+      ],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 30,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 89,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 1,
+          "event_predicted": 1,
+          "event_hits": 1,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 30,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 89,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 1,
+          "event_predicted": 1,
+          "event_hits": 1,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "fault_slow_full_hold",
+      "kind": "injected",
+      "scope": "coverage_extension",
+      "expected": [
+        [
+          20,
+          49
+        ]
+      ],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 30,
+          "frame_tn": 89,
+          "frame_precision": null,
+          "frame_recall": 0.0,
+          "event_expected": 1,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 1,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 30,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 89,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 1,
+          "event_predicted": 1,
+          "event_hits": 1,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "fault_below_command_threshold",
+      "kind": "injected",
+      "scope": "coverage_extension",
+      "expected": [
+        [
+          20,
+          49
+        ]
+      ],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 30,
+          "frame_tn": 89,
+          "frame_precision": null,
+          "frame_recall": 0.0,
+          "event_expected": 1,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 1,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 30,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 89,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 1,
+          "event_predicted": 1,
+          "event_hits": 1,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "fault_above_command_threshold",
+      "kind": "injected",
+      "scope": "in_contract",
+      "expected": [
+        [
+          20,
+          49
+        ]
+      ],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 30,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 89,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 1,
+          "event_predicted": 1,
+          "event_hits": 1,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 30,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 89,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 1,
+          "event_predicted": 1,
+          "event_hits": 1,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "fault_high_fps_full_hold",
+      "kind": "injected",
+      "scope": "coverage_extension",
+      "expected": [
+        [
+          20,
+          49
+        ]
+      ],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 30,
+          "frame_tn": 89,
+          "frame_precision": null,
+          "frame_recall": 0.0,
+          "event_expected": 1,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 1,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 30,
+          "frame_fp": 1,
+          "frame_fn": 0,
+          "frame_tn": 88,
+          "frame_precision": 0.967741935483871,
+          "frame_recall": 1.0,
+          "event_expected": 1,
+          "event_predicted": 1,
+          "event_hits": 1,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 0.967741935483871,
+              "start_error_frames": -1,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 1,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "fault_two_separate_holds",
+      "kind": "injected",
+      "scope": "in_contract",
+      "expected": [
+        [
+          20,
+          39
+        ],
+        [
+          60,
+          79
+        ]
+      ],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 40,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 79,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 2,
+          "event_predicted": 2,
+          "event_hits": 2,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            },
+            {
+              "expected_index": 1,
+              "predicted_index": 1,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 40,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 79,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 2,
+          "event_predicted": 2,
+          "event_hits": 2,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            },
+            {
+              "expected_index": 1,
+              "predicted_index": 1,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "fault_partial_joint_hold",
+      "kind": "injected",
+      "scope": "coverage_extension",
+      "expected": [
+        [
+          20,
+          49
+        ]
+      ],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 30,
+          "frame_tn": 89,
+          "frame_precision": null,
+          "frame_recall": 0.0,
+          "event_expected": 1,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 1,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 30,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 89,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 1,
+          "event_predicted": 1,
+          "event_hits": 1,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "fault_arm_hold_gripper_live",
+      "kind": "injected",
+      "scope": "coverage_extension",
+      "expected": [
+        [
+          20,
+          49
+        ]
+      ],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 30,
+          "frame_tn": 89,
+          "frame_precision": null,
+          "frame_recall": 0.0,
+          "event_expected": 1,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 1,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 30,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 89,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 1,
+          "event_predicted": 1,
+          "event_hits": 1,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "fault_intermittent_command",
+      "kind": "injected",
+      "scope": "coverage_extension",
+      "expected": [
+        [
+          20,
+          59
+        ]
+      ],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 40,
+          "frame_tn": 79,
+          "frame_precision": null,
+          "frame_recall": 0.0,
+          "event_expected": 1,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 1,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 40,
+          "frame_fp": 0,
+          "frame_fn": 0,
+          "frame_tn": 79,
+          "frame_precision": 1.0,
+          "frame_recall": 1.0,
+          "event_expected": 1,
+          "event_predicted": 1,
+          "event_hits": 1,
+          "event_missed": 0,
+          "event_matching": [
+            {
+              "expected_index": 0,
+              "predicted_index": 0,
+              "iou": 1.0,
+              "start_error_frames": 0,
+              "end_error_frames": 0
+            }
+          ],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    },
+    {
+      "id": "fault_two_frame_hold",
+      "kind": "injected",
+      "scope": "below_minimum",
+      "expected": [
+        [
+          20,
+          21
+        ]
+      ],
+      "frame_count": 120,
+      "metrics": {
+        "v1": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 2,
+          "frame_tn": 117,
+          "frame_precision": null,
+          "frame_recall": 0.0,
+          "event_expected": 1,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 1,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        },
+        "v2": {
+          "frame_tp": 0,
+          "frame_fp": 0,
+          "frame_fn": 2,
+          "frame_tn": 117,
+          "frame_precision": null,
+          "frame_recall": 0.0,
+          "event_expected": 1,
+          "event_predicted": 0,
+          "event_hits": 0,
+          "event_missed": 1,
+          "event_matching": [],
+          "boundary_limit": {
+            "false_positive_frames": 0,
+            "start_end_errors_are_reported_in_frames": true,
+            "note_ko": "경고 구간은 정체 직전 기준 프레임을 포함할 수 있어 경계에서 여분 프레임이 생길 수 있습니다."
+          }
+        }
+      }
+    }
+  ],
+  "retrospective": {
+    "corpus_sha256": "97c7dba657d4bfa5fcc15b86a845c727967566d27dbd23e1395a04aeba020b27",
+    "dataset_count": 11,
+    "raw_episodes": 113,
+    "unique_episodes": 91,
+    "duplicate_episodes": 22,
+    "unique_frames": 40716,
+    "labels_available": false,
+    "accuracy_computed": false,
+    "alert_counts": {
+      "v1": {
+        "episodes_with_alert": 13,
+        "union_intervals": 83,
+        "per_joint_issues": null
+      },
+      "v2": {
+        "episodes_with_alert": 89,
+        "union_intervals": 191,
+        "per_joint_issues": 2149
+      }
+    },
+    "record_alert_counts": [
+      {
+        "id": "so101_car--ep0",
+        "label": "unknown",
+        "frames": 515,
+        "identity_sha256": "661ffd8d4685ab5f515b838b49bf5580bbd5e65ce41445b1b4f3414fd75b5fd9",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 17
+        }
+      },
+      {
+        "id": "so101_cube--ep0",
+        "label": "unknown",
+        "frames": 336,
+        "identity_sha256": "45ba1d2b4c49541176b4dc887cacb8136c6a975b818cd28cb9305c2be6dbdd6e",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 8
+        }
+      },
+      {
+        "id": "so101_cube--ep1",
+        "label": "unknown",
+        "frames": 6870,
+        "identity_sha256": "2a4af5cbc1c27d91e9f6781554bfeac108d6bd299bcd0013576021a543e15124",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 10,
+          "v2_per_joint_issues": 92
+        }
+      },
+      {
+        "id": "so101_pick_place--ep0",
+        "label": "unknown",
+        "frames": 460,
+        "identity_sha256": "30802aa1956c05fad4f46bcfb3ba0dda92ea40dc4964bfaddce004cde4cf60cf",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 21
+        }
+      },
+      {
+        "id": "so101_pick_place--ep1",
+        "label": "unknown",
+        "frames": 487,
+        "identity_sha256": "1bde900bbf18568c55ede66b203e2381201cca17204ad901c6d1e06d895a61b0",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 25
+        }
+      },
+      {
+        "id": "so101_pick_place--ep2",
+        "label": "unknown",
+        "frames": 487,
+        "identity_sha256": "20a77a1829c46cb6ba37c4537c4e55e770f8fa1f6a540ab8b8e70639075d19b1",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 21
+        }
+      },
+      {
+        "id": "so101_pick_place--ep3",
+        "label": "unknown",
+        "frames": 589,
+        "identity_sha256": "14b6f922aca04a91e1750e91eda8ddfcac48999fcb43cfb9a2a1f1a6263f8b71",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 24
+        }
+      },
+      {
+        "id": "so101_pick_place--ep4",
+        "label": "unknown",
+        "frames": 452,
+        "identity_sha256": "16ff26d8809873ebd06fd3fefc0fd98398ec93e4fd7920f6a39d69564883d2a0",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 22
+        }
+      },
+      {
+        "id": "so101_pick_place--ep5",
+        "label": "unknown",
+        "frames": 474,
+        "identity_sha256": "f27ca053f08dc63cb46cb072ad6dc5a6fa6aa31e60a74b1ff459fa5604bb131e",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 17
+        }
+      },
+      {
+        "id": "so101_pick_place--ep6",
+        "label": "unknown",
+        "frames": 479,
+        "identity_sha256": "a2f30098f48654349feb9a910fe0374de1ca6fc237fa051503336795aeed2ef8",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 22
+        }
+      },
+      {
+        "id": "so101_pick_place--ep7",
+        "label": "unknown",
+        "frames": 455,
+        "identity_sha256": "885e0900aff2d1ff985c025ed5ea4a3218e0f15bfb97e9f2812e0e81d34b088b",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 20
+        }
+      },
+      {
+        "id": "so101_pick_place--ep8",
+        "label": "unknown",
+        "frames": 466,
+        "identity_sha256": "14b32bf2c3c087b9fd6730dd82042037279d2f4b011dfe5d354bf59e207f555e",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 21
+        }
+      },
+      {
+        "id": "so101_pick_place--ep9",
+        "label": "unknown",
+        "frames": 381,
+        "identity_sha256": "6a1e27d7cef90694afbdecf8d163f8216c2ea377332e67a159af71fd54d8623f",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 18
+        }
+      },
+      {
+        "id": "so101_pick_place--ep10",
+        "label": "unknown",
+        "frames": 379,
+        "identity_sha256": "802f2a723c9136d9c3df8627726aa22f1247f17e99e4aaa8cff35bfcedfa13bc",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 20
+        }
+      },
+      {
+        "id": "so101_pick_place--ep11",
+        "label": "unknown",
+        "frames": 534,
+        "identity_sha256": "ce418347bed2cce0dd45695364c662c9d25773f0004c2cfb2c121d901cb830c6",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 24
+        }
+      },
+      {
+        "id": "so101_pick_place--ep12",
+        "label": "unknown",
+        "frames": 458,
+        "identity_sha256": "6862fcea4ff63105c7fb316edf141bcc693c398782d8fd35de10e9ae723832c8",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 20
+        }
+      },
+      {
+        "id": "so101_pick_place--ep13",
+        "label": "unknown",
+        "frames": 516,
+        "identity_sha256": "77572c128274ed67811b9b2a301ee625375ca83898824fa5ac2587e2a9c90a81",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 29
+        }
+      },
+      {
+        "id": "so101_pick_place--ep14",
+        "label": "unknown",
+        "frames": 478,
+        "identity_sha256": "4ab796f0503e36a924f8c223e6b45a2cdbe3f53b7267220719a373a79734a1f5",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 18
+        }
+      },
+      {
+        "id": "so101_pick_place--ep15",
+        "label": "unknown",
+        "frames": 473,
+        "identity_sha256": "e506c695aad4311a604541089379fe5aab61182b9a8848cc611f7ada058b02db",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 22
+        }
+      },
+      {
+        "id": "so101_pick_place--ep16",
+        "label": "unknown",
+        "frames": 503,
+        "identity_sha256": "7a5adb5b9d294b518bd69db28924c9d041781d5eb6dd202efbfa5b8e8fea8bff",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 22
+        }
+      },
+      {
+        "id": "so101_pick_place--ep17",
+        "label": "unknown",
+        "frames": 480,
+        "identity_sha256": "efccd1525c188b291da7e917e851686e4d7b67977672c2eff03302f7799b09c3",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 21
+        }
+      },
+      {
+        "id": "so101_pick_place--ep18",
+        "label": "unknown",
+        "frames": 520,
+        "identity_sha256": "b488b4534dbf9f3434dc5002482918a830d3a1c47c6808987ac060fe49eb7e6b",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 24
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep0",
+        "label": "unknown",
+        "frames": 460,
+        "identity_sha256": "76b61fecdd4f6f60b96dc3ddbebdad7b8e15b7c4ecc5e795e3b3237d535dff01",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 22
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep1",
+        "label": "unknown",
+        "frames": 487,
+        "identity_sha256": "5738a9c9f63e52ed6dc6744ba35cc907ce08fe72e00f8bbbfb20d81e7eb076ed",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 26
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep2",
+        "label": "unknown",
+        "frames": 487,
+        "identity_sha256": "31c855618223b70f0e9af11c7694b9a22b7c136fb8e2e1b32e9f942a487b65be",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 22
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep3",
+        "label": "unknown",
+        "frames": 589,
+        "identity_sha256": "0db198b68b34617402390108514d5ec910d192a5c86c4237570ca91cd3d1dede",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 24
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep4",
+        "label": "unknown",
+        "frames": 452,
+        "identity_sha256": "4dce04524b835ab2be7265ef6478e4af21ae896edd039302529b42bf2327ea47",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 22
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep5",
+        "label": "unknown",
+        "frames": 474,
+        "identity_sha256": "687e6f8c886f59ddad7ef52e8b9b0344ef42f707481dd32387b7e000bc462ff5",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 18
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep6",
+        "label": "unknown",
+        "frames": 479,
+        "identity_sha256": "41dc7aaa305fa2d7d33d2a71a259c52a354cb8df626a911d091b86f264a596bc",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 22
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep7",
+        "label": "unknown",
+        "frames": 455,
+        "identity_sha256": "27085943c5c08cb49a58c8b1843ee229a78e3e2f8733e145bc6eb8b2f025b358",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 4,
+          "v2_per_joint_issues": 21
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep8",
+        "label": "unknown",
+        "frames": 466,
+        "identity_sha256": "6b27bd3ed8f785940cf112dd62f066ff38f0e1578c3eb8ea39a0aea729d8580b",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 23
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep9",
+        "label": "unknown",
+        "frames": 381,
+        "identity_sha256": "029d8f510df44138d12a260b50d4637c4cacf16622f900311da354515efa4c82",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 20
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep10",
+        "label": "unknown",
+        "frames": 379,
+        "identity_sha256": "75cdf70e8d1acadf45ffb1c59cfd0e7a08f05f29546c3ce28b09cca509ae96ed",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 20
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep11",
+        "label": "unknown",
+        "frames": 534,
+        "identity_sha256": "07c95e01353588daf0c181100c7340061ab88d78d7d6b5f9d141928802e61cb0",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 26
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep12",
+        "label": "unknown",
+        "frames": 458,
+        "identity_sha256": "042d8cbfc2bfbffd3007575625fb9d114314dc414bfa00846c73772ef4838100",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 20
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep13",
+        "label": "unknown",
+        "frames": 516,
+        "identity_sha256": "257bce8993bbb38225e6eda89579bcc7ca274479c998b71fd9c80a672f0e5d98",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 30
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep14",
+        "label": "unknown",
+        "frames": 478,
+        "identity_sha256": "9a24060da5960e3dbd4f9c8b82d63fcae6b6cc52e8c9d2098536547d9153a13a",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 19
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep15",
+        "label": "unknown",
+        "frames": 473,
+        "identity_sha256": "168e00197b9b545f2b0e7ab18e5682f244418d726bc54c299ed6f48a6f0dcb64",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 22
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep16",
+        "label": "unknown",
+        "frames": 503,
+        "identity_sha256": "2893683766c7f8dcbc44a51237a958e2873646757514c49fac6a85d03592d4e3",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 23
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep17",
+        "label": "unknown",
+        "frames": 480,
+        "identity_sha256": "8aa0ed99a1a71637bcdccb1a0aed4a5154f7b3b69ed804b9012edbcb67faf6fb",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 21
+        }
+      },
+      {
+        "id": "so101_pick_place_fix--ep18",
+        "label": "unknown",
+        "frames": 520,
+        "identity_sha256": "aec133150db9e0c324712ce7493bf8cfd23a508847d8041f6ecca211f3498961",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 25
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep0",
+        "label": "unknown",
+        "frames": 357,
+        "identity_sha256": "30947bcf186192800c0444bb71bc272e25ed7b72f8772a68a666d2400d90cfb6",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 24
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep1",
+        "label": "unknown",
+        "frames": 196,
+        "identity_sha256": "af59f83c9fff550da4b41c65cb427e3d9dc7be8603baad7b06a744654196bfd7",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 19
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep2",
+        "label": "unknown",
+        "frames": 316,
+        "identity_sha256": "528d7426ad8218e461ca54321b37be2ae8980136e8af1ef319f95122580dc81d",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 17
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep3",
+        "label": "unknown",
+        "frames": 539,
+        "identity_sha256": "1c0e5158a7573c98b0af85c7342f239409b1965717c7b2631e34ae7fbba8a686",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 22
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep4",
+        "label": "unknown",
+        "frames": 348,
+        "identity_sha256": "619e648dd1447097eb7c5ab918911d2ab449a08a34d5e5cb43418aeac1723528",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 29
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep5",
+        "label": "unknown",
+        "frames": 404,
+        "identity_sha256": "78148ab8b29b99fdc48fe973aae4d3968f71d4d6233d776ce7f2152029695abc",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 24
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep6",
+        "label": "unknown",
+        "frames": 401,
+        "identity_sha256": "cc0b4f58027a4a677c2ff2e558a6ac9348eefd5531cac444a08a15570fcb861d",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 32
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep7",
+        "label": "unknown",
+        "frames": 413,
+        "identity_sha256": "bbd537d45a6628f306daa11757ced69623caedfb3fbc0ea5ba7fb65f7ea40ab8",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 25
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep8",
+        "label": "unknown",
+        "frames": 382,
+        "identity_sha256": "8d025db0406e408225f07bee3b1fb2a5c23838a0cb915842f2c2aefba44ce4ef",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 24
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep9",
+        "label": "unknown",
+        "frames": 395,
+        "identity_sha256": "87b9f6623860e15cd9105884864b3de6addb5135f926e1387f31cdc7ed6247db",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 37
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep10",
+        "label": "unknown",
+        "frames": 460,
+        "identity_sha256": "1b25f93a3d77885df8dce5d4e44bf6864a38ff11a8a488354148bbec091d242d",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 46
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep11",
+        "label": "unknown",
+        "frames": 266,
+        "identity_sha256": "e4d14a81f5aa9e5d643a80554034022e54197ccbe469c8ad89e95b72a46eff15",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 28
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep12",
+        "label": "unknown",
+        "frames": 203,
+        "identity_sha256": "f66136abfa534c8b6e29b8b696caf020b6fa79142b4c8f79bc9b076b0ec95781",
+        "alerts": {
+          "v1_intervals": 1,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 20
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep13",
+        "label": "unknown",
+        "frames": 210,
+        "identity_sha256": "7044b7932281e4b9d8c4e7852dd00fb189016965edeaa8c20d387c85106121bf",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 24
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep14",
+        "label": "unknown",
+        "frames": 188,
+        "identity_sha256": "c03838c8a525919b87daee98eaf8443222a472d39494368a1dc416648a801c4d",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 18
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep15",
+        "label": "unknown",
+        "frames": 237,
+        "identity_sha256": "c1c9d86c20a82b1f1bb743ddeb6992a48d783f148877e939d9b79368e6013bb5",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 30
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep16",
+        "label": "unknown",
+        "frames": 183,
+        "identity_sha256": "ba142f9d82913576a0b5bcbdb315aff04c1ad534e036bdfb1a8a88b66dd9ff4c",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 16
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep17",
+        "label": "unknown",
+        "frames": 206,
+        "identity_sha256": "6a6db511557372a569611b9af4e9798e2a2fbf8709200ab2cdd1e7c66f5c3ff1",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 24
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep18",
+        "label": "unknown",
+        "frames": 173,
+        "identity_sha256": "58515fe64290ab5bd805dabca3351c8f8cf34098b1b0ced94e2f87a5cd0e1403",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 17
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep19",
+        "label": "unknown",
+        "frames": 281,
+        "identity_sha256": "899d64cb951ee48ec1ca14afabef30bd63f5d3fab07ca85cb867b6c01693e4b1",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 21
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep20",
+        "label": "unknown",
+        "frames": 99,
+        "identity_sha256": "ef60fb96ad19ba86d71186298b249002cc4edca7c6e31fc6de0d1a6607b74a3d",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 20
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep21",
+        "label": "unknown",
+        "frames": 104,
+        "identity_sha256": "742e958ae44eb26d3b5ddad1377fa1da6e95da2053bb3b984318964eeb4fef61",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 14
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep22",
+        "label": "unknown",
+        "frames": 460,
+        "identity_sha256": "1712ddce94beee60e4bd429982ff1a0433e1a492ac268b27294e03ad776fc6b2",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 51
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep23",
+        "label": "unknown",
+        "frames": 423,
+        "identity_sha256": "0ad782d6283ddacdb392e699b3f363dbc2d0c1f68711137a67143c66c84b0f6e",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 43
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep24",
+        "label": "unknown",
+        "frames": 322,
+        "identity_sha256": "18fd86d77a14d2abe93d112032b738da62c0e8aed197f233c4ca66236812c0b0",
+        "alerts": {
+          "v1_intervals": 1,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 30
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep25",
+        "label": "unknown",
+        "frames": 213,
+        "identity_sha256": "b5e1c403c76c424e4824e8e958144a212ffeb36aab2ddf0e5a81a01bc4770f20",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 25
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep26",
+        "label": "unknown",
+        "frames": 408,
+        "identity_sha256": "96aa00e212e032b6251ee89a5ec8e3418392a8cdd02b30e20ba31c9dc036a4ec",
+        "alerts": {
+          "v1_intervals": 1,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 32
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep27",
+        "label": "unknown",
+        "frames": 394,
+        "identity_sha256": "3478f62da6b50368e6adc5c9148dd50991c8d7204083efed82491625a4618506",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 27
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep28",
+        "label": "unknown",
+        "frames": 412,
+        "identity_sha256": "4747a28c6d3eae964674ddbf187ca60620a928dbd7ce4364b77e9555a2a069a4",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 46
+        }
+      },
+      {
+        "id": "so101_pick_pm--ep29",
+        "label": "unknown",
+        "frames": 420,
+        "identity_sha256": "cbd301e027bc9036da903f9d938e8159c8b2d27b467ff84741fb7eb7e16b6de7",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 29
+        }
+      },
+      {
+        "id": "so101_pick_v3--ep0",
+        "label": "unknown",
+        "frames": 465,
+        "identity_sha256": "5fbf717acd4435508bf1edbf35876011524777c9cebff54f6e33511f809ab857",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 54
+        }
+      },
+      {
+        "id": "so101_pick_v3--ep1",
+        "label": "unknown",
+        "frames": 326,
+        "identity_sha256": "b2cb2f3c6a3fb4eb02b6460ae2c012be309e0aba2ba2cdad4151c65d6d7ae8ce",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 33
+        }
+      },
+      {
+        "id": "so101_pm_smoke--ep0",
+        "label": "unknown",
+        "frames": 31,
+        "identity_sha256": "de9523a8b880161b7011cb9238936b2bb5a7a4d20afeae763720208eeb5afc08",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 0,
+          "v2_per_joint_issues": 0
+        }
+      },
+      {
+        "id": "so101_policy_rollout--ep0",
+        "label": "unknown",
+        "frames": 656,
+        "identity_sha256": "cf3056dec5ac75d98e171c7fdbe77633154bfab72d0cfdde84fac8ad0c304e97",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 0,
+          "v2_per_joint_issues": 0
+        }
+      },
+      {
+        "id": "so101_teleop_bench--ep0",
+        "label": "unknown",
+        "frames": 248,
+        "identity_sha256": "7d7c660492dc0ef0098a6849ae52ab8b2731853e41d757ed7399e05680659225",
+        "alerts": {
+          "v1_intervals": 11,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 12
+        }
+      },
+      {
+        "id": "so101_teleop_bench--ep1",
+        "label": "unknown",
+        "frames": 259,
+        "identity_sha256": "c4f19352c8089a379ae1383ea4684dd228331f5230487a6f1518707d73936033",
+        "alerts": {
+          "v1_intervals": 13,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 6
+        }
+      },
+      {
+        "id": "so101_teleop_bench--ep2",
+        "label": "unknown",
+        "frames": 250,
+        "identity_sha256": "7db8842ce934e4ca1f88f75a206180ac4fa16efb54f3082b7a67d5a324b0856e",
+        "alerts": {
+          "v1_intervals": 10,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 6
+        }
+      },
+      {
+        "id": "so101_teleop_bench--ep3",
+        "label": "unknown",
+        "frames": 252,
+        "identity_sha256": "bc7a38a329e30f92a8eb7479a74fe0fb5024d60824c1f2557c452223f46e1f50",
+        "alerts": {
+          "v1_intervals": 10,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 6
+        }
+      },
+      {
+        "id": "so101_teleop_bench--ep4",
+        "label": "unknown",
+        "frames": 708,
+        "identity_sha256": "fdbff96095ce68e17ce77ab1ef740840b2aeeaf2fd422ffb9b1c0c286e5406a4",
+        "alerts": {
+          "v1_intervals": 3,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 6
+        }
+      },
+      {
+        "id": "so101_teleop_bench--ep5",
+        "label": "unknown",
+        "frames": 672,
+        "identity_sha256": "b9ff09e12fbd38b38e3c849b423cc071d777b42d63c2506ac493af64bf5ad07d",
+        "alerts": {
+          "v1_intervals": 8,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 6
+        }
+      },
+      {
+        "id": "so101_teleop_bench--ep6",
+        "label": "unknown",
+        "frames": 87,
+        "identity_sha256": "a82612c8522582ed01a6648e47f0aa646b0e5661d018be8b89f4fe1e1b3f1d05",
+        "alerts": {
+          "v1_intervals": 6,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 6
+        }
+      },
+      {
+        "id": "so101_teleop_bench--ep7",
+        "label": "unknown",
+        "frames": 130,
+        "identity_sha256": "d1618947610a16f52a3784b9012d7414de774d32720813d24a557905e043e1d6",
+        "alerts": {
+          "v1_intervals": 8,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 6
+        }
+      },
+      {
+        "id": "so101_teleop_bench--ep8",
+        "label": "unknown",
+        "frames": 110,
+        "identity_sha256": "b5b25b9d9377a3440520d8cd86ce82bd318f36ec86fa65ababb5cf1a259ea208",
+        "alerts": {
+          "v1_intervals": 7,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 6
+        }
+      },
+      {
+        "id": "so101_teleop_v2--ep0",
+        "label": "unknown",
+        "frames": 265,
+        "identity_sha256": "507d4fbaa8bb33ff041dda398fcd68c7663a799912292186b8c8f492afdeabd9",
+        "alerts": {
+          "v1_intervals": 4,
+          "v2_union_intervals": 8,
+          "v2_per_joint_issues": 36
+        }
+      },
+      {
+        "id": "so101_teleop_v2--ep1",
+        "label": "unknown",
+        "frames": 182,
+        "identity_sha256": "0b8a1fb3d2efb6b6ecbd9067ad0370970fa2ab60a483072a57d989f5b2358f8a",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 29
+        }
+      },
+      {
+        "id": "so101_teleop_v2--ep2",
+        "label": "unknown",
+        "frames": 162,
+        "identity_sha256": "b6853f4d8c4e059c9b9897850eed52fddb26ce0fed9ff83c266e6b5a35680917",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 4,
+          "v2_per_joint_issues": 34
+        }
+      },
+      {
+        "id": "so101_teleop_v2--ep3",
+        "label": "unknown",
+        "frames": 168,
+        "identity_sha256": "f98d4e9c8f0ad76cf06f9d991c9aaa94877eeb74e2b80142f88fa9f51ba8a7d7",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 3,
+          "v2_per_joint_issues": 33
+        }
+      },
+      {
+        "id": "so101_teleop_v2--ep4",
+        "label": "unknown",
+        "frames": 132,
+        "identity_sha256": "d088d7baad0bfb9458bd3c24d2675fb2fd3e7ba44c66607d50394f61e77fe7f8",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 1,
+          "v2_per_joint_issues": 25
+        }
+      },
+      {
+        "id": "so101_teleop_v2--ep5",
+        "label": "unknown",
+        "frames": 166,
+        "identity_sha256": "376f26aa832c2b85008e36391345c32c735b04f4b42238eca81ad4804762e5aa",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 4,
+          "v2_per_joint_issues": 42
+        }
+      },
+      {
+        "id": "so101_teleop_v2--ep6",
+        "label": "unknown",
+        "frames": 171,
+        "identity_sha256": "e2db72a7052cd0f9da0c401c2da45518950dae7efb307929c636ef0d516a70e6",
+        "alerts": {
+          "v1_intervals": 0,
+          "v2_union_intervals": 2,
+          "v2_per_joint_issues": 35
+        }
+      }
+    ]
+  }
+}

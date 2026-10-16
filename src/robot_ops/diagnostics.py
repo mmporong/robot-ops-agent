@@ -453,6 +453,15 @@ class DiagnosticToolService:
                     "invalid_trajectory: NaN 또는 무한대는 허용하지 않습니다"
                 )
             divergence = compute_divergence(header, rows)
+            from .recording_inspection import check_rows
+            recording_check = check_rows(header, rows)
+            issue_count = len(recording_check["issues"])
+            recording_check["issues"] = recording_check["issues"][:8]
+            recording_check["issue_count"] = issue_count
+            recording_check["issues_truncated"] = issue_count > 8
+            # 원시 시계열과 프레임별 누락 목록은 도구 응답에 싣지 않는다.
+            missing = recording_check["coverage"].pop("gripper_missing_frames", [])
+            recording_check["coverage"]["gripper_missing_frame_count"] = len(missing)
             summary = {
                 "source_path": str(path),
                 "source_sha256": hashlib.sha256(source_bytes).hexdigest(),
@@ -464,6 +473,7 @@ class DiagnosticToolService:
                 "incidents": divergence["incidents"],
                 "tcp": divergence["tcp"],
                 "max_joint_err_deg": divergence["max_joint_err_deg"],
+                "recording_check": recording_check,
             }
             output = json.dumps(
                 summary,

@@ -246,6 +246,7 @@ class DiagnosticToolServiceTest(unittest.TestCase):
                 "incidents",
                 "tcp",
                 "max_joint_err_deg",
+                "recording_check",
             },
         )
         self.assertEqual(
@@ -259,6 +260,30 @@ class DiagnosticToolServiceTest(unittest.TestCase):
         )
         self.assertNotIn("series", result.output)
         self.assertTrue(summary["incidents"])
+        check = summary["recording_check"]
+        self.assertEqual(check["detector"], "joint_time_v2")
+        self.assertEqual(check["cause_status"], "undetermined")
+        self.assertEqual(check["coverage"]["observation_freshness"], "not_assessable")
+        self.assertEqual(check["issue_count"], 1)
+        self.assertEqual(check["issues"][0]["kind"], "joint_observation_stagnation")
+
+    def test_analyze_trajectory_caps_v2_candidates_and_preserves_total_count(self) -> None:
+        path = self._write_trajectory()
+        values = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        values[0]["joint_names"] = [f"joint_{i}" for i in range(12)]
+        for row in values[1:]:
+            row["q_cmd"] *= 12
+            row["q_obs"] *= 12
+        path.write_text("\n".join(json.dumps(value) for value in values) + "\n", encoding="utf-8")
+
+        result = self.service.execute("analyze_trajectory", {"path": str(path)})
+
+        self.assertTrue(result.ok)
+        self.assertEqual(self.runner.calls, [])
+        check = json.loads(result.output)["recording_check"]
+        self.assertEqual(check["issue_count"], 12)
+        self.assertEqual(len(check["issues"]), 8)
+        self.assertTrue(check["issues_truncated"])
 
     def test_analyze_trajectory_rejects_invalid_inputs_and_audits_completion(self) -> None:
         outside = self.root.parent / f"outside-{self.root.name}-trajectory.jsonl"
