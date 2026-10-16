@@ -6,6 +6,7 @@ import tempfile
 import time
 import unittest
 import uuid
+from dataclasses import replace
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -62,6 +63,16 @@ class AdapterCallTest(unittest.TestCase):
         env = json.loads((outcome.workdir / "env.json").read_text())
         self.assertEqual(env["PYTHONDONTWRITEBYTECODE"], "1")
         self.assertEqual(env["ROBOT_OPS_RUN_ID"], outcome.run_id)
+
+    def test_run_uses_profile_source_repo_instead_of_request_override(self) -> None:
+        snapshot = self.root / "clean-source"
+        snapshot.mkdir()
+        self.profile = replace(self.profile, source_repo=snapshot)
+        outcome = self._run({}, extra={"source_repo": "/unrelated-source"})
+
+        self.assertEqual(outcome.status, "ok")
+        request = json.loads((outcome.workdir / "run.request.json").read_text())
+        self.assertEqual(request["source_repo"], str(snapshot))
 
     def test_unknown_verb_rejected_before_launch(self) -> None:
         with self.assertRaises(VerbRejected):

@@ -29,6 +29,7 @@ REGISTERED_TOOL_NAMES = frozenset(
         "journal_tail",
         "log_tail",
         "analyze_trajectory",
+        "analyze_simulation",
     }
 )
 
@@ -209,6 +210,13 @@ def create_server(
         """저장된 trajectory/1 JSONL의 추종 오차와 동결 구간을 분석합니다."""
         return _json_tool_result_or_error(
             service, "analyze_trajectory", {"path": path}
+        )
+
+    @server.tool()
+    def analyze_simulation(path: str) -> dict[str, object]:
+        """저장된 시뮬레이션의 닫기 전 접촉 이상과 판정 일치를 분석합니다."""
+        return _json_tool_result_or_error(
+            service, "analyze_simulation", {"path": path}
         )
 
     return server

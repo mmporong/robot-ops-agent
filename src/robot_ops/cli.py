@@ -107,6 +107,13 @@ def build_parser() -> argparse.ArgumentParser:
     inspect_parser.add_argument("--profile", type=Path, help="판독 환경과 같은 출처의 저장 녹화를 찾을 프로파일")
     inspect_parser.add_argument("--out", type=Path, default=Path(".local/recording-inspection"))
 
+    sim_check = subparsers.add_parser("sim-check", help="정상·컵 위치 오차·복구를 새 시뮬 실행과 MCP 검사로 확인")
+    sim_inputs = sim_check.add_mutually_exclusive_group(required=True)
+    sim_inputs.add_argument("--profile", type=Path)
+    sim_inputs.add_argument("--from-runs", type=Path, help="저장된 세 실행의 재검사와 확인 화면 생성")
+    sim_check.add_argument("--source-commit", help="실행할 원천 커밋 (기본: 프로파일 pinned_commit)")
+    sim_check.add_argument("--out", type=Path)
+
     replay_parser = subparsers.add_parser("replay", help="실행 기록 재생과 명령·관측 어긋남 계산")
     replay_parser.add_argument("--profile", type=Path, required=True)
     replay_parser.add_argument(
@@ -271,6 +278,9 @@ def _embedder_from_args(args: argparse.Namespace) -> Embedder:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command == "sim-check":
+        from .simulation_workflow import command
+        return command(args)
     if args.command == "inspect":
         from .recording_inspection import command
         import subprocess

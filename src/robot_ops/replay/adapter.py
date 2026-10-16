@@ -348,6 +348,9 @@ def call_adapter(
     if not _RUN_ID.match(run_id):
         raise AdapterError(f"run_id 형식이 올바르지 않습니다: {run_id!r}")
     check_allowlist(request, profile)
+    if verb == "run" and profile.source_repo is not None:
+        # 검사한 원천 저장소와 어댑터가 실행할 저장소를 같은 프로파일 값에 묶는다.
+        request = {**request, "source_repo": str(profile.source_repo)}
 
     workdir.mkdir(parents=True, exist_ok=True)
     request_path = workdir / f"{verb}.request.json"

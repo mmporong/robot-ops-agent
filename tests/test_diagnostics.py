@@ -89,6 +89,48 @@ class DiagnosticToolServiceTest(unittest.TestCase):
         )
         return path
 
+    def _write_simulation(self, directory: str = "run/isaac") -> Path:
+        target = self.root / directory
+        target.mkdir(parents=True)
+        result = {
+            "hardware_accessed": False,
+            "observation_source": "simulator_ground_truth_not_rgb",
+            "task_pass": True,
+            "completed": True,
+            "stop_reason": "sequence_finished",
+            "recovery_enabled": False,
+            "retry_count": 0,
+            "events": [],
+            "samples": [
+                {
+                    "time_s": 0.0,
+                    "physics_time_s": 0.525,
+                    "phase": "RESET",
+                    "attempt": 0,
+                    "contact_force_n": [0.0, 0.0],
+                },
+                {
+                    "time_s": 0.1,
+                    "physics_time_s": 0.625,
+                    "phase": "CLOSE",
+                    "attempt": 0,
+                    "contact_force_n": [0.5, 0.5],
+                },
+            ],
+        }
+        plan = {
+            "hardware_accessed": False,
+            "observation_source": "simulator_ground_truth_not_rgb",
+            "config": {
+                "physics_dt_s": 0.1,
+                "minimum_contact_force_n": 0.02,
+            },
+        }
+        result_path = target / "result.json"
+        result_path.write_text(json.dumps(result), encoding="utf-8")
+        (target / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
+        return result_path
+
     def test_unknown_motion_tool_is_rejected_without_process(self) -> None:
         result = self.service.execute(
             "ros_topic_publish",
@@ -101,6 +143,83 @@ class DiagnosticToolServiceTest(unittest.TestCase):
         self.assertIn("tool_not_allowed", result.error or "")
         self.assertEqual(self.runner.calls, [])
         self.assertIn("tool_not_allowed", self._audit_records()[-1]["error"])
+
+    def test_analyze_simulation_reads_only_fixed_result_and_plan(self) -> None:
+        path = self._write_simulation()
+
+        tool_result = self.service.execute("analyze_simulation", {"path": str(path)})
+
+        self.assertTrue(tool_result.ok, tool_result.error)
+        self.assertEqual(self.runner.calls, [])
+        summary = json.loads(tool_result.output)
+        self.assertEqual(summary["status"], "no_issue_in_checked_scope")
+        self.assertEqual(summary["runtime"]["sample_count"], 2)
+        self.assertFalse(summary["runtime"]["hardware_accessed"])
+        self.assertNotIn("samples", summary)
+        self.assertEqual(
+            summary["source"]["result_sha256"],
+            hashlib.sha256(path.read_bytes()).hexdigest(),
+        )
+
+    def test_analyze_simulation_rejects_wrong_name_symlink_and_plan_symlink(self) -> None:
+        path = self._write_simulation()
+        wrong_name = path.with_name("copy.json")
+        wrong_name.write_bytes(path.read_bytes())
+        result_link = path.with_name("result-link.json")
+        result_link.symlink_to(path)
+        plan_path = path.with_name("plan.json")
+        real_plan = path.with_name("real-plan.json")
+        plan_path.rename(real_plan)
+        plan_path.symlink_to(real_plan)
+
+        wrong = self.service.execute("analyze_simulation", {"path": str(wrong_name)})
+        linked_result = self.service.execute(
+            "analyze_simulation", {"path": str(result_link)}
+        )
+        linked_plan = self.service.execute("analyze_simulation", {"path": str(path)})
+
+        self.assertEqual(wrong.status, "rejected")
+        self.assertEqual(linked_result.status, "rejected")
+        self.assertEqual(linked_plan.status, "rejected")
+
+    def test_analyze_simulation_rejects_path_outside_allowed_root(self) -> None:
+        outside_dir = self.root.parent / f"{self.root.name}-outside" / "isaac"
+        outside_dir.mkdir(parents=True, exist_ok=True)
+        outside_path = outside_dir / "result.json"
+        outside_path.write_text("{}", encoding="utf-8")
+        try:
+            result = self.service.execute(
+                "analyze_simulation", {"path": str(outside_path)}
+            )
+            self.assertEqual(result.status, "rejected")
+            self.assertIn("path_not_allowed", result.error or "")
+        finally:
+            outside_path.unlink()
+            outside_dir.rmdir()
+            outside_dir.parent.rmdir()
+
+    def test_analyze_simulation_rejects_hardware_and_nonfinite_values(self) -> None:
+        path = self._write_simulation("hardware/isaac")
+        result = json.loads(path.read_text(encoding="utf-8"))
+        result["hardware_accessed"] = True
+        path.write_text(json.dumps(result), encoding="utf-8")
+
+        hardware = self.service.execute("analyze_simulation", {"path": str(path)})
+
+        self.assertEqual(hardware.status, "rejected")
+        self.assertIn("hardware_accessed", hardware.error or "")
+
+        other_path = self._write_simulation("nonfinite/isaac")
+        result = json.loads(other_path.read_text(encoding="utf-8"))
+        result["samples"][0]["contact_force_n"][0] = math.inf
+        other_path.write_text(json.dumps(result), encoding="utf-8")
+
+        nonfinite = self.service.execute(
+            "analyze_simulation", {"path": str(other_path)}
+        )
+
+        self.assertEqual(nonfinite.status, "rejected")
+        self.assertIn("NaN 또는 무한대", nonfinite.error or "")
 
     def test_prompt_injection_in_topic_is_rejected(self) -> None:
         result = self.service.execute(

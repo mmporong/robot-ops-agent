@@ -34,6 +34,22 @@ OK_EXIT = (0, 2)
 INFRA_STOP_PREFIXES = ("exception:", "initializing", "window_closed")
 
 
+def _source_repo(request: dict) -> Path:
+    value = request.get("source_repo")
+    if value is None:
+        return TEAM_REPO
+    if not isinstance(value, (str, os.PathLike)) or not str(value):
+        raise ValueError("source_repo는 비어 있지 않은 절대 경로여야 합니다")
+    repo = Path(value)
+    if not repo.is_absolute():
+        raise ValueError("source_repo는 절대 경로여야 합니다")
+    if repo.is_symlink():
+        raise ValueError("source_repo 루트의 심볼릭 링크를 거부합니다")
+    if not repo.is_dir():
+        raise ValueError("source_repo는 일반 디렉터리여야 합니다")
+    return repo
+
+
 def _sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -79,13 +95,14 @@ def encode_frames(frames_dir: Path, out: Path) -> dict:
 
 
 def run(request: dict, workdir: Path) -> dict:
-    script, team_script = resolve_team_file(TEAM_REPO, TEAM_SCRIPTS)
+    source_repo = _source_repo(request)
+    script, team_script = resolve_team_file(source_repo, TEAM_SCRIPTS)
     out_dir = workdir / "isaac"
     if out_dir.exists():
         raise RuntimeError(f"출력 폴더가 이미 있습니다(재사용 금지): {out_dir}")
 
     argv = build_argv(sys.executable, script, out_dir, request)
-    pythonpath = str(TEAM_REPO.resolve())
+    pythonpath = str(source_repo.resolve())
     if os.environ.get("PYTHONPATH"):
         pythonpath += os.pathsep + os.environ["PYTHONPATH"]
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1", PYTHONPATH=pythonpath)

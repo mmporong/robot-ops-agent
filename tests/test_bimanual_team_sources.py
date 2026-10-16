@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -62,7 +63,29 @@ out.mkdir(parents=True)
         (team / "src" / "__init__.py").write_text("", encoding="utf-8")
         (team / "src" / "robot_pkg" / "__init__.py").write_text("VALUE = 17\n", encoding="utf-8")
 
-    def test_new_script_is_preferred_and_gets_team_pythonpath_without_repo_writes(self) -> None:
+    @staticmethod
+    def _mock_team_run(marker: int, calls: list[dict]):
+        def invoke(argv, *, cwd, env, stdout, stderr, check):
+            calls.append({"argv": argv, "cwd": cwd, "env": env})
+            out = Path(argv[argv.index("--output-dir") + 1])
+            out.mkdir(parents=True)
+            (out / "result.json").write_text(
+                json.dumps({
+                    "hardware_accessed": False,
+                    "samples": [{"time_s": 0.25}],
+                    "stop_reason": "completed",
+                    "marker": marker,
+                }),
+                encoding="utf-8",
+            )
+            (out / "plan.json").write_text(
+                json.dumps({"tool_sha256": {}}), encoding="utf-8"
+            )
+            return subprocess.CompletedProcess(argv, 0)
+
+        return invoke
+
+    def test_requested_source_repo_selects_new_script_and_pythonpath_without_repo_writes(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             team = root / "team"
@@ -72,18 +95,33 @@ out.mkdir(parents=True)
             self._write_fake_script(team / "tools" / "simulate_cup_contact.py", 2)
             before = {p.relative_to(team) for p in team.rglob("*")}
             workdir.mkdir()
-            with mock.patch.object(run_cup_contact, "TEAM_REPO", team):
-                response = run_cup_contact.run({"grid_point": {"x_mm": 0, "y_mm": 0}}, workdir)
+            calls: list[dict] = []
+            with (
+                mock.patch.object(run_cup_contact, "TEAM_REPO", root / "missing-default"),
+                mock.patch.object(
+                    run_cup_contact.subprocess,
+                    "run",
+                    side_effect=self._mock_team_run(1, calls),
+                ),
+            ):
+                response = run_cup_contact.run(
+                    {
+                        "source_repo": str(team),
+                        "grid_point": {"x_mm": 0, "y_mm": 0},
+                    },
+                    workdir,
+                )
 
             result = json.loads((workdir / "isaac" / "result.json").read_text(encoding="utf-8"))
-            self.assertEqual(result["cwd"], str(workdir))
-            self.assertEqual(result["simulation_name"], "simulation")
-            self.assertEqual(result["value"], 17)
             self.assertEqual(result["marker"], 1)
             self.assertEqual(response["team_script"], "simulation/simulate_cup_contact.py")
+            self.assertEqual(calls[0]["argv"][1], str(team / "simulation" / "simulate_cup_contact.py"))
+            self.assertEqual(calls[0]["cwd"], str(workdir))
+            self.assertEqual(calls[0]["env"]["PYTHONPATH"].split(os.pathsep)[0], str(team))
+            self.assertEqual(calls[0]["env"]["PYTHONDONTWRITEBYTECODE"], "1")
             self.assertEqual({p.relative_to(team) for p in team.rglob("*")}, before)
 
-    def test_legacy_script_fallback_executes(self) -> None:
+    def test_missing_source_repo_uses_default_and_legacy_script_fallback(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             team = root / "team"
@@ -91,11 +129,39 @@ out.mkdir(parents=True)
             self._make_packages(team)
             self._write_fake_script(team / "tools" / "simulate_cup_contact.py", 2)
             workdir.mkdir()
-            with mock.patch.object(run_cup_contact, "TEAM_REPO", team):
+            calls: list[dict] = []
+            with (
+                mock.patch.object(run_cup_contact, "TEAM_REPO", team),
+                mock.patch.object(
+                    run_cup_contact.subprocess,
+                    "run",
+                    side_effect=self._mock_team_run(2, calls),
+                ),
+            ):
                 response = run_cup_contact.run({}, workdir)
             result = json.loads((workdir / "isaac" / "result.json").read_text(encoding="utf-8"))
             self.assertEqual(result["marker"], 2)
             self.assertEqual(response["team_script"], "tools/simulate_cup_contact.py")
+            self.assertEqual(calls[0]["env"]["PYTHONPATH"].split(os.pathsep)[0], str(team))
+
+    def test_requested_source_repo_rejects_relative_symlink_and_non_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            team = root / "team"
+            team.mkdir()
+            linked = root / "linked-team"
+            linked.symlink_to(team, target_is_directory=True)
+            regular_file = root / "repo.txt"
+            regular_file.write_text("not a directory\n", encoding="utf-8")
+
+            cases = (
+                ("relative/team", "절대 경로"),
+                (str(linked), "심볼릭 링크"),
+                (str(regular_file), "일반 디렉터리"),
+            )
+            for value, message in cases:
+                with self.subTest(value=value), self.assertRaisesRegex(ValueError, message):
+                    run_cup_contact.run({"source_repo": value}, root / "work")
 
     def test_missing_and_symlink_escape_are_rejected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

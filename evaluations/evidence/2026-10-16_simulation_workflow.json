@@ -1,0 +1,464 @@
+{
+  "schema": "robot-ops-simulation-workflow/1",
+  "execution": "actual_simulator_runs_and_mcp_calls",
+  "llm_used": false,
+  "automatic_code_edit": false,
+  "scope": {
+    "basis_ko": "왼팔 강체 패드 접촉 시뮬레이션 · 복구는 시뮬레이터 정답 좌표 사용",
+    "execution_ko": "물리 시뮬레이션에서 생성한 실행 녹화입니다. 화면은 저장된 실행을 재생합니다.",
+    "limitations_ko": [
+      "실물 로봇·카메라 인식 성능을 검증한 결과가 아닙니다.",
+      "영상은 10fps, 접촉력은 120Hz입니다. 작은 접촉은 수치로 확인합니다.",
+      "고정된 실행·검사 흐름이며 LLM 판단이나 자동 코드 수정은 없습니다."
+    ]
+  },
+  "stages": [
+    {
+      "id": "normal",
+      "label_ko": "정상 위치",
+      "description_ko": "컵을 계획한 위치에 놓고 실행했습니다.",
+      "verdict": "pass",
+      "sim_time_s": 18.008333333332953,
+      "sample_count": 2162,
+      "event_t_s": null,
+      "force_threshold_n": 0.02,
+      "analysis": {
+        "consistency": {
+          "event_match_status": "matched",
+          "event_time_tolerance_s": 0.004166666666666667,
+          "expected_stop_reason": "sequence_finished",
+          "recomputed_premature_contact": false,
+          "recovery_status_agrees_with_samples": null,
+          "retry_count_agrees_with_final_attempt": true,
+          "stop_reason_agrees_with_recheck": true,
+          "stored_event_agrees_with_recheck": true,
+          "stored_event_matches": [],
+          "stored_event_matches_truncated": false,
+          "stored_events_truncated": false,
+          "stored_premature_contact_event_count": 0,
+          "stored_premature_contact_events": [],
+          "unassessable_event_count": 0,
+          "unmatched_incident_count": 0
+        },
+        "headline_ko": "닫기 전 접촉력 이상 후보가 발견되지 않았습니다.",
+        "interpretation": {
+          "cause_status": "undetermined",
+          "coordinates": "simulator_ground_truth",
+          "final_task_pass_is_separate_from_past_contact": true,
+          "limitations_ko": [
+            "이 검사는 저장된 시뮬레이터 정답 좌표와 접촉력을 사용합니다.",
+            "실물 센서와 RGB 영상에서 같은 증상을 검증한 결과가 아닙니다.",
+            "접촉의 물리 원인은 이 결과만으로 확정할 수 없습니다."
+          ]
+        },
+        "premature_contact_check": {
+          "checked_phases": [
+            "ALIGN_MIDDLE",
+            "APPROACH",
+            "PREGRASP_ABOVE",
+            "REORIENT_ABOVE",
+            "RESET"
+          ],
+          "issue_count": 0,
+          "issues": [],
+          "issues_truncated": false,
+          "raw_matching_sample_count": 0,
+          "rule": "close 전 단계의 max(contact_force_n) >= plan 임계값",
+          "threshold_n": 0.02
+        },
+        "runtime": {
+          "final_attempt": 0,
+          "final_attempt_premature_contact_count": 0,
+          "hardware_accessed": false,
+          "observation_source": "simulator_ground_truth_not_rgb",
+          "past_attempt_premature_contact_count": 0,
+          "physics_dt_s": 0.008333333333333333,
+          "physics_progress_s": 18.008334272541106,
+          "recovered": false,
+          "recovery_attempts": 0,
+          "recovery_enabled": false,
+          "sample_count": 2162,
+          "sim_time_s": 18.008333333332953,
+          "stored_recovered": null,
+          "time_axis_agrees": true
+        },
+        "schema": "robot-ops-simulation-inspection/1",
+        "source": {
+          "plan_sha256": "660d6d53e37f74a7fe6a44cafb7e8998451ec760ed4d9c384aef325a3d469a7d",
+          "result_sha256": "1e0cf34724aa5268116f451adbebdc4b161786e233bb667e6c08ea61e30653e1"
+        },
+        "status": "no_issue_in_checked_scope",
+        "stored_outcome": {
+          "completed": true,
+          "stop_reason": "sequence_finished",
+          "task_pass": true
+        }
+      },
+      "source": {
+        "plan_sha256": "660d6d53e37f74a7fe6a44cafb7e8998451ec760ed4d9c384aef325a3d469a7d",
+        "result_sha256": "1e0cf34724aa5268116f451adbebdc4b161786e233bb667e6c08ea61e30653e1",
+        "run_id": "record-20261016T121124-e4f189_normal_xp0_yp0_rec",
+        "video_sha256": "0e1d7398f1f59904a284a903d21d9731c1861921daceaadd3ec2c9497bc6041a"
+      }
+    },
+    {
+      "id": "fault",
+      "label_ko": "컵 위치 5mm 오차",
+      "description_ko": "계획은 유지하고 실제 컵 위치만 5mm 옮겼습니다.",
+      "verdict": "fail",
+      "sim_time_s": 6.425000000000109,
+      "sample_count": 772,
+      "event_t_s": 6.425000000000109,
+      "force_threshold_n": 0.02,
+      "analysis": {
+        "consistency": {
+          "event_match_status": "matched",
+          "event_time_tolerance_s": 0.004166666666666667,
+          "expected_stop_reason": "premature_cup_contact",
+          "recomputed_premature_contact": true,
+          "recovery_status_agrees_with_samples": null,
+          "retry_count_agrees_with_final_attempt": true,
+          "stop_reason_agrees_with_recheck": true,
+          "stored_event_agrees_with_recheck": true,
+          "stored_event_matches": [
+            {
+              "attempt": 0,
+              "event_index": 0,
+              "match_status": "matched",
+              "matched_sample_index": 771,
+              "sample_index": 771,
+              "time_delta_s": 0.0,
+              "time_s": 6.425000000000109
+            }
+          ],
+          "stored_event_matches_truncated": false,
+          "stored_events_truncated": false,
+          "stored_premature_contact_event_count": 1,
+          "stored_premature_contact_events": [
+            {
+              "attempt": 0,
+              "event_index": 0,
+              "sample_index": 771,
+              "time_s": 6.425000000000109
+            }
+          ],
+          "unassessable_event_count": 0,
+          "unmatched_incident_count": 0
+        },
+        "headline_ko": "닫기 전 접촉력 이상 후보가 발견되었습니다.",
+        "interpretation": {
+          "cause_status": "undetermined",
+          "coordinates": "simulator_ground_truth",
+          "final_task_pass_is_separate_from_past_contact": true,
+          "limitations_ko": [
+            "이 검사는 저장된 시뮬레이터 정답 좌표와 접촉력을 사용합니다.",
+            "실물 센서와 RGB 영상에서 같은 증상을 검증한 결과가 아닙니다.",
+            "접촉의 물리 원인은 이 결과만으로 확정할 수 없습니다."
+          ]
+        },
+        "premature_contact_check": {
+          "checked_phases": [
+            "ALIGN_MIDDLE",
+            "APPROACH",
+            "PREGRASP_ABOVE",
+            "REORIENT_ABOVE",
+            "RESET"
+          ],
+          "issue_count": 1,
+          "issues": [
+            {
+              "attempt": 0,
+              "end_time_s": 6.425000000000109,
+              "kind": "premature_cup_contact",
+              "last_sample_index": 771,
+              "maximum_force_n": 0.899322509765625,
+              "maximum_force_sample_index": 771,
+              "phase": "ALIGN_MIDDLE",
+              "reason_ko": "그리퍼를 닫기 전 단계에서 접촉력이 임계값 이상이었습니다.",
+              "sample_count": 1,
+              "sample_index": 771,
+              "symptom_only": true,
+              "threshold_n": 0.02,
+              "time_s": 6.425000000000109
+            }
+          ],
+          "issues_truncated": false,
+          "raw_matching_sample_count": 1,
+          "rule": "close 전 단계의 max(contact_force_n) >= plan 임계값",
+          "threshold_n": 0.02
+        },
+        "runtime": {
+          "final_attempt": 0,
+          "final_attempt_premature_contact_count": 1,
+          "hardware_accessed": false,
+          "observation_source": "simulator_ground_truth_not_rgb",
+          "past_attempt_premature_contact_count": 0,
+          "physics_dt_s": 0.008333333333333333,
+          "physics_progress_s": 6.425000335089862,
+          "recovered": false,
+          "recovery_attempts": 0,
+          "recovery_enabled": false,
+          "sample_count": 772,
+          "sim_time_s": 6.425000000000109,
+          "stored_recovered": null,
+          "time_axis_agrees": true
+        },
+        "schema": "robot-ops-simulation-inspection/1",
+        "source": {
+          "plan_sha256": "23af6932527286ee41722bc456f2ca43af1e83c4fb2b3f9d25095d7c9d081661",
+          "result_sha256": "004b360459f0eafa24dc51479a9dbfcc18538fedd0bd30fab7ee84add4f3c108"
+        },
+        "status": "review_required",
+        "stored_outcome": {
+          "completed": false,
+          "stop_reason": "premature_cup_contact",
+          "task_pass": false
+        }
+      },
+      "source": {
+        "plan_sha256": "23af6932527286ee41722bc456f2ca43af1e83c4fb2b3f9d25095d7c9d081661",
+        "result_sha256": "004b360459f0eafa24dc51479a9dbfcc18538fedd0bd30fab7ee84add4f3c108",
+        "run_id": "record-20261016T121217-8a3332_fault_xp0_ym5_rec",
+        "video_sha256": "38c7750edb65578872cd6fec735d8907397341a456894c6c0c8707c41e3301b1"
+      }
+    },
+    {
+      "id": "recovery",
+      "label_ko": "같은 오차에서 복구",
+      "description_ko": "같은 위치 오차에서 기존 후퇴·재접근 복구를 켰습니다.",
+      "verdict": "pass",
+      "sim_time_s": 22.616666666666024,
+      "sample_count": 2715,
+      "event_t_s": 6.425000000000109,
+      "force_threshold_n": 0.02,
+      "analysis": {
+        "consistency": {
+          "event_match_status": "matched",
+          "event_time_tolerance_s": 0.004166666666666667,
+          "expected_stop_reason": "sequence_finished",
+          "recomputed_premature_contact": true,
+          "recovery_status_agrees_with_samples": null,
+          "retry_count_agrees_with_final_attempt": true,
+          "stop_reason_agrees_with_recheck": true,
+          "stored_event_agrees_with_recheck": true,
+          "stored_event_matches": [
+            {
+              "attempt": 0,
+              "event_index": 0,
+              "match_status": "matched",
+              "matched_sample_index": 771,
+              "sample_index": 771,
+              "time_delta_s": 0.0,
+              "time_s": 6.425000000000109
+            }
+          ],
+          "stored_event_matches_truncated": false,
+          "stored_events_truncated": false,
+          "stored_premature_contact_event_count": 1,
+          "stored_premature_contact_events": [
+            {
+              "attempt": 0,
+              "event_index": 0,
+              "sample_index": 771,
+              "time_s": 6.425000000000109
+            }
+          ],
+          "unassessable_event_count": 0,
+          "unmatched_incident_count": 0
+        },
+        "headline_ko": "닫기 전 접촉력 이상 후보가 발견되었습니다.",
+        "interpretation": {
+          "cause_status": "undetermined",
+          "coordinates": "simulator_ground_truth",
+          "final_task_pass_is_separate_from_past_contact": true,
+          "limitations_ko": [
+            "이 검사는 저장된 시뮬레이터 정답 좌표와 접촉력을 사용합니다.",
+            "실물 센서와 RGB 영상에서 같은 증상을 검증한 결과가 아닙니다.",
+            "접촉의 물리 원인은 이 결과만으로 확정할 수 없습니다."
+          ]
+        },
+        "premature_contact_check": {
+          "checked_phases": [
+            "ALIGN_MIDDLE",
+            "APPROACH",
+            "PREGRASP_ABOVE",
+            "REORIENT_ABOVE",
+            "RESET"
+          ],
+          "issue_count": 1,
+          "issues": [
+            {
+              "attempt": 0,
+              "end_time_s": 6.425000000000109,
+              "kind": "premature_cup_contact",
+              "last_sample_index": 771,
+              "maximum_force_n": 0.899322509765625,
+              "maximum_force_sample_index": 771,
+              "phase": "ALIGN_MIDDLE",
+              "reason_ko": "그리퍼를 닫기 전 단계에서 접촉력이 임계값 이상이었습니다.",
+              "sample_count": 1,
+              "sample_index": 771,
+              "symptom_only": true,
+              "threshold_n": 0.02,
+              "time_s": 6.425000000000109
+            }
+          ],
+          "issues_truncated": false,
+          "raw_matching_sample_count": 1,
+          "rule": "close 전 단계의 max(contact_force_n) >= plan 임계값",
+          "threshold_n": 0.02
+        },
+        "runtime": {
+          "final_attempt": 1,
+          "final_attempt_premature_contact_count": 0,
+          "hardware_accessed": false,
+          "observation_source": "simulator_ground_truth_not_rgb",
+          "past_attempt_premature_contact_count": 1,
+          "physics_dt_s": 0.008333333333333333,
+          "physics_progress_s": 22.61666784621775,
+          "recovered": true,
+          "recovery_attempts": 1,
+          "recovery_enabled": true,
+          "sample_count": 2715,
+          "sim_time_s": 22.616666666666024,
+          "stored_recovered": null,
+          "time_axis_agrees": true
+        },
+        "schema": "robot-ops-simulation-inspection/1",
+        "source": {
+          "plan_sha256": "ffef41419620d64198f328a4573a60e8f1133ee19645d3c304273862cb7f997f",
+          "result_sha256": "5af332fc20d8001bb7654d2a852237b9cce77330742968fc763cfc872d0aa2d9"
+        },
+        "status": "review_required",
+        "stored_outcome": {
+          "completed": true,
+          "stop_reason": "sequence_finished",
+          "task_pass": true
+        }
+      },
+      "source": {
+        "plan_sha256": "ffef41419620d64198f328a4573a60e8f1133ee19645d3c304273862cb7f997f",
+        "result_sha256": "5af332fc20d8001bb7654d2a852237b9cce77330742968fc763cfc872d0aa2d9",
+        "run_id": "record-20261016T121245-bb097a_recovery_xp0_ym5_rec",
+        "video_sha256": "88e68115b84ee6db1d8f51ca3acb4e1e420cd69fe967880e1b51f3d29830640a"
+      }
+    }
+  ],
+  "provenance": {
+    "normal": {
+      "source_repo_commit": "8a09a02b818fb691613e9cc89d642ca29dda7f50",
+      "pinned_commit": "8a09a02b818fb691613e9cc89d642ca29dda7f50",
+      "adapter_sha256": "a4d2ea5242e7e1a902946cd93a39e30d4f73932ef45385d20ca41f74d9d603f1",
+      "tool_sha256": {
+        "cup_contact_model.py": "7e48eb14c0a294bd8c05329bcda785d5b5dc5741510240002ad2e3cc1c442b90",
+        "cup_contact_place.py": "5b504cd101b50beab0a2e3630df2f4a9875a185a4a6bca8f86d435f38ec50bb6",
+        "cup_contact_recovery.py": "798828a75de3a1a4e0292196026af41d68ce33808abb558c4e144bbf7f7c5206",
+        "plan_body_side_grasp.py": "bfa0acdd44c9c6da931744b5b973a08528a1e42541332b72e2610c81b408c472",
+        "simulate_cup_contact.py": "85c90169cd2e6b10ea80e4dd80f370ddbecc822aebb19acf2d15b02b953525ec",
+        "workcell_preview_inputs.py": "b9e1eda52e970632410e7e4a1ea7b11979d709390d51430c9f4406ba1038d7de",
+        "workcell_preview_motion.py": "f3fe37faf76696ab04e2e328a367033eee5a07c8e19f484c33ac6e01643bd144"
+      },
+      "sim_version": "5.1.0.0"
+    },
+    "fault": {
+      "source_repo_commit": "8a09a02b818fb691613e9cc89d642ca29dda7f50",
+      "pinned_commit": "8a09a02b818fb691613e9cc89d642ca29dda7f50",
+      "adapter_sha256": "a4d2ea5242e7e1a902946cd93a39e30d4f73932ef45385d20ca41f74d9d603f1",
+      "tool_sha256": {
+        "cup_contact_model.py": "7e48eb14c0a294bd8c05329bcda785d5b5dc5741510240002ad2e3cc1c442b90",
+        "cup_contact_place.py": "5b504cd101b50beab0a2e3630df2f4a9875a185a4a6bca8f86d435f38ec50bb6",
+        "cup_contact_recovery.py": "798828a75de3a1a4e0292196026af41d68ce33808abb558c4e144bbf7f7c5206",
+        "plan_body_side_grasp.py": "bfa0acdd44c9c6da931744b5b973a08528a1e42541332b72e2610c81b408c472",
+        "simulate_cup_contact.py": "85c90169cd2e6b10ea80e4dd80f370ddbecc822aebb19acf2d15b02b953525ec",
+        "workcell_preview_inputs.py": "b9e1eda52e970632410e7e4a1ea7b11979d709390d51430c9f4406ba1038d7de",
+        "workcell_preview_motion.py": "f3fe37faf76696ab04e2e328a367033eee5a07c8e19f484c33ac6e01643bd144"
+      },
+      "sim_version": "5.1.0.0"
+    },
+    "recovery": {
+      "source_repo_commit": "8a09a02b818fb691613e9cc89d642ca29dda7f50",
+      "pinned_commit": "8a09a02b818fb691613e9cc89d642ca29dda7f50",
+      "adapter_sha256": "a4d2ea5242e7e1a902946cd93a39e30d4f73932ef45385d20ca41f74d9d603f1",
+      "tool_sha256": {
+        "cup_contact_model.py": "7e48eb14c0a294bd8c05329bcda785d5b5dc5741510240002ad2e3cc1c442b90",
+        "cup_contact_place.py": "5b504cd101b50beab0a2e3630df2f4a9875a185a4a6bca8f86d435f38ec50bb6",
+        "cup_contact_recovery.py": "798828a75de3a1a4e0292196026af41d68ce33808abb558c4e144bbf7f7c5206",
+        "plan_body_side_grasp.py": "bfa0acdd44c9c6da931744b5b973a08528a1e42541332b72e2610c81b408c472",
+        "simulate_cup_contact.py": "85c90169cd2e6b10ea80e4dd80f370ddbecc822aebb19acf2d15b02b953525ec",
+        "workcell_preview_inputs.py": "b9e1eda52e970632410e7e4a1ea7b11979d709390d51430c9f4406ba1038d7de",
+        "workcell_preview_motion.py": "f3fe37faf76696ab04e2e328a367033eee5a07c8e19f484c33ac6e01643bd144"
+      },
+      "sim_version": "5.1.0.0"
+    }
+  },
+  "gpu_checks": {
+    "normal": {
+      "tolerance_mib": 200.0,
+      "settle_s": 20.0,
+      "runs": 1,
+      "all_released": true,
+      "max_excess_mib": 0,
+      "max_waited_s": 0.0,
+      "baseline_range_mib": [
+        16,
+        16
+      ]
+    },
+    "fault": {
+      "tolerance_mib": 200.0,
+      "settle_s": 20.0,
+      "runs": 1,
+      "all_released": true,
+      "max_excess_mib": 0,
+      "max_waited_s": 0.0,
+      "baseline_range_mib": [
+        16,
+        16
+      ]
+    },
+    "recovery": {
+      "tolerance_mib": 200.0,
+      "settle_s": 20.0,
+      "runs": 1,
+      "all_released": true,
+      "max_excess_mib": 0,
+      "max_waited_s": 0.0,
+      "baseline_range_mib": [
+        16,
+        16
+      ]
+    }
+  },
+  "audit_sha256": "aeeb6858434d8524701e3ba4d0198507b1c8696b44133005b8794a0fc0909939",
+  "source_evidence_sha256": "1446167d6fe13faade64a9741b7ca373c8e558903b6b7715f5927753ec51a8d0",
+  "implementation_sha256": {
+    "src/robot_ops/simulation_workflow.py": "8d9fcd5670856cb8ac6c0fb7235e8cbf301a9348ff9719f706efb11749564e12",
+    "src/robot_ops/simulation_inspection.py": "b693d2d0d0ce335473864560b2dfd09e3b038665b62f16b236f172936e9b9431",
+    "src/robot_ops/replay/adapter.py": "a6850edb305fedd8c1ffe5f84beb01347e1986e07784ed90dde4b6d3448defd1",
+    "adapters/bimanual/run_cup_contact.py": "c6d1f33722e9fc71d83a2d21c0b45482cc805adba6a733543cebd7c9092714b3",
+    "src/robot_ops/replay/report_assets/sim-proof.js": "9a81dfa2bbb097b6986075546606abb992b53b1aec3aa68b7a61158fc0d96788",
+    "src/robot_ops/replay/report_assets/sim-proof.css": "50f6597292606538a6dd2337e525fda3fd9c0673296d51f1a158f9439f22f3f4"
+  },
+  "created_at_by_stage": {
+    "normal": "2026-10-16T12:12:17+0900",
+    "fault": "2026-10-16T12:12:45+0900",
+    "recovery": "2026-10-16T12:13:49+0900"
+  },
+  "runtime_environment": {
+    "kernel_driver": "580.173.02",
+    "installed_system_libraries": "580.178.04",
+    "process_driver_libraries": "580.173.02",
+    "system_driver_files_modified": false,
+    "host_driver_stack_fixed": false,
+    "process_isolation": "systemd user scope, MemoryMax=20G, timeout=180s, flock",
+    "library_selection": "private LD_LIBRARY_PATH and Vulkan ICD; GNU runtime linker audit redirects CUDA/NVML absolute-path lookups",
+    "installer_url": "https://download.nvidia.com/XFree86/Linux-x86_64/580.173.02/NVIDIA-Linux-x86_64-580.173.02.run",
+    "installer_sha256": "8d8eb9001e05a9a8a663d3d5d304feb64ef2844ee185ccdfd952786820f46e1b"
+  },
+  "limitations": [
+    "한 조건씩 정상·오차·복구를 확인한 실행이며 실제 현장 성공률 평가가 아닙니다.",
+    "새 실행의 물리 시간·접촉력·판정·녹화를 확인했습니다. 브라우저에서 시뮬레이터를 실시간 조작하는 화면은 아닙니다.",
+    "복구 제어는 기존 구현과 시뮬레이터 정답 좌표를 사용합니다. LLM 판단·자동 코드 수정·실물 검증은 없습니다.",
+    "드라이버 연결은 프로세스별 임시 환경입니다. 호스트 전체의 버전 불일치는 해결하지 않았습니다."
+  ]
+}

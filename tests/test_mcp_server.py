@@ -102,6 +102,54 @@ class MCPServerTest(unittest.IsolatedAsyncioTestCase):
         )
         return path
 
+    def _write_simulation(self) -> Path:
+        target = self.root / "run" / "isaac"
+        target.mkdir(parents=True)
+        result = {
+            "hardware_accessed": False,
+            "observation_source": "simulator_ground_truth_not_rgb",
+            "task_pass": False,
+            "completed": False,
+            "stop_reason": "premature_cup_contact",
+            "recovery_enabled": False,
+            "retry_count": 0,
+            "events": [
+                {
+                    "failure_code": "premature_cup_contact",
+                    "time_s": 0.1,
+                    "attempt": 0,
+                }
+            ],
+            "samples": [
+                {
+                    "time_s": 0.0,
+                    "physics_time_s": 0.525,
+                    "phase": "RESET",
+                    "attempt": 0,
+                    "contact_force_n": [0.0, 0.0],
+                },
+                {
+                    "time_s": 0.1,
+                    "physics_time_s": 0.625,
+                    "phase": "APPROACH",
+                    "attempt": 0,
+                    "contact_force_n": [0.03, 0.0],
+                },
+            ],
+        }
+        plan = {
+            "hardware_accessed": False,
+            "observation_source": "simulator_ground_truth_not_rgb",
+            "config": {
+                "physics_dt_s": 0.1,
+                "minimum_contact_force_n": 0.02,
+            },
+        }
+        path = target / "result.json"
+        path.write_text(json.dumps(result), encoding="utf-8")
+        (target / "plan.json").write_text(json.dumps(plan), encoding="utf-8")
+        return path
+
     async def asyncTearDown(self) -> None:
         self.temp_dir.cleanup()
 
@@ -113,6 +161,7 @@ class MCPServerTest(unittest.IsolatedAsyncioTestCase):
         self.assertIn("ros_topic_sample", names)
         self.assertIn("search_documents", names)
         self.assertIn("analyze_trajectory", names)
+        self.assertIn("analyze_simulation", names)
         self.assertNotIn("ros_topic_publish", names)
         self.assertNotIn("shell", names)
         self.assertNotIn("restart_process", names)
@@ -155,6 +204,36 @@ class MCPServerTest(unittest.IsolatedAsyncioTestCase):
                 record["phase"]
                 for record in records
                 if record.get("tool") == "analyze_trajectory"
+            ],
+            ["started", "started", "completed", "completed"],
+        )
+
+    async def test_analyze_simulation_runs_through_mcp_and_is_audited(self) -> None:
+        path = self._write_simulation()
+
+        async with Client(self.server, raise_exceptions=True) as client:
+            result = await client.call_tool(
+                "analyze_simulation", {"path": str(path)}
+            )
+
+        self.assertFalse(result.is_error)
+        self.assertEqual(self.runner.calls, [])
+        summary = result.structured_content
+        self.assertEqual(summary["status"], "review_required")
+        self.assertEqual(summary["premature_contact_check"]["issue_count"], 1)
+        self.assertTrue(
+            summary["consistency"]["stored_event_agrees_with_recheck"]
+        )
+        self.assertNotIn("samples", summary)
+        records = [
+            json.loads(line)
+            for line in self.audit_log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(
+            [
+                record["phase"]
+                for record in records
+                if record.get("tool") == "analyze_simulation"
             ],
             ["started", "started", "completed", "completed"],
         )

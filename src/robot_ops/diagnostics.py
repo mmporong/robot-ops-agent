@@ -195,6 +195,10 @@ class DiagnosticToolService:
             "허용된 경로의 trajectory/1 JSONL을 읽어 "
             "추종 오차와 동결 구간을 분석합니다."
         ),
+        "analyze_simulation": (
+            "허용된 경로의 저장된 시뮬레이션 결과를 읽어 "
+            "닫기 전 접촉 이상과 저장 판정의 일치 여부를 분석합니다."
+        ),
     }
 
     def __init__(self, policy: ToolPolicy, runner: CommandRunner | None = None) -> None:
@@ -215,6 +219,7 @@ class DiagnosticToolService:
             "journal_tail": self._journal_tail,
             "log_tail": self._log_tail,
             "analyze_trajectory": self._analyze_trajectory,
+            "analyze_simulation": self._analyze_simulation,
         }
 
     def list_tools(self) -> list[dict[str, str]]:
@@ -497,6 +502,81 @@ class DiagnosticToolService:
             duration_ms=(time.perf_counter() - started) * 1000.0,
         )
 
+    def _analyze_simulation(self, arguments: Mapping[str, object]) -> ProcessResult:
+        _require_only(arguments, {"path"})
+        raw_path = _require_string(arguments, "path", max_length=4096)
+        requested_path = Path(raw_path).expanduser()
+        if requested_path.is_symlink():
+            raise ToolRejected(
+                "symlink_not_allowed: 시뮬레이션 결과 심볼릭 링크는 허용하지 않습니다"
+            )
+        path = self._resolve_allowed_path(raw_path)
+        if path.name != "result.json":
+            raise ToolRejected(
+                "invalid_simulation_path: result.json 일반 파일만 허용합니다"
+            )
+        plan_path = path.parent / "plan.json"
+        if plan_path.is_symlink():
+            raise ToolRejected(
+                "symlink_not_allowed: 시뮬레이션 계획 심볼릭 링크는 허용하지 않습니다"
+            )
+
+        started = time.perf_counter()
+        result_bytes = _read_regular_file_no_follow(
+            path,
+            max_bytes=MAX_TRAJECTORY_BYTES,
+            label="simulation_result",
+        )
+        plan_bytes = _read_regular_file_no_follow(
+            plan_path,
+            max_bytes=MAX_TRAJECTORY_BYTES,
+            label="simulation_plan",
+        )
+        try:
+            result = json.loads(result_bytes.decode("utf-8"))
+            plan = json.loads(plan_bytes.decode("utf-8"))
+        except UnicodeDecodeError as error:
+            raise ToolRejected("invalid_simulation: UTF-8 JSON이어야 합니다") from error
+        except json.JSONDecodeError as error:
+            raise ToolRejected("invalid_simulation: 올바른 JSON이어야 합니다") from error
+        if not isinstance(result, Mapping) or not isinstance(plan, Mapping):
+            raise ToolRejected("invalid_simulation: result와 plan은 JSON 객체여야 합니다")
+        if not _all_numbers_finite(result) or not _all_numbers_finite(plan):
+            raise ToolRejected(
+                "invalid_simulation: NaN 또는 무한대는 허용하지 않습니다"
+            )
+
+        try:
+            from .simulation_inspection import inspect_simulation_result
+
+            summary = inspect_simulation_result(
+                result,
+                plan,
+                result_sha256=hashlib.sha256(result_bytes).hexdigest(),
+                plan_sha256=hashlib.sha256(plan_bytes).hexdigest(),
+            )
+            summary["source"]["result_path"] = str(path)
+            summary["source"]["plan_path"] = str(plan_path)
+            output = json.dumps(
+                summary,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            )
+        except (ValueError, TypeError, KeyError) as error:
+            raise ToolRejected(f"invalid_simulation: {error}") from error
+        if len(output) > self.policy.max_output_chars:
+            raise ToolRejected(
+                "analysis_output_too_large: 분석 요약이 출력 제한을 넘었습니다"
+            )
+        return ProcessResult(
+            returncode=0,
+            stdout=output,
+            stderr="",
+            duration_ms=(time.perf_counter() - started) * 1000.0,
+        )
+
     def _resolve_allowed_path(self, raw_path: str) -> Path:
         candidate = Path(raw_path).expanduser().resolve()
         for root in self.policy.allowed_roots:
@@ -575,6 +655,51 @@ def _tail_text_file(path: Path, *, lines: int, max_bytes: int) -> tuple[str, boo
     selected = b"\n".join(captured.splitlines()[-lines:])
     truncated = position > 0
     return selected.decode("utf-8", errors="replace"), truncated
+
+
+def _read_regular_file_no_follow(
+    path: Path,
+    *,
+    max_bytes: int,
+    label: str,
+) -> bytes:
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except FileNotFoundError as error:
+        raise ToolRejected(f"path_not_found: {label} 파일이 없습니다") from error
+    except OSError as error:
+        raise ToolRejected(f"read_error: {type(error).__name__}") from error
+    try:
+        file_stat = os.fstat(descriptor)
+        if not stat.S_ISREG(file_stat.st_mode):
+            raise ToolRejected(f"invalid_simulation_path: {label} 일반 파일이어야 합니다")
+        if file_stat.st_size > max_bytes:
+            raise ToolRejected(
+                f"simulation_file_too_large: {label}은 {max_bytes}바이트 이하여야 합니다"
+            )
+        with os.fdopen(descriptor, "rb", closefd=False) as stream:
+            content = stream.read(max_bytes + 1)
+        final_stat = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    if (
+        file_stat.st_dev,
+        file_stat.st_ino,
+        file_stat.st_size,
+        file_stat.st_mtime_ns,
+    ) != (
+        final_stat.st_dev,
+        final_stat.st_ino,
+        final_stat.st_size,
+        final_stat.st_mtime_ns,
+    ):
+        raise ToolRejected(f"read_error: {label} 파일이 읽는 동안 변경되었습니다")
+    if len(content) > max_bytes:
+        raise ToolRejected(
+            f"simulation_file_too_large: {label}은 {max_bytes}바이트 이하여야 합니다"
+        )
+    return content
 
 
 def _require_only(arguments: Mapping[str, object], allowed: set[str]) -> None:
