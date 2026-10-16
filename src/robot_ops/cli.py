@@ -133,9 +133,9 @@ def build_parser() -> argparse.ArgumentParser:
     )
     report_build.add_argument(
         "--hero",
-        choices=("auto", "cup_grid", "observation_freeze"),
+        choices=("auto", "bimanual_pour", "cup_grid", "observation_freeze"),
         default=None,
-        help="히어로 영상 소스(기본 auto: 컵 격자 결과·녹화가 있으면 cup_grid, 없으면 observation_freeze)",
+        help="대표 영상 소스(auto: 프로파일의 따르기 녹화, 컵 격자, 관측 동결 순서로 선택)",
     )
     report_serve = report_sub.add_parser("serve", help="Range 지원 로컬 미리보기 서버(영상 seek 동작)")
     report_serve.add_argument("--dir", type=Path, default=Path(".local/report"))

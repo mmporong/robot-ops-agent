@@ -126,10 +126,79 @@
     );
   }
 
+  function reducedMotion() {
+    return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  }
+
+  function startVideo(video, shouldPlay, userInitiated) {
+    if (!video) return;
+    video.muted = true;
+    if (shouldPlay && (userInitiated || !reducedMotion())) video.play().catch(function () {
+      var host = video.parentNode;
+      if (!host || host.querySelector(".autoplay-fallback")) return;
+      var play = h("button", { class: "autoplay-fallback", type: "button", text: "영상 재생", "aria-live": "polite", onclick: function () {
+        video.play().then(function () { if (play.parentNode) play.parentNode.removeChild(play); }).catch(function () {
+          play.textContent = "영상을 재생할 수 없습니다";
+          play.classList.add("is-error");
+          play.disabled = true;
+        });
+      }});
+      host.appendChild(play);
+    });
+  }
+
+  function enableDock(el) {
+    var threshold = null;
+    var spacer = null;
+    function measureThreshold() {
+      var media = el.querySelector("video") || el;
+      var rect = media.getBoundingClientRect();
+      return rect.bottom + window.scrollY - Math.min(rect.height, Math.max(180, rect.height * 0.65));
+    }
+    function undock() {
+      el.classList.remove("is-docked");
+      document.body.classList.remove("has-media-dock");
+      if (spacer && spacer.parentNode) spacer.parentNode.removeChild(spacer);
+      spacer = null;
+    }
+    var onScroll = function () {
+      if (threshold === null && !el.classList.contains("is-docked")) threshold = measureThreshold();
+      var dock = threshold !== null && window.scrollY > threshold;
+      if (dock && !el.classList.contains("is-docked")) {
+        spacer = h("div", { class: "media-spacer", "aria-hidden": "true" });
+        spacer.style.height = el.getBoundingClientRect().height + "px";
+        el.parentNode.insertBefore(spacer, el);
+        el.classList.add("is-docked");
+        document.body.classList.add("has-media-dock");
+      } else if (!dock && el.classList.contains("is-docked")) undock();
+    };
+    var onResize = function () {
+      undock();
+      threshold = measureThreshold();
+      onScroll();
+    };
+    requestAnimationFrame(function () { threshold = measureThreshold(); onScroll(); });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize);
+    state.cleanup.push(function () { window.removeEventListener("scroll", onScroll); window.removeEventListener("resize", onResize); undock(); });
+  }
+
   // ------------------------------------------------------------ 히어로
   function heroSummary(hero) {
     var lines = [];
     var cup = hero.cup_grid;
+    if (hero.source === "bimanual_pour") {
+      lines.push(h("p", { class: "hero-kicker", text: "저장된 양팔 시뮬레이션" }));
+      lines.push(h("p", { class: "hero-facts" },
+        "두 팔이 병과 컵을 들어 ", h("strong", { text: "따르고 제자리에 놓는 전 과정" }), "을 한 화면에서 확인합니다."
+      ));
+      lines.push(h("div", { class: "badges" },
+        badge("origin", "출처", ORIGIN[hero.origin] || hero.origin),
+        badge("assembly", "구성", ASSEMBLY[hero.assembly] || hero.assembly),
+        badge("basis", "조건", hero.conditions_note_ko || "저장된 시뮬레이션")
+      ));
+      return lines;
+    }
     if (hero.source === "observation_freeze") {
       var m = hero.metrics || {};
       lines.push(h("p", { class: "hero-kicker", text: "영상 = 사례 ① 실측 기록 재생" }));
@@ -184,26 +253,44 @@
 
   function heroMedia(hero) {
     if (!hero.video) return h("div", { class: "hero-media hero-empty" }, h("p", { text: "히어로 영상이 아직 없습니다. 재생 실행 뒤 리포트를 다시 빌드하면 채워집니다." }));
-    var label = hero.source === "cup_grid" ? "컵 격자 히어로 영상 재생" : "관측 동결 나란히 영상 재생";
+    var pour = hero.source === "bimanual_pour";
+    var label = pour ? "양팔 따르기 시뮬레이션" : hero.source === "cup_grid" ? "컵 격자 히어로 영상" : "관측 동결 나란히 영상";
     var fig = h("figure", { class: "hero-media" });
-    var btn = h("button", { class: "poster-button", type: "button", "aria-label": label },
-      hero.poster ? h("img", { src: hero.poster, alt: "", width: hero.width || 1280, height: hero.height || 480 }) : null,
-      h("span", { class: "play-mark", "aria-hidden": "true" })
-    );
-    btn.addEventListener("click", function () {
-      var v = h("video", { controls: true, playsinline: true, preload: "auto", poster: hero.poster || null, src: hero.video, class: "hero-video" });
-      fig.replaceChild(v, btn);
-      v.play().catch(function () {});
-      v.focus();
-    });
-    append(fig, btn);
+    var video = h("video", { controls: true, playsinline: true, preload: "auto", poster: hero.poster || null, src: hero.video,
+      class: "hero-video", muted: true, loop: pour, autoplay: !reducedMotion(), "aria-label": label });
+    append(fig, video);
+    startVideo(video, true);
+    state.cleanup.push(function () { video.pause(); });
+    if ((hero.chapters || []).length) {
+      append(fig, h("div", { class: "chapter-row", "aria-label": "영상 구간" }, hero.chapters.map(function (chapter) {
+        return h("button", { class: "chapter", type: "button", text: chapter.label_ko, onclick: function () {
+          video.currentTime = Number(chapter.start_s) || 0;
+          startVideo(video, true, true);
+        }});
+      })));
+    }
     var detail = ((hero.segments || [])[0] || {}).highlight_detail;
-    append(fig, h("figcaption", null, hero.source === "cup_grid"
-      ? "조건 A 격자점 x " + mm((hero.point || {}).x_mm) + " mm, y " + mm((hero.point || {}).y_mm) + " mm 녹화 → 같은 격자점 조건 B 녹화 → 통과 지도 순서입니다. " +
+    append(fig, h("figcaption", null, pour
+      ? (hero.conditions_note_ko || "저장된 시뮬레이션입니다.")
+      : hero.source === "cup_grid"
+      ? "조건 A 격자점 x " + mm((hero.point || {}).x_mm) + " mm, y " + mm((hero.point || {}).y_mm) + " mm 녹화와 같은 격자점의 조건 B 녹화입니다. " +
         (detail ? "접촉 크기(" + detail + ")가 작아 화면에서는 거의 보이지 않으므로 판정 순간에 수치를 글자로 얹었습니다. " : "") +
         "녹화는 컵·그리퍼 주변을 잘라 확대했고 붉은 테두리가 판정 시각입니다."
       : "왼쪽 " + (hero.real_label_ko || "실측 카메라") + ", 오른쪽 고스트 렌더(명령 반투명, 관측 불투명). 붉은 띠가 관측 동결 구간입니다."));
+    enableDock(fig);
     return fig;
+  }
+
+  function routeHero(label) {
+    var hero = state.hero || {};
+    if (!hero.video) return null;
+    return h("aside", { class: "route-viewer", "aria-label": label || "대표 시뮬레이션" },
+      h("div", { class: "route-viewer-head" },
+        h("strong", { text: hero.title_ko || "대표 시뮬레이션" }),
+        h("a", { href: "#/", text: "전체 화면" })
+      ),
+      heroMedia(hero)
+    );
   }
 
   // ------------------------------------------------------------ 홈(히어로 + 사례 두 가지 + 그 밖의 시나리오)
@@ -233,7 +320,8 @@
         badge("origin", "출처", ORIGIN[c.origin] || c.origin),
         badge("basis", "판정 조건", BASIS[c.judgement_basis] || c.judgement_basis),
         badge("assembly", "구성", ASSEMBLY[c.assembly] || c.assembly)),
-      h("dl", { class: "case-rows" }, rows.map(function (r) { return h("div", null, h("dt", { text: r[0] }), h("dd", { text: r[1] })); })),
+      h("details", { class: "case-more" }, h("summary", { text: "사례 설명" }),
+        h("dl", { class: "case-rows" }, rows.map(function (r) { return h("div", null, h("dt", { text: r[0] }), h("dd", { text: r[1] })); }))),
       h("p", { class: "case-links" },
         h("a", { class: "text-link", href: href, text: c.kind === "replay" ? "사례 ① 자세히" : "사례 ② 흐름 보기" }),
         c.kind === "grid" ? h("a", { class: "text-link", href: "#/eval/" + c.scenario_id, text: "격자 평가" }) : null)
@@ -244,8 +332,8 @@
     var hero = state.hero || {};
     main.appendChild(h("section", { class: "hero", "aria-labelledby": "hero-title" },
       h("div", { class: "hero-head" },
-        h("h1", { id: "hero-title", tabindex: "-1", text: "명령과 관측이 어긋난 순간을 다시 재생합니다" }),
-        h("p", { class: "lead", text: "실행 기록을 다시 읽어 어긋남이 시작된 시각을 수치와 영상으로 보여 주고, 재현한 사고는 같은 조건의 격자로 다시 평가합니다. 모든 결과에 출처와 판정 조건을 붙였습니다." })
+        h("h1", { id: "hero-title", tabindex: "-1", text: hero.title_ko || "로봇 실행을 영상으로 다시 봅니다" }),
+        h("p", { class: "lead", text: "움직임을 먼저 보고, 필요한 구간과 판정 근거를 이어서 확인할 수 있습니다." })
       ),
       heroMedia(hero),
       h("div", { class: "hero-summary" }, heroSummary(hero))
@@ -469,6 +557,7 @@
 
   function syncVideos(vids, onTime) {
     vids = vids.filter(Boolean);
+    vids.forEach(function (v) { v.muted = true; });
     var raf = 0;
     function others(v) { return vids.filter(function (o) { return o !== v; }); }
     function tick() {
@@ -512,7 +601,7 @@
   function videoFigure(src, poster, label, caption, cls) {
     return h("figure", { class: "pane " + (cls || "") },
       h("div", { class: "pane-label" }, h("span", { class: "pane-dot " + (cls || ""), "aria-hidden": "true" }), label),
-      src ? h("video", { src: src, poster: poster || null, controls: true, playsinline: true, preload: "none", muted: true, "aria-label": label })
+      src ? h("video", { src: src, poster: poster || null, controls: true, playsinline: true, preload: "auto", muted: true, "aria-label": label })
         : h("div", { class: "pane-empty", text: "영상 없음" }),
       caption ? h("figcaption", { text: caption }) : null
     );
@@ -546,6 +635,8 @@
       if (view) renderReplayView(main, doc, view);
       else if (doc.task === "cup_contact" && doc.regress) {
         return getJSON("data/regress/" + encodeURIComponent(sid) + ".json").then(function (reg) {
+          var viewer = routeHero("사례를 읽는 동안 표시되는 대표 시뮬레이션");
+          if (viewer) main.appendChild(viewer);
           if (reg.story) renderCupCase(main, doc, reg);
           else renderGridDetail(main, doc);
           renderSources(main, doc, view);
@@ -626,7 +717,9 @@
     var ghost = view.ghost.src
       ? videoFigure(view.ghost.src, view.ghost.poster, view.ghost.label_ko, ghostCap, "ghost")
       : null;
-    main.appendChild(h("section", { class: ghost ? "videos" : "videos single", "aria-label": "실측 영상과 고스트 렌더" }, real, ghost));
+    var videoSection = h("section", { class: ghost ? "videos sticky-videos" : "videos single sticky-videos", "aria-label": "실측 영상과 고스트 렌더" }, real, ghost);
+    main.appendChild(videoSection);
+    enableDock(videoSection);
 
     var readout = h("output", { class: "readout num", "aria-live": "off", text: "0.0 s" });
     var toIncident = h("button", { type: "button", class: "btn", text: "사고 지점으로" });
@@ -660,6 +753,7 @@
       if (graph) graph.setTime(t);
     });
     graph = new Graph(graphHost, view, function (t) { sync.seek(t); });
+    if (vids.length) startVideo(vids[0], true);
     toIncident.addEventListener("click", function () { sync.seek(view.incident.t_start_s); });
     var onResize = debounce(function () { graph.render(); }, 150);
     window.addEventListener("resize", onResize);
@@ -1280,7 +1374,7 @@
   function renderEval(main, sid, sel) {
     var cards = gridCards();
     var card = cards.filter(function (c) { return c.scenario_id === sid; })[0] || cards.filter(function (c) { return c.task === "cup_contact"; })[0] || cards[0];
-    main.appendChild(h("header", { class: "detail-head" },
+    main.appendChild(h("header", { class: "detail-head eval-head" },
       h("h1", { tabindex: "-1", text: "격자 평가" }),
       h("p", { class: "lead", text: "같은 사고를 위치 오프셋 5×5 격자에서 두 조건으로 다시 실행하고, 시뮬레이터 실좌표 결과 파일로 통과·실패를 판정했습니다." })
     ));
@@ -1297,9 +1391,9 @@
     var load = card.has_regress ? getJSON("data/regress/" + encodeURIComponent(card.scenario_id) + ".json") : Promise.resolve(null);
     return load.then(function (reg) {
       var flow = storyFlow(reg, card, [3, 4]);
-      if (flow) main.appendChild(flow);
       main.appendChild(h("div", { class: "eval-title" }, h("h2", { text: card.title_ko }), conditionBadges(card)));
       renderMaps(main, card, reg, sel);
+      if (flow) main.appendChild(flow);
     });
   }
 
@@ -1307,8 +1401,12 @@
     var conds = card.conditions || {};
     var names = Object.keys(conds);
     var grid = reg ? reg.grid : null;
+    var mediaPanel = h("section", { class: "cell-media", "aria-live": "polite" },
+      h("p", { class: "note", text: "녹화된 대표 격자점을 찾는 중입니다." }));
     var panel = h("section", { class: "cell-panel", "aria-live": "polite" },
       h("p", { class: "note", text: reg ? "칸을 누르면 그 격자점의 검사값·임계값·실행 기록이 여기에 나옵니다." : "격자 실행 결과가 들어오면 칸마다 검사값과 실행 기록을 볼 수 있습니다." }));
+    var evalSummary = null;
+    var evalPattern = null;
     if (reg) {
       var parts = names.map(function (n) {
         var c = (reg.conditions || {})[n] || {};
@@ -1330,15 +1428,17 @@
         var pk = ((reg.conditions || {})[n] || {}).pattern_ko || [];
         return pk.length ? "조건 " + n + " " + shortLabel(conds[n].label_ko) + ": " + pk.join(", ") : null;
       }).filter(Boolean);
-      main.appendChild(h("p", { class: "eval-summary" }, parts.length === 2 ? [parts[0], h("span", { class: "arrow", "aria-hidden": "true", text: "→" }), parts[1]] : parts, agree, partial));
-      if (patterns.length) main.appendChild(h("p", { class: "eval-pattern" }, patterns.map(function (t) { return h("span", { text: t }); })));
+      evalSummary = h("p", { class: "eval-summary" }, parts.length === 2 ? [parts[0], h("span", { class: "arrow", "aria-hidden": "true", text: "→" }), parts[1]] : parts, agree, partial);
+      if (patterns.length) evalPattern = h("p", { class: "eval-pattern" }, patterns.map(function (t) { return h("span", { text: t }); }));
     } else {
-      main.appendChild(h("p", { class: "eval-summary" }, h("span", { class: "pending", text: "측정 전" }), " 이 시나리오의 격자 실행 결과가 아직 없습니다. 아래 지도는 칸 배치만 보여 줍니다."));
+      evalSummary = h("p", { class: "eval-summary" }, h("span", { class: "pending", text: "측정 전" }), " 이 시나리오의 격자 실행 결과가 아직 없습니다. 아래 지도는 칸 배치만 보여 줍니다.");
     }
-    if (reg && card.task === "cup_contact" && reg.complete) main.appendChild(readingBlock(reg, card));
+    var reading = reg && card.task === "cup_contact" && reg.complete ? readingBlock(reg, card) : null;
     var axes = reg && reg.axes;
     var maps = h("div", { class: "maps" });
     var toSelect = null;
+    var representative = null;
+    var initializing = true;
     var xs = grid ? grid.x_mm : [-5, -2.5, 0, 2.5, 5];
     var ys = (grid ? grid.y_mm : [-5, -2.5, 0, 2.5, 5]).slice().sort(function (a, b) { return b - a; });
     names.forEach(function (n) {
@@ -1354,6 +1454,7 @@
         gridEl.appendChild(h("span", { class: rowBad ? "axis-y num line-fail" : "axis-y num", text: mm(y), title: rowBad ? "이 행 전부 실패" : null }));
         xs.forEach(function (x) {
           var c = cells[Number(x) + "," + Number(y)];
+          if (!representative && c && c.video) representative = { name: n, cond: conds[n], cell: c };
           var st = !c ? "none" : (c.status && c.status !== "ok") ? "infra" : (c.verdict === "pass" || c.verdict === "fail") ? c.verdict : "infra";
           var word = st === "none" ? "–" : CELL[st];
           var lineBad = badRows.indexOf(Number(y)) >= 0 || badCols.indexOf(Number(x)) >= 0;
@@ -1363,7 +1464,7 @@
           if (c) btn.addEventListener("click", function () {
             maps.querySelectorAll(".cell.sel").forEach(function (b) { b.classList.remove("sel"); });
             btn.classList.add("sel");
-            showCell(panel, reg, n, conds[n], c);
+            showCell(mediaPanel, panel, reg, n, conds[n], c, representative, !initializing);
             if (history.replaceState) history.replaceState(null, "", "#/eval/" + card.scenario_id + "/" + n + "/" + x + "/" + y);
           });
           if (c && sel && sel.cond === n && Number(sel.x) === Number(x) && Number(sel.y) === Number(y)) toSelect = btn;
@@ -1385,15 +1486,29 @@
         )
       ));
     });
-    main.appendChild(maps);
-    main.appendChild(h("ul", { class: "legend map-legend", "aria-label": "칸 범례" },
+    var legend = h("ul", { class: "legend map-legend", "aria-label": "칸 범례" },
       h("li", null, h("i", { class: "sw cell-pass" }), "통과"),
       h("li", null, h("i", { class: "sw cell-fail" }), "실패"),
       h("li", null, h("i", { class: "sw cell-infra" }), "infra(도구 오류·시간 초과, k/valid에서 제외)"),
       h("li", null, h("i", { class: "sw sw-rec" }), "녹화 있음")
-    ));
+    );
+    main.appendChild(h("div", { class: "eval-workspace" }, mediaPanel,
+      h("div", { class: "eval-maps" }, evalSummary, evalPattern, maps, legend)));
+    enableDock(mediaPanel);
+    state.cleanup.push(function () {
+      var active = mediaPanel.querySelector("video");
+      if (active) active.pause();
+    });
     main.appendChild(panel);
+    if (!toSelect && representative) {
+      maps.querySelectorAll(".cell").forEach(function (button) {
+        if (!toSelect && button.querySelector(".cell-rec")) toSelect = button;
+      });
+    }
     if (toSelect) toSelect.click();
+    else if (state.hero && state.hero.video) showCell(mediaPanel, panel, reg, "", null, null, null, false);
+    initializing = false;
+    if (reading) main.appendChild(reading);
     if (reg && reg.pass_map_png) {
       main.appendChild(h("p", { class: "note" }, h("a", { class: "text-link", href: reg.pass_map_png, text: "통과 지도 이미지(PNG 1200×600)" })));
     }
@@ -1417,20 +1532,42 @@
     return unit && unit !== "bool" ? text + " " + unit : text;
   }
 
-  function showCell(panel, reg, name, cond, cell) {
+  function showCell(mediaPanel, panel, reg, name, cond, cell, representative, allowScroll) {
+    var previous = mediaPanel.querySelector("video");
+    if (previous) previous.pause();
+    mediaPanel.textContent = "";
     panel.textContent = "";
+    if (!cell) {
+      var hv = h("video", { src: state.hero.video, poster: state.hero.poster || null, controls: true, playsinline: true, muted: true,
+        preload: "auto", loop: true, class: "cell-video", "aria-label": "대표 양팔 시뮬레이션" });
+      append(mediaPanel, [
+        h("p", { class: "cell-video-label", text: "대표 시뮬레이션" }),
+        hv,
+        h("p", { class: "note", text: "격자점 녹화가 없어 전체 동작 영상을 표시합니다." })
+      ]);
+      startVideo(hv, true);
+      append(panel, h("p", { class: "note", text: "이 평가에는 선택할 수 있는 격자점 녹화가 없습니다." }));
+      return;
+    }
     var st = cell.status && cell.status !== "ok" ? "infra(" + cell.status + ")" : CELL[cell.verdict] || cell.verdict;
     append(panel, h("h3", { text: "조건 " + name + "  x " + mm(cell.x_mm) + " mm, y " + mm(cell.y_mm) + " mm" }));
     append(panel, h("p", null, h("span", { class: "state state-" + (cell.status && cell.status !== "ok" ? "infra" : cell.verdict), text: st }),
       cell.failure_code ? h("code", { class: "code-inline", text: cell.failure_code }) : null));
-    if (cell.video) {
-      var cv = h("video", { src: cell.video, poster: cell.poster || null, controls: true, playsinline: true, muted: true, preload: "auto", class: "cell-video", "aria-label": "격자점 녹화(컵·그리퍼 주변 확대)" });
-      append(panel, h("figure", { class: "cell-figure" }, cv,
-        h("figcaption", { text: "녹화" + (cell.record_run_id ? "(녹화 전용 실행 " + cell.record_run_id + ")" : "") + ". 컵·그리퍼 주변을 잘라 확대했습니다." })));
+    var shown = cell.video ? { name: name, cond: cond, cell: cell } : representative;
+    if (shown && shown.cell.video) {
+      var cv = h("video", { src: shown.cell.video, poster: shown.cell.poster || null, controls: true, playsinline: true, muted: true, preload: "auto", class: "cell-video", "aria-label": "격자점 시뮬레이션 녹화" });
+      var same = shown.cell === cell;
+      append(mediaPanel, [h("p", { class: "cell-video-label", text: same
+        ? "선택한 셀 녹화 · 조건 " + name + "  x " + mm(cell.x_mm) + ", y " + mm(cell.y_mm) + " mm"
+        : "대표 셀 녹화 · 조건 " + shown.name + "  x " + mm(shown.cell.x_mm) + ", y " + mm(shown.cell.y_mm) + " mm" }),
+        cv,
+        h("p", { class: same ? "note" : "note representative-note", text: same
+          ? "컵·그리퍼 주변을 잘라 확대했습니다."
+          : "선택한 셀은 녹화가 없습니다. 위 영상은 선택한 셀의 판정 영상이 아니라 대표 녹화입니다." })]);
       cv.muted = true;
-      cv.play().catch(function () {});
+      startVideo(cv, true);
     } else if (reg.complete) {
-      append(panel, h("p", { class: "note", text: "이 격자점은 녹화하지 않았습니다. 녹화는 조건 A 실패점, 같은 점의 조건 B, 대표 통과점만 남깁니다." }));
+      append(mediaPanel, h("p", { class: "note", text: "이 격자점은 녹화하지 않았고 표시할 대표 녹화도 없습니다." }));
     }
     if (cell.evidence) {
       var evHost = h("div", { class: "cell-evidence" }, h("p", { class: "note", text: "접촉 증거를 불러오는 중입니다." }));
@@ -1464,7 +1601,7 @@
     )));
     append(panel, h("p", { class: "note" }, "실행 기록 ", h("code", { text: (reg.runs_root || "") + "/" + (cell.run_id || "") })));
     var target = panel.querySelector("h3");
-    if (target && panel.getBoundingClientRect().top > window.innerHeight) panel.scrollIntoView({ block: "start" });
+    if (allowScroll && target && panel.getBoundingClientRect().top > window.innerHeight) panel.scrollIntoView({ block: "start" });
     if (target) target.setAttribute("tabindex", "-1");
   }
 

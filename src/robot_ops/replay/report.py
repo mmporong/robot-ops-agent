@@ -12,8 +12,9 @@
   `/home/<user>`·`/data/<user>`가 남지 않았는지 검사한다(남으면 빌드 실패).
 
 히어로 영상 소스(`hero_source`, 환경변수 `ROBOT_OPS_HERO_SOURCE`로도 지정):
-- `auto`(기본): 컵 격자 regress 결과에 조건 A 녹화가 있으면 `cup_grid`, 없으면 `observation_freeze`.
-- `cup_grid`: 조건 A 실패 격자점 클립(접촉 순간 강조) → 같은 격자점 조건 B 클립 → 통과 지도 A|B.
+- `auto`(기본): 프로필의 저장된 `bimanual_pour` → `cup_grid` → `observation_freeze` 순서로 선택.
+- `bimanual_pour`: 양팔 파지·따르기·복귀 전체 녹화를 확대해 3배속으로 표시한다.
+- `cup_grid`: 조건 A 실패 격자점 클립(접촉 순간 강조) → 같은 격자점 조건 B 클립.
   조건 A 실패가 0이면 판정 여유가 가장 작은 조건 A 셀의 녹화로 대신한다.
 - `observation_freeze`: 관측 동결 시나리오의 실측 3인칭 카메라 | 고스트 렌더 나란히 영상(사고 띠 포함).
 """
@@ -25,6 +26,7 @@ import json
 import math
 import os
 import shutil
+import subprocess
 import time
 import xml.etree.ElementTree as ET
 from collections.abc import Callable
@@ -33,19 +35,27 @@ from typing import Any
 
 from . import media as mediacmd
 from .artifacts import sha256_file, write_json
-from .profile import Profile, current_user, display_path
+from .profile import Profile, current_user, display_path, expand_path
 from .scenario_bank import STATUS_RULE_TASKS, is_public, list_scenarios
 
 REPORT_SCHEMA = "robot-ops-report/1"
 ASSETS_DIR = Path(__file__).resolve().parent / "report_assets"
 ASSET_FILES = ("index.html", "app.js", "style.css")
-HERO_SOURCES = ("auto", "cup_grid", "observation_freeze")
+HERO_SOURCES = ("auto", "bimanual_pour", "cup_grid", "observation_freeze")
 GRID_TASKS = frozenset({"cup_contact", "drive_kinematic"})
 FPS = 10
 CLIP_BUDGET = 3 * 1024 * 1024
 HERO_BUDGET = 6 * 1024 * 1024
 SITE_BUDGET = 60 * 1024 * 1024
 HERO_FREEZE_LENGTH_S = 18.0
+SHOWCASE_PHASES = (
+    ("LEFT_RESET", "왼팔로 병 잡기"),
+    ("RIGHT_RESET", "오른팔로 컵 잡기"),
+    ("POUR_MOVE_CUP", "컵과 병 맞추기"),
+    ("POUR_TILT_5", "기울여 따르기"),
+    ("POUR_RETURN", "병 세우기"),
+    ("RIGHT_LOWER", "컵 내려놓기"),
+)
 
 # 상태 표기. 공개 빌드에 나오지 않는 상태 이름이 화면 자산(app.js)에 남지 않도록 데이터에 싣는다.
 STATUS_KO = {
@@ -1380,6 +1390,160 @@ def _cup_story(
 # ---------------------------------------------------------------- 히어로
 
 
+def _showcase_hero(profile: Profile, media: MediaBuilder, *, required: bool = False) -> dict[str, Any] | None:
+    """프로필에 명시한 저장 시뮬레이션을 검증해 대표 영상 메타데이터를 만든다."""
+    report_config = profile.raw.get("report")
+    if report_config is None:
+        if required:
+            media.warnings.append("bimanual_pour 대표 영상에 필요한 [report.showcase] 설정이 없습니다")
+        return None
+    if not isinstance(report_config, dict):
+        media.warnings.append("[report]는 표여야 하므로 대표 영상을 건너뜁니다")
+        return None
+    config = report_config.get("showcase")
+    if config is None:
+        if required:
+            media.warnings.append("bimanual_pour 대표 영상에 필요한 [report.showcase] 설정이 없습니다")
+        return None
+    if not isinstance(config, dict):
+        media.warnings.append("[report.showcase]는 표여야 하므로 대표 영상을 건너뜁니다")
+        return None
+    source = config.get("source")
+    if source != "bimanual_pour":
+        media.warnings.append(
+            f"[report.showcase].source가 없거나 지원되지 않습니다: {source!r}"
+        )
+        return None
+    if not media.enabled:
+        return None
+    if not media.font:
+        media.warnings.append("bimanual_pour 대표 영상은 CJK 글꼴이 없어 생성하지 않습니다")
+        return None
+    font_path = media.font
+
+    try:
+        path_values = {role: config[role] for role in ("video", "result", "plan")}
+        if not all(isinstance(value, str) and value for value in path_values.values()):
+            raise ValueError("video/result/plan은 비어 있지 않은 경로 문자열이어야 합니다")
+        paths = {role: expand_path(value, profile.base_dir) for role, value in path_values.items()}
+        crop_raw = config.get("crop")
+        speed = float(config.get("playback_speed", 3))
+        if not math.isfinite(speed) or speed <= 0:
+            raise ValueError("playback_speed는 유한한 양수여야 합니다")
+        if not isinstance(crop_raw, list) or len(crop_raw) != 4 or not all(isinstance(v, int) for v in crop_raw):
+            raise ValueError("crop은 정수 4개 [w, h, x, y]여야 합니다")
+        crop = (crop_raw[0], crop_raw[1], crop_raw[2], crop_raw[3])
+        mediacmd.crop_filter(crop)
+        result = _load_json(paths["result"])
+        plan = _load_json(paths["plan"])
+        if not isinstance(result, dict) or not isinstance(plan, dict):
+            raise ValueError("result.json 또는 plan.json을 읽을 수 없습니다")
+        required_false = (
+            "hardware_accessed", "physical_pour_verified", "model_calibrated", "object_attachment_used",
+        )
+        if result.get("task_pass") is not True or result.get("completed") is not True:
+            raise ValueError("완료·통과한 저장 실행이 아닙니다")
+        for key in required_false:
+            if key in result and key in plan and result[key] != plan[key]:
+                raise ValueError(f"result와 plan의 {key} 값이 서로 다릅니다")
+            value = result.get(key, plan.get(key))
+            if value is not False:
+                raise ValueError(f"{key}=false가 확인되지 않습니다")
+        if (result.get("observation_source") is not None and plan.get("observation_source") is not None
+                and result["observation_source"] != plan["observation_source"]):
+            raise ValueError("result와 plan의 observation_source가 서로 다릅니다")
+        observation_source = result.get("observation_source") or plan.get("observation_source")
+        if observation_source != "simulator_ground_truth_not_rgb":
+            raise ValueError("시뮬레이터 관측 출처가 확인되지 않습니다")
+        events = result.get("events")
+        if not isinstance(events, list):
+            raise ValueError("events 배열이 없습니다")
+        event_times: dict[str, float] = {}
+        previous = -math.inf
+        for event in events:
+            if not isinstance(event, dict) or not isinstance(event.get("time_s"), (int, float)):
+                raise ValueError("events의 시각 형식이 올바르지 않습니다")
+            event_time = float(event["time_s"])
+            if not math.isfinite(event_time) or event_time < previous:
+                raise ValueError("events 시각이 오름차순이 아닙니다")
+            previous = event_time
+            if event.get("phase") in dict(SHOWCASE_PHASES):
+                phase = str(event["phase"])
+                if phase in event_times:
+                    raise ValueError(f"필수 단계가 중복되었습니다: {phase}")
+                event_times[phase] = event_time
+        missing = [phase for phase, _ in SHOWCASE_PHASES if phase not in event_times]
+        if missing:
+            raise ValueError(f"필수 단계가 없습니다: {', '.join(missing)}")
+        chapter_times = [event_times[phase] for phase, _ in SHOWCASE_PHASES]
+        if chapter_times[0] < 0 or any(a >= b for a, b in zip(chapter_times, chapter_times[1:])):
+            raise ValueError("필수 단계의 시각 또는 순서가 올바르지 않습니다")
+        source_duration = mediacmd.probe_duration(paths["video"])
+        if not math.isfinite(source_duration) or source_duration <= event_times[SHOWCASE_PHASES[-1][0]]:
+            raise ValueError("녹화 길이가 마지막 필수 단계보다 짧습니다")
+        provenance = [
+            {"role": role, "path": display_path(path), "sha256": sha256_file(path)}
+            for role, path in paths.items()
+        ]
+    except (KeyError, OSError, RuntimeError, subprocess.SubprocessError, TypeError, ValueError, json.JSONDecodeError) as exc:
+        media.warnings.append(f"bimanual_pour 대표 영상을 사용할 수 없습니다: {exc}")
+        return None
+
+    try:
+        video = media.make(
+            "hero.mp4",
+            lambda out, crf: mediacmd.showcase_command(
+                paths["video"], out, fps=FPS, source_duration_s=source_duration, speed=speed,
+                crop=crop, font_path=font_path, crf=crf,
+            ),
+            [paths["video"], paths["result"], paths["plan"]],
+            budget=HERO_BUDGET,
+        )
+        if video is None:
+            return None
+        poster_at = event_times["POUR_TILT_5"] / speed + 1.0
+        poster = media.make(
+            "hero.webp",
+            lambda out, crf: mediacmd.poster_command(media.dir / "hero.mp4", out, at_s=poster_at),
+            [media.dir / "hero.mp4"],
+        )
+    except (OSError, RuntimeError, subprocess.SubprocessError, ValueError) as exc:
+        media.warnings.append(f"bimanual_pour 대표 영상 생성 실패: {exc}")
+        return None
+    return {
+        "source": "bimanual_pour",
+        "title_ko": "양팔로 잡고, 따르고, 제자리에",
+        "video": video,
+        "poster": poster,
+        "width": mediacmd.SHOWCASE_SIZE[0],
+        "height": mediacmd.SHOWCASE_SIZE[1],
+        "length_s": round(source_duration / speed, 2),
+        "playback_speed": speed,
+        "source_duration_s": round(source_duration, 3),
+        "chapters": [
+            {
+                "label_ko": label,
+                "start_s": round(event_times[phase] / speed, 3),
+                "source_start_s": round(event_times[phase], 3),
+            }
+            for phase, label in SHOWCASE_PHASES
+        ],
+        "conditions_note_ko": "저장된 시뮬레이션 · 모델 미보정 · 실물 검증 전",
+        "origin": "sim_run",
+        "assembly": "bimanual_full",
+        "provenance": provenance,
+        "result": {
+            "task_pass": result["task_pass"],
+            "completed": result["completed"],
+            "hardware_accessed": result.get("hardware_accessed", plan.get("hardware_accessed")),
+            "physical_pour_verified": result.get("physical_pour_verified", plan.get("physical_pour_verified")),
+            "model_calibrated": result.get("model_calibrated", plan.get("model_calibrated")),
+            "object_attachment_used": result.get("object_attachment_used", plan.get("object_attachment_used")),
+            "observation_source": observation_source,
+        },
+    }
+
+
 def _cup_hero(
     scenario: dict[str, Any], regress: dict[str, Any], media: MediaBuilder
 ) -> dict[str, Any] | None:
@@ -1445,9 +1609,6 @@ def _cup_hero(
         seg["start_s"] = round(start, 3)
         seg["length_s"] = round(length, 3)
         segments.append(seg)
-    passmap = media.dir / f"{sid}--passmap.png"
-    if passmap.exists():
-        segments.append({"path": passmap, "image": True, "length_s": 5.5, "fade_in": True})
     inputs = [Path(s["path"]) for s in segments]
     video = media.make(
         "hero.mp4",
@@ -1738,7 +1899,11 @@ def build(
     hero: dict[str, Any] | None = None
     cup = next((s for s in scenarios if s["task"] == "cup_contact"), None)
     cup_regress = regress_views.get(cup["scenario_id"]) if cup is not None else None
-    if hero_source in ("auto", "cup_grid") and cup_regress is not None and cup_regress.get("complete"):
+    if hero_source in ("auto", "bimanual_pour"):
+        hero = _showcase_hero(profile, builder, required=hero_source == "bimanual_pour")
+        if hero is None and hero_source == "bimanual_pour" and not media and not builder.warnings:
+            builder.warnings.append("bimanual_pour 대표 영상은 media=false 빌드에서 생성하지 않습니다")
+    if hero is None and hero_source in ("auto", "cup_grid") and cup_regress is not None and cup_regress.get("complete"):
         hero = _cup_hero(cup, cup_regress, builder)
     if hero is None and hero_source in ("auto", "observation_freeze") and first_freeze is not None:
         hero = _freeze_hero(*first_freeze, builder)

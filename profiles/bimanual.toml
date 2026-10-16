@@ -55,5 +55,13 @@ delete_patterns = ["scene.usda", "frames/*.png", "isaac/scene.usda", "isaac/fram
 # divergence의 별도 규칙(freeze_rule)이라 이 값에 영향받지 않는다.
 threshold = { joint_deg = 3.0, tcp_mm = 20.0 }
 
+[report.showcase]
+source = "bimanual_pour"
+video = "/data/$USER/robot-artifacts/pour_20260921/runs/inward02/bimanual_pour_full.mp4"
+result = "/data/$USER/robot-artifacts/pour_20260921/runs/inward02/result.json"
+plan = "/data/$USER/robot-artifacts/pour_20260921/runs/inward02/plan.json"
+crop = [720, 480, 300, 230]
+playback_speed = 3
+
 [public]
 exclude_status = ["after_fix_regression"]       # report build 기본(공개) 빌드에서 시나리오 카드 전체 제외

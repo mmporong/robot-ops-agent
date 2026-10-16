@@ -6,7 +6,9 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
+from unittest import mock
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -16,6 +18,7 @@ from robot_ops.replay import media as mediacmd  # noqa: E402
 from robot_ops.replay.profile import current_user  # noqa: E402
 from robot_ops.replay.report import (  # noqa: E402
     OUT_OF_SCOPE,
+    _showcase_hero,
     _series_buckets,
     build,
     check_no_private_paths,
@@ -30,6 +33,20 @@ from robot_ops.replay.schema import validate_regress_result  # noqa: E402
 
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "replay" / "regress_result_cup_fixture.json"
 PRIVATE = [str(Path.home()), f"/data/{current_user()}"]
+
+
+class _FakeMediaBuilder:
+    def __init__(self, root: Path) -> None:
+        self.enabled = True
+        self.font = "/fonts/NotoSansCJK.ttc"
+        self.dir = root / "media"
+        self.dir.mkdir(exist_ok=True)
+        self.warnings: list[str] = []
+        self.commands: list[list[str]] = []
+
+    def make(self, name, command, inputs, *, budget=None):
+        self.commands.append(command(self.dir / name, 23))
+        return f"media/{name}"
 
 
 def _lerobot_scenario() -> dict:
@@ -242,6 +259,167 @@ class CupEvidenceTest(unittest.TestCase):
         self.assertEqual(grid_readings({"cells": through_zero}, g, g, axes), [])
         all_pass = [dict(c, verdict="pass") for c in cells]
         self.assertEqual(grid_readings({"cells": all_pass}, g, g, axes), [])
+
+
+class ShowcaseHeroTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.video = self.root / "pour.mp4"
+        self.result = self.root / "result.json"
+        self.plan = self.root / "plan.json"
+        self.video.write_bytes(b"saved-simulation")
+        events = [
+            {"phase": phase, "time_s": time_s}
+            for phase, time_s in (
+                ("LEFT_RESET", 0.0),
+                ("RIGHT_RESET", 18.0),
+                ("POUR_MOVE_CUP", 37.9833333333),
+                ("POUR_TILT_5", 46.9833333333),
+                ("POUR_RETURN", 79.5833333333),
+                ("RIGHT_LOWER", 101.1833333333),
+            )
+        ]
+        self.result.write_text(json.dumps({
+            "task_pass": True,
+            "completed": True,
+            "hardware_accessed": False,
+            "physical_pour_verified": False,
+            "model_calibrated": False,
+            "object_attachment_used": False,
+            "events": events,
+            "samples": [{"private_raw": "must-not-leak"}],
+        }), encoding="utf-8")
+        self.plan.write_text(json.dumps({
+            "hardware_accessed": False,
+            "model_calibrated": False,
+            "object_attachment_used": False,
+            "observation_source": "simulator_ground_truth_not_rgb",
+        }), encoding="utf-8")
+        self.profile = write_profile(self.root, extra=f"""
+[report.showcase]
+source = "bimanual_pour"
+video = "{self.video}"
+result = "{self.result}"
+plan = "{self.plan}"
+crop = [720, 480, 300, 230]
+playback_speed = 3
+""")
+
+    def tearDown(self) -> None:
+        self.tmp.cleanup()
+
+    def test_showcase_whitelists_result_and_builds_chapters(self) -> None:
+        media = _FakeMediaBuilder(self.root)
+        with mock.patch.object(mediacmd, "probe_duration", return_value=130.8):
+            hero = _showcase_hero(self.profile, media)
+        self.assertIsNotNone(hero)
+        assert hero is not None
+        self.assertEqual(hero["source"], "bimanual_pour")
+        self.assertEqual((hero["width"], hero["height"], hero["length_s"]), (1200, 800, 43.6))
+        self.assertEqual(hero["chapters"][3], {
+            "label_ko": "기울여 따르기", "start_s": 15.661, "source_start_s": 46.983,
+        })
+        self.assertEqual(set(hero["result"]), {
+            "task_pass", "completed", "hardware_accessed", "physical_pour_verified",
+            "model_calibrated", "object_attachment_used", "observation_source",
+        })
+        self.assertNotIn("private_raw", json.dumps(hero))
+        self.assertEqual([item["role"] for item in hero["provenance"]], ["video", "result", "plan"])
+        self.assertIn("setpts=PTS/3", media.commands[0][media.commands[0].index("-vf") + 1])
+
+    def test_showcase_rejects_missing_required_phase(self) -> None:
+        result = json.loads(self.result.read_text(encoding="utf-8"))
+        result["events"] = result["events"][:-1]
+        self.result.write_text(json.dumps(result), encoding="utf-8")
+        media = _FakeMediaBuilder(self.root)
+        with mock.patch.object(mediacmd, "probe_duration", return_value=130.8):
+            self.assertIsNone(_showcase_hero(self.profile, media))
+        self.assertIn("필수 단계가 없습니다", media.warnings[-1])
+
+    def test_showcase_rejects_conflicting_safety_flag(self) -> None:
+        plan = json.loads(self.plan.read_text(encoding="utf-8"))
+        plan["hardware_accessed"] = True
+        self.plan.write_text(json.dumps(plan), encoding="utf-8")
+        media = _FakeMediaBuilder(self.root)
+        self.assertIsNone(_showcase_hero(self.profile, media))
+        self.assertIn("서로 다릅니다", media.warnings[-1])
+
+    def test_showcase_rejects_out_of_order_chapters(self) -> None:
+        result = json.loads(self.result.read_text(encoding="utf-8"))
+        result["events"][2]["phase"], result["events"][3]["phase"] = (
+            result["events"][3]["phase"], result["events"][2]["phase"],
+        )
+        self.result.write_text(json.dumps(result), encoding="utf-8")
+        media = _FakeMediaBuilder(self.root)
+        self.assertIsNone(_showcase_hero(self.profile, media))
+        self.assertIn("순서가 올바르지 않습니다", media.warnings[-1])
+
+    def test_showcase_rejects_malformed_config_and_nonfinite_speed(self) -> None:
+        malformed = replace(self.profile, raw={**self.profile.raw, "report": "invalid"})
+        media = _FakeMediaBuilder(self.root)
+        self.assertIsNone(_showcase_hero(malformed, media))
+        self.assertIn("[report]는 표", media.warnings[-1])
+
+        showcase = dict(self.profile.raw["report"]["showcase"])
+        showcase["playback_speed"] = float("nan")
+        invalid_speed = replace(self.profile, raw={
+            **self.profile.raw, "report": {"showcase": showcase},
+        })
+        media = _FakeMediaBuilder(self.root)
+        self.assertIsNone(_showcase_hero(invalid_speed, media))
+        self.assertIn("유한한 양수", media.warnings[-1])
+
+    def test_showcase_warns_for_missing_or_unknown_source(self) -> None:
+        original = self.profile.raw["report"]["showcase"]
+        for source in (None, "pour_typo"):
+            with self.subTest(source=source):
+                showcase = dict(original)
+                if source is None:
+                    showcase.pop("source")
+                else:
+                    showcase["source"] = source
+                profile = replace(self.profile, raw={
+                    **self.profile.raw, "report": {"showcase": showcase},
+                })
+                media = _FakeMediaBuilder(self.root)
+                self.assertIsNone(_showcase_hero(profile, media))
+                self.assertIn("source가 없거나 지원되지 않습니다", media.warnings[-1])
+
+    def test_explicit_showcase_without_config_warns_but_auto_does_not(self) -> None:
+        profile = replace(self.profile, raw={k: v for k, v in self.profile.raw.items() if k != "report"})
+        explicit_media = _FakeMediaBuilder(self.root)
+        self.assertIsNone(_showcase_hero(profile, explicit_media, required=True))
+        self.assertIn("[report.showcase] 설정이 없습니다", explicit_media.warnings[-1])
+
+        auto_media = _FakeMediaBuilder(self.root)
+        self.assertIsNone(_showcase_hero(profile, auto_media))
+        self.assertEqual(auto_media.warnings, [])
+
+    def test_showcase_ffprobe_and_encode_failures_become_warnings(self) -> None:
+        media = _FakeMediaBuilder(self.root)
+        with mock.patch.object(mediacmd, "probe_duration", side_effect=RuntimeError("probe failed")):
+            self.assertIsNone(_showcase_hero(self.profile, media))
+        self.assertIn("probe failed", media.warnings[-1])
+
+        media = _FakeMediaBuilder(self.root)
+        media.make = mock.Mock(side_effect=RuntimeError("encode failed"))
+        with mock.patch.object(mediacmd, "probe_duration", return_value=130.8):
+            self.assertIsNone(_showcase_hero(self.profile, media))
+        self.assertIn("생성 실패", media.warnings[-1])
+
+    def test_media_false_does_not_read_showcase_files(self) -> None:
+        profile = write_profile(self.root / "disabled", extra="""
+[report.showcase]
+source = "bimanual_pour"
+video = "/missing/video.mp4"
+result = "/missing/result.json"
+plan = "/missing/plan.json"
+crop = [720, 480, 300, 230]
+""")
+        with mock.patch("robot_ops.replay.report._load_json", side_effect=AssertionError("read")):
+            summary = build(profile, media=False)
+        self.assertIsNone(summary["hero_source"])
 
 
 class ReportBuildTest(unittest.TestCase):
@@ -519,6 +697,14 @@ class ReportBuildTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             build(self.profile, media=False, hero_source="banner")
 
+    def test_explicit_showcase_without_config_reports_warning(self) -> None:
+        explicit = build(self.profile, media=False, hero_source="bimanual_pour")
+        self.assertIsNone(explicit["hero_source"])
+        self.assertTrue(any("[report.showcase] 설정이 없습니다" in item for item in explicit["warnings"]))
+
+        auto = build(self.profile, media=False)
+        self.assertFalse(any("[report.showcase] 설정이 없습니다" in item for item in auto["warnings"]))
+
 
 @unittest.skipUnless(
     shutil.which("ffmpeg") and shutil.which("ffprobe") and mediacmd.find_cjk_font(), "ffmpeg·CJK 글꼴 없음"
@@ -574,8 +760,8 @@ class ReportMediaBuildTest(unittest.TestCase):
         stream = probe["streams"][0]
         self.assertEqual((stream["codec_name"], stream["width"], stream["height"], stream["pix_fmt"]),
                          ("h264", 1200, 600, "yuv420p"))
-        # A 실패 4초 + 판정 순간 정지 1초, B 통과 4초(마지막 6초 이내), 통과 지도 5.5초
-        self.assertAlmostEqual(float(probe["format"]["duration"]), 14.5, delta=0.3)
+        # A 실패 4초 + 판정 순간 정지 1초, B 통과 4초. 통과 지도는 별도 UI에서 본다.
+        self.assertAlmostEqual(float(probe["format"]["duration"]), 9.0, delta=0.3)
         self.assertEqual(hero["pattern_ko"]["A"][0], "y −5 mm 행 5점 전부 조기 접촉")
         self.assertTrue((out / "media" / "cup-a--passmap.png").exists())
         reg = json.loads((out / "data" / "regress" / "cup-a.json").read_text())
@@ -589,6 +775,15 @@ class ReportMediaBuildTest(unittest.TestCase):
         self.assertEqual(check_no_private_paths(out), [])
         for mp4 in (out / "media").glob("*.mp4"):
             self.assertLessEqual(mp4.stat().st_size, 6 * 1024 * 1024)
+
+    def test_auto_unknown_showcase_warns_and_falls_back_to_cup_grid(self) -> None:
+        self.profile = replace(self.profile, raw={
+            **self.profile.raw,
+            "report": {"showcase": {"source": "pour_typo"}},
+        })
+        summary = build(self.profile)
+        self.assertEqual(summary["hero_source"], "cup_grid")
+        self.assertTrue(any("source가 없거나 지원되지 않습니다" in item for item in summary["warnings"]))
 
     def test_media_build_freeze_hero_and_unused_media_removed(self) -> None:
         build(self.profile)

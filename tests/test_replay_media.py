@@ -122,6 +122,33 @@ class MediaCommandTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             media.hero_sequence_command([], Path("o"), fps=10, font_path="/f")
 
+    def test_showcase_command_crops_speeds_and_labels(self) -> None:
+        argv = media.showcase_command(
+            Path("pour.mp4"), Path("hero.mp4"), fps=10, source_duration_s=130.8, speed=3,
+            crop=(720, 480, 300, 230), font_path="/f.ttc",
+        )
+        graph = argv[argv.index("-vf") + 1]
+        self.assertIn("crop=720:480:300:230", graph)
+        self.assertIn("scale=1200:800", graph)
+        self.assertIn("setpts=PTS/3", graph)
+        self.assertIn("text='저장된 시뮬레이션 · 3배속'", graph)
+        self.assertIn("w='iw*t/43.6'", graph)
+        with self.assertRaises(ValueError):
+            media.showcase_command(
+                Path("pour.mp4"), Path("hero.mp4"), fps=10, source_duration_s=130.8, speed=0,
+                crop=(720, 480, 300, 230), font_path="/f.ttc",
+            )
+        with self.assertRaises(ValueError):
+            media.showcase_command(
+                Path("pour.mp4"), Path("hero.mp4"), fps=10, source_duration_s=130.8, speed=float("nan"),
+                crop=(720, 480, 300, 230), font_path="/f.ttc",
+            )
+        with self.assertRaises(ValueError):
+            media.showcase_command(
+                Path("pour.mp4"), Path("hero.mp4"), fps=10, source_duration_s=130.8, speed=3,
+                crop=(720, 480, 300, 230), font_path="/f.ttc", size=(1201, 800),
+            )
+
     def test_hero_sequence_detail_line_during_highlight(self) -> None:
         argv = media.hero_sequence_command(
             [{"path": "a.mp4", "start_s": 1.5, "length_s": 5, "label": "조건 A", "highlight": (4.6, 5.0),

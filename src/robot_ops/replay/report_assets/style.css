@@ -66,7 +66,7 @@ nav a:hover { color: var(--ink); background: var(--rule-soft); }
 nav a[aria-current="page"] { color: var(--ink); font-weight: 700; box-shadow: inset 0 -2px 0 var(--ink); border-radius: 0; }
 .is-private .masthead { box-shadow: inset 0 4px 0 var(--incident); }
 
-main { padding-top: 40px; padding-bottom: 64px; }
+main { padding-top: 28px; padding-bottom: 64px; }
 .loading, .empty { color: var(--ink-2); }
 
 h1 {
@@ -99,11 +99,11 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
 .badge-val { color: var(--ink); font-weight: 600; }
 
 /* ---------------------------------------------------------------- 히어로 */
-.hero-head { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 16px 48px; align-items: end; margin-bottom: 28px; }
+.hero-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px 40px; margin-bottom: 16px; }
 .hero-head h1 { margin: 0; }
 .hero-media { margin: 0; position: relative; }
 .hero-media .poster-button, .hero-media .hero-video { border-radius: 8px; overflow: hidden; }
-.hero-media figcaption { background: var(--paper); color: var(--ink-3); font-size: 14px; padding: 10px 0 0; }
+.hero-media figcaption { background: var(--paper); color: var(--ink-3); font-size: 13px; padding: 8px 0 0; }
 .poster-button { display: block; width: 100%; padding: 0; border: 0; background: #10151c; cursor: pointer; position: relative; }
 .poster-button img { width: 100%; height: auto; }
 .play-mark {
@@ -116,12 +116,35 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
 }
 .poster-button:hover .play-mark { background: #fff; transform: scale(1.04); }
 .poster-button:focus-visible { outline-offset: -4px; outline-color: #fff; }
-.hero-video { width: 100%; height: auto; background: #10151c; }
+.hero-video { width: 100%; max-height: min(72vh, 720px); object-fit: contain; background: #10151c; border-radius: 8px; }
 .hero-empty { padding: 48px 24px; color: #cfd5dc; }
-.hero-summary { margin-top: 18px; display: grid; gap: 6px; }
+.hero-summary { margin-top: 12px; display: grid; gap: 4px; }
 .hero-facts { font-size: 18px; margin: 8px 0 0; max-width: 72ch; }
 .hero-facts strong { font-weight: 800; }
 .hero-facts-minor { font-size: 16px; color: var(--ink-2); margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--rule); }
+.chapter-row { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 10px; }
+.chapter {
+  min-height: 44px; padding: 8px 14px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel);
+  color: var(--ink); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer;
+}
+.chapter:hover { border-color: var(--ink-3); background: var(--rule-soft); }
+.autoplay-fallback {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); min-height: 44px; padding: 8px 18px;
+  border: 0; border-radius: 999px; background: rgba(255,255,255,0.96); color: var(--ink); font: inherit; font-weight: 800; cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.cell-media { position: relative; }
+.hero-media.is-docked, .sticky-videos.is-docked, .cell-media.is-docked {
+  position: fixed; z-index: 30; top: 76px; right: max(16px, calc((100vw - 1200px) / 2 + 20px)); width: min(440px, calc(100vw - 32px));
+  padding: 10px; border: 1px solid var(--rule); border-radius: 10px; background: var(--panel); box-shadow: 0 14px 40px rgba(22, 27, 34, 0.2);
+}
+.hero-media.is-docked .hero-video, .sticky-videos.is-docked video, .cell-media.is-docked .cell-video { max-height: 28vh; }
+.hero-media.is-docked figcaption, .hero-media.is-docked .chapter-row, .sticky-videos.is-docked figcaption { display: none; }
+.sticky-videos.is-docked { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.sticky-videos.is-docked .pane-label { font-size: 12px; margin-bottom: 4px; }
+.route-viewer { margin: 0 0 28px; }
+.route-viewer-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 8px; font-size: 14px; }
+.route-viewer-head a { white-space: nowrap; }
 
 /* ---------------------------------------------------------------- 사고 목록 */
 .incidents { margin-top: 64px; }
@@ -281,6 +304,12 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
 .check-id { word-break: break-all; }
 .cell-panel .table td:nth-child(2), .cell-panel .table td:nth-child(3) { white-space: nowrap; }
 .cell-video { width: 100%; max-width: 720px; border-radius: 6px; background: #10151c; }
+.eval-workspace { display: grid; grid-template-columns: minmax(300px, 0.82fr) minmax(0, 1.18fr); gap: 28px; align-items: start; }
+.eval-workspace .maps { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+.cell-media { position: sticky; top: 16px; min-width: 0; padding: 12px; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; }
+.cell-media .note { margin: 8px 0 0; }
+.cell-video-label { margin: 0 0 8px; font-size: 14px; font-weight: 800; }
+.representative-note { color: var(--incident); }
 
 .colophon { color: var(--ink-3); font-size: 13px; padding-top: 18px; padding-bottom: 40px; border-top: 1px solid var(--rule); }
 .colophon p { margin: 0; }
@@ -293,9 +322,12 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
 }
 @media (max-width: 600px) {
   main { padding-top: 24px; }
+  body.has-media-dock main { padding-bottom: calc(25vh + 132px); }
   .wordmark span { display: none; }
   nav a { padding: 10px 8px; }
-  .videos { grid-template-columns: minmax(0, 1fr); }
+  .videos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .videos.single { grid-template-columns: minmax(0, 1fr); }
+  .videos .pane-label { font-size: 12px; }
   .graph-block { padding: 14px 12px 12px; margin-left: calc(-1 * var(--gutter) + 8px); margin-right: calc(-1 * var(--gutter) + 8px); }
   .metrics { grid-template-columns: minmax(0, 1fr); }
   .tile + .tile { padding-left: 0; border-left: 0; border-top: 1px solid var(--rule); }
@@ -347,6 +379,8 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
 .case-rows dt { color: var(--ink-3); font-weight: 700; }
 .case-rows dd { margin: 0; }
 .case-links { margin: auto 0 0; padding-top: 14px; display: flex; gap: 18px; flex-wrap: wrap; }
+.case-more { margin-top: 10px; }
+.case-more summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; color: var(--ink-2); font-weight: 700; }
 
 /* ---------------------------------------------------------------- 사례 ② 흐름 */
 .flow-block { margin: 4px 0 28px; }
@@ -451,6 +485,8 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
 .cell-sub { font-size: 15px; margin: 18px 0 6px; }
 
 @media (max-width: 900px) {
+  .eval-workspace { grid-template-columns: minmax(0, 1fr); }
+  .cell-media { top: 8px; z-index: 5; }
   .case-grid { grid-template-columns: minmax(0, 1fr); }
   .flow ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .flow-step + .flow-step::before { display: none; }
@@ -458,6 +494,19 @@ h3 { font-size: 17px; line-height: 1.4; margin: 0; font-weight: 700; }
   .schematics { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 600px) {
+  .hero-head { display: grid; gap: 6px; }
+  .hero-head .lead { font-size: 15px; }
+  .eval-head { margin-bottom: 10px; }
+  .eval-head .lead { display: none; }
+  .eval-title { margin: 0 0 12px; }
+  .eval-title .badges { margin-top: 6px; }
+  .hero-media.is-docked, .sticky-videos.is-docked, .cell-media.is-docked {
+    top: auto; bottom: 8px; right: 8px; width: calc(100vw - 16px); padding: 6px;
+  }
+  .hero-media.is-docked .hero-video, .sticky-videos.is-docked video, .cell-media.is-docked .cell-video { max-height: 25vh; }
+  .hero-media.is-docked figcaption, .hero-media.is-docked .chapter-row, .sticky-videos.is-docked .pane-label { display: none; }
+  .cell-media.is-docked .cell-video-label { margin: 0 0 3px; font-size: 11px; line-height: 1.25; }
+  .cell-media.is-docked .note { margin: 3px 0 0; font-size: 11px; line-height: 1.25; }
   .flow ol { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .evidence { padding: 12px 12px 10px; margin-left: calc(-1 * var(--gutter) + 8px); margin-right: calc(-1 * var(--gutter) + 8px); }
   .cell-panel .evidence { margin-left: 0; margin-right: 0; }

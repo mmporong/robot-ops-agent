@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import math
 import shutil
 import subprocess
 from collections.abc import Callable, Sequence
@@ -335,6 +336,7 @@ def roi_around(
 
 HERO_SIZE = (1200, 600)
 HERO_BACKGROUND = "0x10151c"
+SHOWCASE_SIZE = (1200, 800)
 
 
 def _fit_canvas(width: int, height: int, fps: int) -> str:
@@ -342,6 +344,44 @@ def _fit_canvas(width: int, height: int, fps: int) -> str:
         f"scale={width}:{height}:force_original_aspect_ratio=decrease:flags=lanczos,"
         f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:color={HERO_BACKGROUND},fps={int(fps)},setsar=1,format=yuv420p"
     )
+
+
+def showcase_command(
+    src: Path,
+    out: Path,
+    *,
+    fps: int,
+    source_duration_s: float,
+    speed: float,
+    crop: tuple[int, int, int, int],
+    font_path: str,
+    label: str = "저장된 시뮬레이션 · 3배속",
+    size: tuple[int, int] = SHOWCASE_SIZE,
+    crf: int = 23,
+) -> list[str]:
+    """긴 시뮬레이션 녹화를 확대·가속해 대표 영상으로 인코딩한다."""
+    if not math.isfinite(source_duration_s) or not math.isfinite(speed) or source_duration_s <= 0 or speed <= 0:
+        raise ValueError("원본 길이와 재생 배속은 양수여야 합니다")
+    width, height = size
+    if width <= 0 or height <= 0 or width % 2 or height % 2:
+        raise ValueError("대표 영상 크기는 양의 짝수여야 합니다")
+    output_duration = source_duration_s / speed
+    chain = (
+        f"{crop_filter(crop)},"
+        f"scale={width}:{height}:force_original_aspect_ratio=decrease:flags=lanczos,"
+        f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:color={HERO_BACKGROUND},"
+        f"setpts=PTS/{speed:g},fps={int(fps)},setsar=1,format=yuv420p,"
+        f"{label_bar_filter(label, font_path, height=44, size=22)},"
+        f"{progress_bar_filter(output_duration, height=5)}"
+    )
+    return [
+        *FFMPEG,
+        "-i", str(src),
+        "-vf", chain,
+        "-an",
+        *h264_args(fps, crf=crf),
+        str(out),
+    ]
 
 
 def hero_sequence_command(

@@ -109,6 +109,15 @@ class ReplayCliTest(unittest.TestCase):
         with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
             main(["report", "build", "--profile", str(self.profile.path), "--hero", "banner"])
 
+    def test_report_build_accepts_showcase_hero(self) -> None:
+        with patch("robot_ops.replay.report.build", return_value={"hero_source": "bimanual_pour"}) as build:
+            code, out = self._main(
+                "report", "build", "--profile", str(self.profile.path), "--hero", "bimanual_pour",
+            )
+        self.assertEqual(code, 0)
+        self.assertEqual(out["hero_source"], "bimanual_pour")
+        self.assertEqual(build.call_args.kwargs["hero_source"], "bimanual_pour")
+
     def test_report_serve_requires_built_report(self) -> None:
         code, out = self._main("report", "serve", "--dir", str(self.root / "missing"))
         self.assertEqual(code, 2)
