@@ -285,6 +285,13 @@ class VerifyPairTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "소스 해시"):
             self._verify(plan=plan)
 
+    def test_rejects_changed_source_path_before_recording_pair_controls(self) -> None:
+        self.baseline_plan["tool_source_paths"] = {"tool.py": "simulation/tool.py"}
+        plan = copy.deepcopy(self.baseline_plan)
+        plan["tool_source_paths"]["tool.py"] = "src/manipulation/tool.py"
+        with self.assertRaisesRegex(ValueError, "원천 경로"):
+            self._verify(plan=plan)
+
     def test_rejects_initial_position_change(self) -> None:
         result = copy.deepcopy(self.baseline)
         result["samples"][0]["cup_position_m"][0] += 0.0002

@@ -16,7 +16,7 @@ sys.path.insert(0, str(PROJECT_ROOT / "src"))
 from robot_ops.cli import main as cli_main  # noqa: E402
 from robot_ops.replay.artifacts import sha256_file  # noqa: E402
 from robot_ops.replay.profile import Profile  # noqa: E402
-from robot_ops.simulation_workflow import build_report, run_fresh  # noqa: E402
+from robot_ops.simulation_workflow import _cell, build_report, run_fresh  # noqa: E402
 
 
 STAGES = ("normal", "fault", "recovery")
@@ -32,6 +32,15 @@ class SimulationWorkflowTest(unittest.TestCase):
 
     def tearDown(self) -> None:
         self.tmp.cleanup()
+
+    def test_incomplete_execution_reports_infrastructure_status_before_reading_results(self) -> None:
+        for status in ("timeout", "infra"):
+            with self.subTest(status=status):
+                (self.runs / "fault.json").write_text(json.dumps({
+                    "conditions": {"fault": {"cells": [{"status": status, "verdict": None}]}}
+                }), encoding="utf-8")
+                with self.assertRaisesRegex(ValueError, status):
+                    _cell(self.runs, "fault")
 
     def _write_three_runs(self) -> None:
         for stage in STAGES:

@@ -16,6 +16,7 @@ from .replay.artifacts import sha256_file, write_json
 from .replay.doctor import check_profile
 from .replay.profile import Profile, display_path, load_profile
 from .replay.regress import run_regress
+from .replay.source_provenance import require_same_tool_manifest, validate_tool_sources
 from .simulation_workflow import ASSETS, EARLY_PHASES, _cell, inspect_via_mcp
 
 LABELS = {"original": "원래 목표", "sham": "같은 목표 재실행", "corrected": "관측 위치로 목표 보정", "opposite": "반대 방향으로 목표 변경"}
@@ -50,6 +51,16 @@ def diagnose(result: dict, config: dict) -> dict:
                                   contact_threshold_n=config["minimum_contact_force_n"])
 
 
+def validate_case_source(source_root: Path, case_plan: dict) -> None:
+    """GPU 실행 전에 입력 사례가 고정 소스에서 생성됐는지 확인한다."""
+    source_config_path = source_root / "config/simulation/cup_contact_experiment.json"
+    source_config_sha = sha256_file(source_config_path)
+    validate_tool_sources(source_root, case_plan)
+    if (case_plan.get("source_config_sha256") != source_config_sha
+        or case_plan.get("config_sha256") != source_config_sha):
+        raise ValueError("입력 사례의 설정 해시가 고정 소스와 다릅니다")
+
+
 def verify_pair(baseline: dict, baseline_plan: dict, result: dict, plan: dict) -> dict:
     """계획과 보상용 오프셋 이외의 설정 및 실제 초기 상태를 대조한다."""
     a, b = baseline_plan["config"], plan["config"]
@@ -78,8 +89,10 @@ def verify_pair(baseline: dict, baseline_plan: dict, result: dict, plan: dict) -
         joint_deltas.extend(abs(x - y) for x, y in zip(qa, qb))
     if max(joint_deltas) > JOINT_TOLERANCE_RAD:
         raise ValueError("대조 실험의 초기 관절 상태가 다릅니다")
-    if baseline_plan.get("tool_sha256") != plan.get("tool_sha256"):
-        raise ValueError("대조 실험의 시뮬레이터 소스 해시가 다릅니다")
+    try:
+        require_same_tool_manifest(plan, baseline_plan)
+    except ValueError as exc:
+        raise ValueError("대조 실험의 시뮬레이터 소스 해시 또는 원천 경로가 다릅니다") from exc
     return {"physical_spawn_equal": True, "physics_and_thresholds_equal": True,
             "source_tools_equal": True, "initial_position_delta_mm": position_delta * 1000,
             "reset_median_position_delta_mm": reset_delta * 1000,
@@ -162,7 +175,11 @@ def validate_experiment(root: Path, experiment: dict, audit: Path) -> None:
     case_plan = read_json(case_path.with_name("plan.json"))
     if diagnose(read_json(case_path), case_plan["config"]) != experiment["proposal"]:
         raise ValueError("입력 사례에서 다시 계산한 제안이 실험 제안과 다릅니다")
-    if case_plan["tool_sha256"] != base_plan["tool_sha256"] or case_plan["source_config_sha256"] != source_config_sha:
+    try:
+        require_same_tool_manifest(case_plan, base_plan)
+    except ValueError as exc:
+        raise ValueError("입력 사례와 고정 소스의 출처가 다릅니다") from exc
+    if case_plan["source_config_sha256"] != source_config_sha:
         raise ValueError("입력 사례와 고정 소스의 출처가 다릅니다")
     if base_plan["source_config_sha256"] != source_config_sha or base_plan["config_sha256"] != source_config_sha:
         raise ValueError("기준 실행의 설정 해시가 원천 설정과 다릅니다")
@@ -172,10 +189,7 @@ def validate_experiment(root: Path, experiment: dict, audit: Path) -> None:
     case_alignment = asyncio.run(inspect_via_mcp(case_path, root / "input-case", audit.with_name("alignment-audit.jsonl"), tool_name="analyze_cup_alignment"))
     if case_alignment["proposal"] != experiment["proposal"]:
         raise ValueError("MCP 위치 차이 검사와 입력 제안이 다릅니다")
-    for name, digest in base_plan["tool_sha256"].items():
-        candidates = [root / "source" / folder / name for folder in ("tools", "simulation")]
-        if not any(p.is_file() and sha256_file(p) == digest for p in candidates):
-            raise ValueError("실행 도구 해시가 고정 소스 파일과 다릅니다")
+    validate_tool_sources(root / "source", base_plan)
     if experiment["proposal"] != diagnose(base_result, base_plan["config"]):
         raise ValueError("입력 사례의 진단이 새 baseline에서 재현되지 않았습니다")
     baseline_config = {k: v for k, v in base_plan["config"].items() if k not in ("cup_center_m", "cup_spawn_offset_m")}
@@ -217,8 +231,12 @@ def validate_experiment(root: Path, experiment: dict, audit: Path) -> None:
         for key, path in (("result_sha256", directory / "isaac/result.json"), ("plan_sha256", directory / "isaac/plan.json")):
             if sha256_file(path) != entry[key] or entry["analysis"]["source"][key] != entry[key]:
                 raise ValueError("실험 뒤 원시 파일 또는 검사 출처 해시가 바뀌었습니다")
-        if {k: v for k, v in plan["config"].items() if k not in ("cup_center_m", "cup_spawn_offset_m")} != baseline_config or plan["tool_sha256"] != base_plan["tool_sha256"]:
+        if {k: v for k, v in plan["config"].items() if k not in ("cup_center_m", "cup_spawn_offset_m")} != baseline_config:
             raise ValueError("실험 전체에서 물리 조건 또는 소스가 달라졌습니다")
+        try:
+            require_same_tool_manifest(plan, base_plan)
+        except ValueError as exc:
+            raise ValueError("실험 전체에서 물리 조건 또는 소스가 달라졌습니다") from exc
         baseline_name = paired_to.get(name)
         if baseline_name:
             baseline, baseline_plan, _ = _load_run(root, baseline_name)
@@ -302,6 +320,7 @@ def run_experiment(profile: Profile, case: Path, out: Path, *, source_commit: st
     snapshot = out / "source"
     subprocess.run(["git", "clone", "--shared", "--no-checkout", "--", str(profile.source_repo), str(snapshot)], check=True, capture_output=True, timeout=60)
     subprocess.run(["git", "-C", str(snapshot), "checkout", "--detach", commit], check=True, capture_output=True, timeout=60)
+    validate_case_source(snapshot, case_plan)
     profile = replace(profile, source_repo=snapshot, artifacts_root=out / "artifacts",
                       project={**profile.project, "source_repo": str(snapshot), "pinned_commit": commit})
     prerequisites = check_profile(profile, task="cup_contact")

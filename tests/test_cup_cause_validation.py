@@ -39,11 +39,15 @@ class ValidateExperimentEvidenceTest(unittest.TestCase):
         source_path = root / "source/config/simulation/cup_contact_experiment.json"
         _write_json(source_path, source_config)
         source_sha = _sha256(source_path)
+        tool_path = root / "source/simulation/simulate_cup_contact.py"
+        tool_path.parent.mkdir(parents=True, exist_ok=True)
+        tool_path.write_text("# fixture source\n", encoding="utf-8")
+        tool_hashes = {"simulate_cup_contact.py": _sha256(tool_path)}
 
         case_result = _result()
         case_plan = {
             "config": copy.deepcopy(source_config),
-            "tool_sha256": {},
+            "tool_sha256": copy.deepcopy(tool_hashes),
             "source_config_sha256": source_sha,
         }
         case_path = root / "input-case/result.json"
@@ -52,7 +56,7 @@ class ValidateExperimentEvidenceTest(unittest.TestCase):
 
         base_plan = {
             "config": copy.deepcopy(source_config),
-            "tool_sha256": {},
+            "tool_sha256": copy.deepcopy(tool_hashes),
             "source_config_sha256": source_sha,
             "config_sha256": source_sha,
         }
@@ -211,7 +215,7 @@ class ValidateExperimentEvidenceTest(unittest.TestCase):
         _write_json(target / "run.response.json", {"plan_intervention": metadata})
         target_plan = {
             "config": corrected_config,
-            "tool_sha256": {},
+            "tool_sha256": copy.deepcopy(base_plan["tool_sha256"]),
             "source_config_sha256": "3" * 64 if forged == "plan" else metadata["generated_config_sha256"],
         }
         return experiment, base_result, base_plan, target, target_plan

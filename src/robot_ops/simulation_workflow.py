@@ -54,9 +54,16 @@ async def inspect_via_mcp(path: Path, allowed: Path, audit: Path, *, tool_name: 
 def _cell(run_root: Path, stage: str) -> tuple[dict, Path]:
     record = json.loads((run_root / f"{stage}.json").read_text(encoding="utf-8"))
     cells = record["conditions"][stage]["cells"]
-    if len(cells) != 1 or cells[0].get("status") != "ok":
+    if len(cells) != 1:
         raise ValueError(f"{stage}: 정상 종료한 새 실행 한 건이 필요합니다")
     cell = cells[0]
+    status = cell.get("status")
+    if status != "ok":
+        detail = {
+            "timeout": "timeout: 실행 시간 제한을 초과했습니다",
+            "infra": "infra: 실행 환경 또는 시뮬레이터 오류입니다",
+        }.get(status, "실행 기록이 정상 종료 상태가 아닙니다")
+        raise ValueError(f"{stage}: {detail}. 작업 성공·실패는 판정하지 않았습니다.")
     identifier = cell.get("run_id")
     if not isinstance(identifier, str) or not re.fullmatch(r"[A-Za-z0-9._-]+", identifier):
         raise ValueError("실행 ID 형식이 올바르지 않습니다")
