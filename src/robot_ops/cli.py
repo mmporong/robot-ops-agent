@@ -107,6 +107,18 @@ def build_parser() -> argparse.ArgumentParser:
     inspect_parser.add_argument("--profile", type=Path, help="판독 환경과 같은 출처의 저장 녹화를 찾을 프로파일")
     inspect_parser.add_argument("--out", type=Path, default=Path(".local/recording-inspection"))
 
+    investigate = subparsers.add_parser("investigate", help="실패 기록의 검토 구간·영상·다음 검사와 전후 비교(CPU 전용)")
+    investigate.add_argument("--trajectory", type=Path, required=True)
+    investigate.add_argument("--events", type=Path, help="같은 궤적 해시·시간 기준을 가진 구조화 로그 JSON")
+    investigate.add_argument("--after", type=Path, help="같은 명령·검사 조건으로 수집한 변경 후 궤적")
+    investigate.add_argument("--profile", type=Path, help="동일 출처의 저장 영상 탐색용 프로파일")
+    investigate.add_argument("--mcp", action="store_true", help="실제 조회 전용 MCP 호출과 감사 기록을 사용(mcp 선택 의존성)")
+    investigate.add_argument("--out", type=Path, default=Path(".local/incident-review"))
+
+    incident_eval = subparsers.add_parser("investigate-evaluate", help="라벨이 있는 기록의 구간 선택 평가와 사람 검토시간 비교")
+    incident_eval.add_argument("--manifest", type=Path, required=True)
+    incident_eval.add_argument("--out", type=Path, default=Path(".local/incident-evaluation"))
+
     sim_check = subparsers.add_parser("sim-check", help="정상·컵 위치 오차·복구를 새 시뮬 실행과 MCP 검사로 확인")
     sim_inputs = sim_check.add_mutually_exclusive_group(required=True)
     sim_inputs.add_argument("--profile", type=Path)
@@ -286,6 +298,29 @@ def _embedder_from_args(args: argparse.Namespace) -> Embedder:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.command in ("investigate", "investigate-evaluate"):
+        try:
+            if args.command == "investigate":
+                from .incident_review import review_path
+                from .replay.profile import load_profile
+                options = {"profile": load_profile(args.profile) if args.profile else None,
+                           "events_path": args.events.expanduser() if args.events else None,
+                           "after_path": args.after.expanduser() if args.after else None}
+                if args.mcp:
+                    import asyncio
+                    from .incident_agent import investigate_via_mcp
+                    result = asyncio.run(investigate_via_mcp(args.trajectory.expanduser(), args.out.expanduser(), **options))
+                else:
+                    result = review_path(args.trajectory.expanduser(), args.out.expanduser(), **options)
+                result = {k: result[k] for k in ("status", "summary", "cause_status", "next_checks")}
+            else:
+                from .incident_evaluation import evaluate_manifest
+                result = evaluate_manifest(args.manifest.expanduser(), args.out.expanduser())
+        except (OSError, ValueError, TypeError, KeyError, ImportError) as error:
+            print(json.dumps({"error": str(error), "type": type(error).__name__}, ensure_ascii=False))
+            return 2
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0
     if args.command == "sim-check":
         from .simulation_workflow import command
         return command(args)

@@ -13,7 +13,7 @@ import tempfile
 import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Callable, Mapping, Protocol, Sequence
+from typing import Any, Callable, Mapping, Protocol, Sequence
 
 from .audit import AuditLogger, AuditSpan
 from .replay.divergence import compute_divergence, read_trajectory
@@ -195,6 +195,10 @@ class DiagnosticToolService:
             "허용된 경로의 trajectory/1 JSONL을 읽어 "
             "추종 오차와 동결 구간을 분석합니다."
         ),
+        "investigate_recording": (
+            "허용된 경로의 trajectory/1 JSONL을 읽어 실패 구간과 "
+            "다음 확인 항목을 근거와 함께 정리합니다."
+        ),
         "analyze_simulation": (
             "허용된 경로의 저장된 시뮬레이션 결과를 읽어 "
             "닫기 전 접촉 이상과 저장 판정의 일치 여부를 분석합니다."
@@ -223,6 +227,7 @@ class DiagnosticToolService:
             "journal_tail": self._journal_tail,
             "log_tail": self._log_tail,
             "analyze_trajectory": self._analyze_trajectory,
+            "investigate_recording": self._investigate_recording,
             "analyze_simulation": self._analyze_simulation,
             "analyze_cup_alignment": self._analyze_cup_alignment,
         }
@@ -399,6 +404,151 @@ class DiagnosticToolService:
         )
 
     def _analyze_trajectory(self, arguments: Mapping[str, object]) -> ProcessResult:
+        started = time.perf_counter()
+        path, source_bytes, header, rows = self._read_trajectory_snapshot(arguments)
+        try:
+            divergence = compute_divergence(header, rows)
+            from .recording_inspection import check_rows
+            recording_check = check_rows(header, rows)
+            issue_count = len(recording_check["issues"])
+            recording_check["issues"] = recording_check["issues"][:8]
+            recording_check["issue_count"] = issue_count
+            recording_check["issues_truncated"] = issue_count > 8
+            # 원시 시계열과 프레임별 누락 목록은 도구 응답에 싣지 않는다.
+            missing = recording_check["coverage"].pop("gripper_missing_frames", [])
+            recording_check["coverage"]["gripper_missing_frame_count"] = len(missing)
+            summary = {
+                "source_path": str(path),
+                "source_sha256": hashlib.sha256(source_bytes).hexdigest(),
+                "frame_count": len(rows),
+                "duration_s": float(rows[-1]["t"]) - float(rows[0]["t"]),
+                "joint_names": divergence["joint_names"],
+                "thresholds": divergence["thresholds"],
+                "freeze_rule": divergence["freeze_rule"],
+                "incidents": divergence["incidents"],
+                "tcp": divergence["tcp"],
+                "max_joint_err_deg": divergence["max_joint_err_deg"],
+                "recording_check": recording_check,
+            }
+            output = json.dumps(
+                summary,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            )
+        except ToolRejected:
+            raise
+        except (ValueError, TypeError, KeyError, json.JSONDecodeError) as error:
+            raise ToolRejected(f"invalid_trajectory: {type(error).__name__}") from error
+        if len(output) > self.policy.max_output_chars:
+            raise ToolRejected(
+                "analysis_output_too_large: 분석 요약이 출력 제한을 넘었습니다"
+            )
+        return ProcessResult(
+            returncode=0,
+            stdout=output,
+            stderr="",
+            duration_ms=(time.perf_counter() - started) * 1000.0,
+        )
+
+    def _investigate_recording(self, arguments: Mapping[str, object]) -> ProcessResult:
+        started = time.perf_counter()
+        _require_only(arguments, {"path", "events_path", "after_path"})
+        path, source_bytes, header, rows = self._read_trajectory_snapshot(
+            {"path": arguments.get("path")}
+        )
+        try:
+            from .incident_review import compare_rows, review_rows
+
+            digest = hashlib.sha256(source_bytes).hexdigest()
+            events = None
+            events_bytes = None
+            if "events_path" in arguments:
+                from .incident_review import parse_events_document
+
+                events_bytes = self._read_incident_json(
+                    _require_string(arguments, "events_path", max_length=4096),
+                    label="incident_events",
+                )
+                try:
+                    events_document = json.loads(events_bytes.decode("utf-8"))
+                except UnicodeDecodeError as error:
+                    raise ToolRejected(
+                        "invalid_incident_events: UTF-8 JSON이어야 합니다"
+                    ) from error
+                except json.JSONDecodeError as error:
+                    raise ToolRejected(
+                        "invalid_incident_events: 올바른 JSON이어야 합니다"
+                    ) from error
+                events = parse_events_document(events_document, digest)
+
+            summary = review_rows(header, rows, events=events)
+            summary["source"] = {
+                "label": path.name,
+                "sha256": digest,
+            }
+            if events_bytes is not None:
+                summary["source"]["events_sha256"] = hashlib.sha256(
+                    events_bytes
+                ).hexdigest()
+
+            if "after_path" in arguments:
+                after_path, after_bytes, after_header, after_rows = (
+                    self._read_trajectory_snapshot(
+                        {"path": arguments.get("after_path")}
+                    )
+                )
+                summary["comparison"] = compare_rows(
+                    header,
+                    rows,
+                    after_header,
+                    after_rows,
+                )
+                summary["comparison"]["after_sha256"] = hashlib.sha256(
+                    after_bytes
+                ).hexdigest()
+                summary["comparison"]["after_label"] = after_path.name
+            output = json.dumps(
+                summary,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            )
+        except ToolRejected:
+            raise
+        except (ValueError, TypeError, KeyError, IndexError) as error:
+            raise ToolRejected(f"invalid_trajectory: {error}") from error
+        if len(output) > self.policy.max_output_chars:
+            raise ToolRejected(
+                "analysis_output_too_large: 사건 검토 요약이 출력 제한을 넘었습니다"
+            )
+        return ProcessResult(
+            returncode=0,
+            stdout=output,
+            stderr="",
+            duration_ms=(time.perf_counter() - started) * 1000.0,
+        )
+
+    def _read_incident_json(self, raw_path: str, *, label: str) -> bytes:
+        requested_path = Path(raw_path).expanduser()
+        if requested_path.is_symlink():
+            raise ToolRejected(
+                f"symlink_not_allowed: {label} 심볼릭 링크는 허용하지 않습니다"
+            )
+        path = self._resolve_allowed_path(raw_path)
+        if path.suffix.lower() != ".json":
+            raise ToolRejected(f"invalid_incident_path: {label}은 .json 파일이어야 합니다")
+        return _read_regular_file_no_follow(
+            path,
+            max_bytes=MAX_TRAJECTORY_BYTES,
+            label=label,
+        )
+
+    def _read_trajectory_snapshot(
+        self, arguments: Mapping[str, object]
+    ) -> tuple[Path, bytes, dict[str, Any], list[dict[str, Any]]]:
         _require_only(arguments, {"path"})
         raw_path = _require_string(arguments, "path", max_length=4096)
         requested_path = Path(raw_path).expanduser()
@@ -410,7 +560,6 @@ class DiagnosticToolService:
         if path.suffix.lower() != ".jsonl":
             raise ToolRejected("invalid_trajectory_path: .jsonl 일반 파일만 허용합니다")
 
-        started = time.perf_counter()
         flags = (
             os.O_RDONLY
             | getattr(os, "O_NOFOLLOW", 0)
@@ -458,54 +607,13 @@ class DiagnosticToolService:
                 stable_copy.write(source_bytes)
                 stable_copy.flush()
                 header, rows = read_trajectory(Path(stable_copy.name))
-            if not _all_numbers_finite(header) or not _all_numbers_finite(rows):
-                raise ToolRejected(
-                    "invalid_trajectory: NaN 또는 무한대는 허용하지 않습니다"
-                )
-            divergence = compute_divergence(header, rows)
-            from .recording_inspection import check_rows
-            recording_check = check_rows(header, rows)
-            issue_count = len(recording_check["issues"])
-            recording_check["issues"] = recording_check["issues"][:8]
-            recording_check["issue_count"] = issue_count
-            recording_check["issues_truncated"] = issue_count > 8
-            # 원시 시계열과 프레임별 누락 목록은 도구 응답에 싣지 않는다.
-            missing = recording_check["coverage"].pop("gripper_missing_frames", [])
-            recording_check["coverage"]["gripper_missing_frame_count"] = len(missing)
-            summary = {
-                "source_path": str(path),
-                "source_sha256": hashlib.sha256(source_bytes).hexdigest(),
-                "frame_count": len(rows),
-                "duration_s": float(rows[-1]["t"]) - float(rows[0]["t"]),
-                "joint_names": divergence["joint_names"],
-                "thresholds": divergence["thresholds"],
-                "freeze_rule": divergence["freeze_rule"],
-                "incidents": divergence["incidents"],
-                "tcp": divergence["tcp"],
-                "max_joint_err_deg": divergence["max_joint_err_deg"],
-                "recording_check": recording_check,
-            }
-            output = json.dumps(
-                summary,
-                ensure_ascii=False,
-                sort_keys=True,
-                separators=(",", ":"),
-                allow_nan=False,
-            )
-        except ToolRejected:
-            raise
         except (ValueError, TypeError, KeyError, json.JSONDecodeError) as error:
             raise ToolRejected(f"invalid_trajectory: {type(error).__name__}") from error
-        if len(output) > self.policy.max_output_chars:
+        if not _all_numbers_finite(header) or not _all_numbers_finite(rows):
             raise ToolRejected(
-                "analysis_output_too_large: 분석 요약이 출력 제한을 넘었습니다"
+                "invalid_trajectory: NaN 또는 무한대는 허용하지 않습니다"
             )
-        return ProcessResult(
-            returncode=0,
-            stdout=output,
-            stderr="",
-            duration_ms=(time.perf_counter() - started) * 1000.0,
-        )
+        return path, source_bytes, header, rows
 
     def _read_simulation_pair(
         self, arguments: Mapping[str, object]
@@ -569,8 +677,11 @@ class DiagnosticToolService:
                 result_sha256=hashlib.sha256(result_bytes).hexdigest(),
                 plan_sha256=hashlib.sha256(plan_bytes).hexdigest(),
             )
-            summary["source"]["result_path"] = str(path)
-            summary["source"]["plan_path"] = str(plan_path)
+            source = summary["source"]
+            if not isinstance(source, dict):
+                raise ValueError("시뮬레이션 검사 출처는 객체여야 합니다")
+            source["result_path"] = str(path)
+            source["plan_path"] = str(plan_path)
             output = json.dumps(
                 summary,
                 ensure_ascii=False,
@@ -610,9 +721,15 @@ class DiagnosticToolService:
                 plan_sha256=hashlib.sha256(plan_bytes).hexdigest(),
             )
             config = plan["config"]
+            if not isinstance(config, dict):
+                raise ValueError("시뮬레이션 config는 객체여야 합니다")
             recovery = config["recovery"]
+            if not isinstance(recovery, dict):
+                raise ValueError("시뮬레이션 recovery는 객체여야 합니다")
             duration_s = recovery["observation_duration_s"]
             raw_samples = result["samples"]
+            if not isinstance(raw_samples, list) or not raw_samples:
+                raise ValueError("시뮬레이션 samples는 비어 있지 않은 목록이어야 합니다")
             start_s = raw_samples[0]["time_s"]
             fields = (
                 "time_s",

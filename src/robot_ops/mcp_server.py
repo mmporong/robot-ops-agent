@@ -29,6 +29,7 @@ REGISTERED_TOOL_NAMES = frozenset(
         "journal_tail",
         "log_tail",
         "analyze_trajectory",
+        "investigate_recording",
         "analyze_simulation",
         "analyze_cup_alignment",
     }
@@ -212,6 +213,20 @@ def create_server(
         return _json_tool_result_or_error(
             service, "analyze_trajectory", {"path": path}
         )
+
+    @server.tool()
+    def investigate_recording(
+        path: str,
+        events_path: str | None = None,
+        after_path: str | None = None,
+    ) -> dict[str, object]:
+        """저장된 trajectory/1에서 실패 구간과 다음 확인 항목을 정리합니다."""
+        arguments: dict[str, object] = {"path": path}
+        if events_path is not None:
+            arguments["events_path"] = events_path
+        if after_path is not None:
+            arguments["after_path"] = after_path
+        return _json_tool_result_or_error(service, "investigate_recording", arguments)
 
     @server.tool()
     def analyze_simulation(path: str) -> dict[str, object]:
